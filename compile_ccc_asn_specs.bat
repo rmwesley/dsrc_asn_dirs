@@ -1,0 +1,1 @@
+.\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/DSRC Instances asn specs/CCC2019/" -o ./ASN/compiled_DSRC_instances/CCC2019
