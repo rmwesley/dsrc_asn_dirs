@@ -1,28 +1,24 @@
-EfcDsrcGeneric {iso(1) standard(0) 14906 generic(1) version9(9)}
-DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+EfcDsrcGeneric {iso(1) standard(0) 14906 generic(1) version10(10) minorVersion1(1)}
+DEFINITIONS AUTOMATIC TAGS 
+::= BEGIN
 EXPORTS ALL;
 IMPORTS
-GetStampedRq,GetStampedRs{},SetStampedRq{},GetInstanceRq,
-GetInstanceRs{},SetInstanceRq{},SetMMIRq,ChannelRq,ChannelRs,CopyRq,
-SubRq,AddRq,DebitRq,DebitRs,CreditRq,CreditRs,
-EFC-ContextMark,ContractSerialNumber,ContractValidity,
-ContractVehicle,ContractAuthenticator,ICC-Id,
-ReceiptServicePart,SessionClass,SignedValue,ReceiptServiceSerialNumber,
-ReceiptFinancialPart,ReceiptContract,ReceiptOBUId,ReceiptICC-Id,
-ReceiptText,ReceiptAuthenticator,ReceiptDistance,LPN,VehicleClass,
-VehicleDimensions,VehicleAxles,VehicleWeightLimits,
-VehicleWeightLaden,VehicleSpecificCharacteristics,
-VehicleAuthenticator,EquipmentOBUId,
-EquipmentStatus,DriverCharacteristics,
-PaymentMeans,PaymentMeansBalance,PaymentMeansUnit,
-PaymentSecurityData,PersonalAccountNumber,ReceiptData1,
-ReceiptData2,SessionLocation,ValidityOfContract, AxleWeightLimits, PassengerCapacity, Engine, SoundLevel, ExhaustEmissionValues, DieselEmissionValues, CO2EmissionValue, VehicleTotalDistance, TrailerLicencePlateNumber, TrailerCharacteristics, ActualNumberOfPassengers
-FROM EfcDsrcApplication {iso(1) standard(0) 14906 application(0) version8(8)}
-
-CS5
-FROM AVIAEINumberingAndDataStructures {iso(1) standard(0) iso14816(14816) asnm1(1) version1(1)};
--- defined in ISO 14816 --
--- EXPORTS everything;
+-- ********* ISO 17573-3:2022 *********
+	ActualNumberOfPassengers, AxleWeightLimits, Co2EmissionValue, ContractSerialNumber, ContractAuthenticator, ContractValidity, 
+	DieselEmissionValues, DriverCharacteristics, EfcContextMark, EngineDetails, EquipmentIccId, EquipmentObuId, EquipmentStatus, ExhaustEmissionValues, 
+	Lpn, PassengerCapacity, PaymentMeans, PaymentMeansBalance, PaymentSecurityData, ReceiptAuthenticator, ReceiptContract, ReceiptDistance, 
+	ReceiptFinancialPart, ReceiptIccId, ReceiptObuId, ReceiptServicePart, ReceiptServiceSerialNumber, ReceiptText, SessionClass, SoundLevel, 
+	TrailerCharacteristics, ValidityOfContract, VehicleAuthenticator, VehicleAxles, VehicleClass, VehicleDimensions, VehicleIdentificationNumber, 
+	VehicleSpecificCharacteristics, VehicleTotalDistance, VehicleWeightLaden, VehicleWeightLimits
+	FROM EfcDataDictionary {iso(1) standard(0) 17573 dd(3) version1(1) minorVersion1(1)} WITH SUCCESSORS
+	
+-- ********* ISO/FDIS 14906:2022 application *********
+	AddRq, ChannelRq, ChannelRs, CopyRq, CreditRq, CreditRs, DebitRq, DebitRs, GetInstanceRq, GetInstanceRs{}, GetStampedRq, GetStampedRs{}, 
+	SetInstanceRq{}, SetMMIRq, SetStampedRq{}, SubRq, 
+	PaymentMeansUnit, --type re-definition of PayUnitkept for descriptive reasons in the body of the standard
+	ReceiptData1, ReceiptData2, --type re-definitions of ReceiptData kept for descriptive reasons in the body of the standard
+	ContractVehicle, TrailerLicencePlateNumber --type re-definitions of Lpn kept for descriptive reasons in the body of the standard
+	FROM EfcDsrcApplication {iso(1) standard(0) 14906 application(0) version9(9) minorVersion1(1)} WITH SUCCESSORS;
 
 Action-Request{Container}::= SEQUENCE{
 	mode BOOLEAN,
@@ -63,7 +59,7 @@ ActionType ::= INTEGER (0..127,...)
 
 ApplicationContextMark ::= EfcContainer (WITH COMPONENTS {octetstring PRESENT})
 -- The contents of the octetstring shall be an aligned PER
--- encoding of EFC-Contextmark, but this encoding may be followed
+-- encoding of EfcContextMark, but this encoding may be followed
 -- by non-standardised encodings. Illustrations of the inclusion
 -- of non-standardised encodings are shown in annex B.
 
@@ -136,7 +132,7 @@ EfcContainer ::= CHOICE{
 	debrs [29] DebitRs,
 	crerq [30] CreditRq,
 	crers [31] CreditRs,
-	efccontext [32] EFC-ContextMark,
+	efccontext [32] EfcContextMark,
 	contser [33] ContractSerialNumber,
 	contval [34] ContractValidity,
 	contveh [35] ContractVehicle,
@@ -144,15 +140,15 @@ EfcContainer ::= CHOICE{
 	recspt [37] ReceiptServicePart,
 	sessioncls [38] SessionClass,
 	recservserialno [39] ReceiptServiceSerialNumber,
-	recfinptENV [40] NULL,
+	recfinptEnv [40] NULL,
 	reccont [41] ReceiptContract,
-	recOBUId [42] ReceiptOBUId,
-	recICCId [43] ReceiptICC-Id,
+	recOBUId [42] ReceiptObuId,
+	recICCId [43] ReceiptIccId,
 	rectext [44] ReceiptText,
 	recauth [45] ReceiptAuthenticator,
 	recdist [46] ReceiptDistance,
-	vehlpn [47] LPN, -- vehicle licence plate number
-	vehid [48] CS5, -- vehicle identification number
+	vehlpn [47] Lpn,
+	vehid [48] VehicleIdentificationNumber,
 	vehclass [49] VehicleClass,
 	vehdims [50] VehicleDimensions,
 	vehaxles [51] VehicleAxles,
@@ -160,37 +156,37 @@ EfcContainer ::= CHOICE{
 	vehwtladen [53] VehicleWeightLaden,
 	vehspchars [54] VehicleSpecificCharacteristics,
 	vehauth [55] VehicleAuthenticator,
-	equOBUId [56] EquipmentOBUId,
-	equICCId [57] ICC-Id,
+	equOBUId [56] EquipmentObuId, 
+	equICCId [57] EquipmentIccId,
 	equstat [58] EquipmentStatus,
 	dvrchars [59] DriverCharacteristics,
-	paymeansENV [60] NULL,
+	paymeansEnv [60] NULL,
 	paymbal [61] PaymentMeansBalance,
 	paymunit [62] PaymentMeansUnit,
 	paysecdata [63] PaymentSecurityData,
 	paymeans [64] PaymentMeans,
-	recdata1 [65] ReceiptData1,
+	recdata1 [65] ReceiptData1, 
 	recdata2 [66] ReceiptData2,
 	valofcon [67] ValidityOfContract,
 	recfinpt [68] ReceiptFinancialPart,
 	setmmirq [69] SetMMIRq,
 	awl [70] AxleWeightLimits,
 	paca [71] PassengerCapacity,
-	eng [72] Engine,
+	eng [72] EngineDetails,
 	sl [73] SoundLevel,
 	eev [74] ExhaustEmissionValues,
 	dev [75] DieselEmissionValues,
-	co2ev [76] CO2EmissionValue,
+	co2ev [76] Co2EmissionValue,
 	vtd [77] VehicleTotalDistance,
 	tlpn [78] TrailerLicencePlateNumber,
 	tch [79] TrailerCharacteristics,
 	anp [80] ActualNumberOfPassengers,
-	rfuCenISO48 [81] NULL,
-	rfuCenISO49 [82] NULL,
-	rfuCenISO50 [83] NULL,
-	rfuCenISO51 [84] NULL,
-	rfuCenISO52 [85] NULL,
-	rfuCenISO53 [86] NULL,
+	rfuCenIso48 [81] NULL,
+	rfuCenIso49 [82] NULL,
+	rfuCenIso50 [83] NULL,
+	rfuCenIso51 [84] NULL,
+	rfuCenIso52 [85] NULL,
+	rfuCenIso53 [86] NULL,
 	-- Container CHOICE type values [81..86] are reserved for
 	-- attribute Ids 48 to 53 which are used in CCC
 	-- Container CHOICE type values [87..127] are reserved for private EFC use 
@@ -317,7 +313,7 @@ ReturnStatus::= INTEGER {
 	processingFailure (4),
 	processing (5),
 	chainingError (6)
-	-- (7..127) are reserved for future CEN use
+	-- (7..127) are reserved for CEN use
 }(0..127,...)
 
 Set-Request{Container}::= SEQUENCE{
@@ -341,16 +337,16 @@ Time::= INTEGER(0..4294967295)
 -- start of 1st January 1970
 
 T-APDUs-Generic{Container}::=CHOICE{
-	action-request        [0]   Action-Request{Container},
-	action-response       [1]   Action-Response{Container},
-	event-report-request  [2]   Event-Report-Request{Container},
-	event-report-response [3]   Event-Report-Response,
-	set-request           [4]   Set-Request{Container},
-	set-response          [5]   Set-Response,
-	get-request           [6]   Get-Request,
-	get-response          [7]   Get-Response{Container},
-	initialisation-request  [8]   Initialisation-Request,
-	initialisation-response [9]   Initialisation-Response
+	action-request			[0]	Action-Request{Container},
+	action-response			[1]	Action-Response{Container},
+	event-report-request	[2]	Event-Report-Request{Container},
+	event-report-response	[3]	Event-Report-Response,
+	set-request				[4]	Set-Request{Container},
+	set-response			[5]	Set-Response,
+	get-request				[6]	Get-Request,
+	get-response			[7]	Get-Response{Container},
+	initialisation-request	[8]	Initialisation-Request,
+	initialisation-response	[9]	Initialisation-Response
 }
 
 T-APDUs ::= T-APDUs-Generic{EfcContainer}
