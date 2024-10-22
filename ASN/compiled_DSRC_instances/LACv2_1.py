@@ -2714,6 +2714,694 @@ class EfcCcc:
         CccContainer,
     ]
 
+class EfcLac:
+
+    _name_  = 'EfcLac'
+    _oid_   = [1, 0, 13141, 2, 1]
+    
+    _obj_ = [
+        'LacInitialiseCommRequest',
+        'LacInitialiseCommResponse',
+        'LacDataTxRequest',
+        'LacDataTxResponse',
+        'LacTerminateComm',
+        'LacContextMark',
+        'LacData',
+        'ChargeObjectId',
+        'TollCharger',
+        'MacTc',
+        'MacTcAlgorithm',
+        'ApplicationContextMark',
+        'LacTApdus',
+        'LacContainer',
+        ]
+    _type_ = [
+        'LacInitialiseCommRequest',
+        'LacInitialiseCommResponse',
+        'LacDataTxRequest',
+        'LacDataTxResponse',
+        'LacTerminateComm',
+        'LacContextMark',
+        'LacData',
+        'ChargeObjectId',
+        'TollCharger',
+        'MacTc',
+        'MacTcAlgorithm',
+        'ApplicationContextMark',
+        'LacTApdus',
+        'LacContainer',
+        ]
+    _set_ = [
+        ]
+    _val_ = [
+        ]
+    _class_ = [
+        ]
+    _param_ = [
+        ]
+    
+    #-----< LacInitialiseCommRequest >-----#
+    LacInitialiseCommRequest = SEQ(name='LacInitialiseCommRequest', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'BST')))
+    
+    #-----< LacInitialiseCommResponse >-----#
+    LacInitialiseCommResponse = SEQ(name='LacInitialiseCommResponse', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'VST')))
+    
+    #-----< LacDataTxRequest >-----#
+    LacDataTxRequest = SEQ(name='LacDataTxRequest', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Request')))
+    _LacDataTxRequest_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacDataTxRequest_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    _LacDataTxRequest_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacDataTxRequest_eid = INT(name='eid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    _LacDataTxRequest_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _LacDataTxRequest_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacDataTxRequest_attrList = SEQ_OF(name='attrList', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
+    __LacDataTxRequest_attrList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ___LacDataTxRequest_attrList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ___LacDataTxRequest_attrList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ___LacDataTxRequest_attrList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContainer')))
+    __LacDataTxRequest_attrList__item_._cont = ASN1Dict([
+        ('attributeId', ___LacDataTxRequest_attrList__item__attributeId),
+        ('attributeValue', ___LacDataTxRequest_attrList__item__attributeValue),
+        ])
+    __LacDataTxRequest_attrList__item_._ext = None
+    _LacDataTxRequest_attrList._cont = __LacDataTxRequest_attrList__item_
+    _LacDataTxRequest_attrList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacDataTxRequest_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    LacDataTxRequest._cont = ASN1Dict([
+        ('fill', _LacDataTxRequest_fill),
+        ('mode', _LacDataTxRequest_mode),
+        ('eid', _LacDataTxRequest_eid),
+        ('accessCredentials', _LacDataTxRequest_accessCredentials),
+        ('attrList', _LacDataTxRequest_attrList),
+        ('iid', _LacDataTxRequest_iid),
+        ])
+    LacDataTxRequest._ext = None
+    
+    #-----< LacDataTxResponse >-----#
+    LacDataTxResponse = SEQ(name='LacDataTxResponse', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Response')))
+    
+    #-----< LacTerminateComm >-----#
+    LacTerminateComm = SEQ(name='LacTerminateComm', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Request')))
+    _LacTerminateComm_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacTerminateComm_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    _LacTerminateComm_eventType = INT(name='eventType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'EventType')))
+    _LacTerminateComm_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _LacTerminateComm_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacTerminateComm_eventParameter = CHOICE(name='eventParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContainer')), opt=True)
+    _LacTerminateComm_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    LacTerminateComm._cont = ASN1Dict([
+        ('mode', _LacTerminateComm_mode),
+        ('eid', _LacTerminateComm_eid),
+        ('eventType', _LacTerminateComm_eventType),
+        ('accessCredentials', _LacTerminateComm_accessCredentials),
+        ('eventParameter', _LacTerminateComm_eventParameter),
+        ('iid', _LacTerminateComm_iid),
+        ])
+    LacTerminateComm._ext = None
+    
+    #-----< LacContextMark >-----#
+    LacContextMark = SEQ(name='LacContextMark', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDataDictionary', 'EfcContextMark')))
+    
+    #-----< LacData >-----#
+    LacData = SEQ(name='LacData', mode=MODE_TYPE)
+    _LacData_lacOperator = SEQ(name='lacOperator', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Provider')))
+    _LacData_rseId = INT(name='rseId', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Int2Unsigned')))
+    _LacData_latitude = INT(name='latitude', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Latitude')))
+    _LacData_longitude = INT(name='longitude', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Longitude')))
+    _LacData_altitude = INT(name='altitude', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Altitude')))
+    _LacData_tollCharger = SEQ(name='tollCharger', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'TollCharger')))
+    _LacData_chargeObject = SEQ(name='chargeObject', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'ChargeObjectId')))
+    _LacData_distanceToObject = INT(name='distanceToObject', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Int2Signed')))
+    _LacData_lacTime = INT(name='lacTime', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Time')))
+    _LacData_macTc = SEQ(name='macTc', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'MacTc')))
+    _LacData_mac2 = OCT_STR(name='mac2', mode=MODE_TYPE, tag=(10, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacData_mac2._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
+    LacData._cont = ASN1Dict([
+        ('lacOperator', _LacData_lacOperator),
+        ('rseId', _LacData_rseId),
+        ('latitude', _LacData_latitude),
+        ('longitude', _LacData_longitude),
+        ('altitude', _LacData_altitude),
+        ('tollCharger', _LacData_tollCharger),
+        ('chargeObject', _LacData_chargeObject),
+        ('distanceToObject', _LacData_distanceToObject),
+        ('lacTime', _LacData_lacTime),
+        ('macTc', _LacData_macTc),
+        ('mac2', _LacData_mac2),
+        ])
+    LacData._ext = None
+    
+    #-----< ChargeObjectId >-----#
+    ChargeObjectId = SEQ(name='ChargeObjectId', mode=MODE_TYPE)
+    _ChargeObjectId_regimeId = INT(name='regimeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Int2Unsigned')))
+    _ChargeObjectId_chargeObjectDesignation = INT(name='chargeObjectDesignation', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Int4Unsigned')))
+    ChargeObjectId._cont = ASN1Dict([
+        ('regimeId', _ChargeObjectId_regimeId),
+        ('chargeObjectDesignation', _ChargeObjectId_chargeObjectDesignation),
+        ])
+    ChargeObjectId._ext = None
+    
+    #-----< TollCharger >-----#
+    TollCharger = SEQ(name='TollCharger', mode=MODE_TYPE)
+    _TollCharger_tollContext = SEQ(name='tollContext', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Provider')))
+    _TollCharger_chargeReportFinalRecipient = SEQ(name='chargeReportFinalRecipient', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Provider')))
+    TollCharger._cont = ASN1Dict([
+        ('tollContext', _TollCharger_tollContext),
+        ('chargeReportFinalRecipient', _TollCharger_chargeReportFinalRecipient),
+        ])
+    TollCharger._ext = None
+    
+    #-----< MacTc >-----#
+    MacTc = SEQ(name='MacTc', mode=MODE_TYPE)
+    _MacTc_keyRef = INT(name='keyRef', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Int1Unsigned')))
+    _MacTc_algorithmId = INT(name='algorithmId', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'MacTcAlgorithm')))
+    _MacTc_mac = OCT_STR(name='mac', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _MacTc_mac._const_sz = ASN1Set(rv=[4], rr=[], ev=None, er=[])
+    _MacTc_nonce = OCT_STR(name='nonce', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _MacTc_nonce._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    MacTc._cont = ASN1Dict([
+        ('keyRef', _MacTc_keyRef),
+        ('algorithmId', _MacTc_algorithmId),
+        ('mac', _MacTc_mac),
+        ('nonce', _MacTc_nonce),
+        ])
+    MacTc._ext = None
+    
+    #-----< MacTcAlgorithm >-----#
+    MacTcAlgorithm = INT(name='MacTcAlgorithm', mode=MODE_TYPE)
+    MacTcAlgorithm._cont = ASN1Dict([('cbcDes64bitKey', 0), ('cmacAes128bitKey', 1)])
+    MacTcAlgorithm._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
+    #-----< ApplicationContextMark >-----#
+    ApplicationContextMark = SEQ(name='ApplicationContextMark', mode=MODE_TYPE)
+    _ApplicationContextMark_lacContextMark = SEQ(name='lacContextMark', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContextMark')))
+    _ApplicationContextMark_ac_cr_reference = OCT_STR(name='ac-cr-reference', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _ApplicationContextMark_ac_cr_reference._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _ApplicationContextMark_rndOBE = OCT_STR(name='rndOBE', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _ApplicationContextMark_rndOBE._const_sz = ASN1Set(rv=[4], rr=[], ev=None, er=[])
+    ApplicationContextMark._cont = ASN1Dict([
+        ('lacContextMark', _ApplicationContextMark_lacContextMark),
+        ('ac-cr-reference', _ApplicationContextMark_ac_cr_reference),
+        ('rndOBE', _ApplicationContextMark_rndOBE),
+        ])
+    ApplicationContextMark._ext = None
+    
+    #-----< LacTApdus >-----#
+    LacTApdus = CHOICE(name='LacTApdus', mode=MODE_TYPE)
+    _LacTApdus_actionRequest = SEQ(name='actionRequest', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Request')))
+    __LacTApdus_actionRequest_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __LacTApdus_actionRequest_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __LacTApdus_actionRequest_actionType = INT(name='actionType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ActionType')))
+    __LacTApdus_actionRequest_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __LacTApdus_actionRequest_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __LacTApdus_actionRequest_actionParameter = CHOICE(name='actionParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContainer')), opt=True)
+    __LacTApdus_actionRequest_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _LacTApdus_actionRequest._cont = ASN1Dict([
+        ('mode', __LacTApdus_actionRequest_mode),
+        ('eid', __LacTApdus_actionRequest_eid),
+        ('actionType', __LacTApdus_actionRequest_actionType),
+        ('accessCredentials', __LacTApdus_actionRequest_accessCredentials),
+        ('actionParameter', __LacTApdus_actionRequest_actionParameter),
+        ('iid', __LacTApdus_actionRequest_iid),
+        ])
+    _LacTApdus_actionRequest._ext = None
+    _LacTApdus_actionResponse = SEQ(name='actionResponse', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Response')))
+    __LacTApdus_actionResponse_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __LacTApdus_actionResponse_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __LacTApdus_actionResponse_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __LacTApdus_actionResponse_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    __LacTApdus_actionResponse_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContainer')), opt=True)
+    __LacTApdus_actionResponse_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
+    _LacTApdus_actionResponse._cont = ASN1Dict([
+        ('fill', __LacTApdus_actionResponse_fill),
+        ('eid', __LacTApdus_actionResponse_eid),
+        ('iid', __LacTApdus_actionResponse_iid),
+        ('responseParameter', __LacTApdus_actionResponse_responseParameter),
+        ('ret', __LacTApdus_actionResponse_ret),
+        ])
+    _LacTApdus_actionResponse._ext = None
+    _LacTApdus_eventReportRequest = SEQ(name='eventReportRequest', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacTerminateComm')))
+    _LacTApdus_eventReportResponse = SEQ(name='eventReportResponse', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Response')))
+    _LacTApdus_setRequest = SEQ(name='setRequest', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacDataTxRequest')))
+    _LacTApdus_setResponse = SEQ(name='setResponse', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacDataTxResponse')))
+    _LacTApdus_reserved6 = NULL(name='reserved6', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacTApdus_reserved7 = NULL(name='reserved7', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacTApdus_initialisationRequest = SEQ(name='initialisationRequest', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacInitialiseCommRequest')))
+    _LacTApdus_initialisationResponse = SEQ(name='initialisationResponse', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacInitialiseCommResponse')))
+    LacTApdus._cont = ASN1Dict([
+        ('actionRequest', _LacTApdus_actionRequest),
+        ('actionResponse', _LacTApdus_actionResponse),
+        ('eventReportRequest', _LacTApdus_eventReportRequest),
+        ('eventReportResponse', _LacTApdus_eventReportResponse),
+        ('setRequest', _LacTApdus_setRequest),
+        ('setResponse', _LacTApdus_setResponse),
+        ('reserved6', _LacTApdus_reserved6),
+        ('reserved7', _LacTApdus_reserved7),
+        ('initialisationRequest', _LacTApdus_initialisationRequest),
+        ('initialisationResponse', _LacTApdus_initialisationResponse),
+        ])
+    LacTApdus._ext = None
+    
+    #-----< LacContainer >-----#
+    LacContainer = CHOICE(name='LacContainer', mode=MODE_TYPE)
+    _LacContainer_integer = INT(name='integer', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved1 = NULL(name='reserved1', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_octetstring = OCT_STR(name='octetstring', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_octetstring._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacContainer_universalString = STR_UNIV(name='universalString', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_beaconId = SEQ(name='beaconId', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'BeaconID')))
+    _LacContainer_t_apdu = CHOICE(name='t-apdu', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacTApdus')))
+    _LacContainer_dsrcApplicationEntityId = INT(name='dsrcApplicationEntityId', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'DSRCApplicationEntityID')))
+    _LacContainer_dsrc_Ase_Id = INT(name='dsrc-Ase-Id', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    _LacContainer_attrIdList = SEQ_OF(name='attrIdList', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeIdList')))
+    _LacContainer_attrList = SEQ_OF(name='attrList', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
+    __LacContainer_attrList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ___LacContainer_attrList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ___LacContainer_attrList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ___LacContainer_attrList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcLac', 'LacContainer')))
+    __LacContainer_attrList__item_._cont = ASN1Dict([
+        ('attributeId', ___LacContainer_attrList__item__attributeId),
+        ('attributeValue', ___LacContainer_attrList__item__attributeValue),
+        ])
+    __LacContainer_attrList__item_._ext = None
+    _LacContainer_attrList._cont = __LacContainer_attrList__item_
+    _LacContainer_attrList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacContainer_reserved10 = NULL(name='reserved10', mode=MODE_TYPE, tag=(10, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved11 = NULL(name='reserved11', mode=MODE_TYPE, tag=(11, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved12 = NULL(name='reserved12', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved13 = NULL(name='reserved13', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved14 = NULL(name='reserved14', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_time = INT(name='time', mode=MODE_TYPE, tag=(15, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDataDictionary', 'Time')))
+    _LacContainer_vector = SEQ_OF(name='vector', mode=MODE_TYPE, tag=(16, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __LacContainer_vector__item_ = INT(name='_item_', mode=MODE_TYPE)
+    __LacContainer_vector__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    _LacContainer_vector._cont = __LacContainer_vector__item_
+    _LacContainer_vector._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _LacContainer_reserved17 = NULL(name='reserved17', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved18 = NULL(name='reserved18', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved19 = NULL(name='reserved19', mode=MODE_TYPE, tag=(19, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved20 = NULL(name='reserved20', mode=MODE_TYPE, tag=(20, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved21 = NULL(name='reserved21', mode=MODE_TYPE, tag=(21, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved22 = NULL(name='reserved22', mode=MODE_TYPE, tag=(22, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved23 = NULL(name='reserved23', mode=MODE_TYPE, tag=(23, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved24 = NULL(name='reserved24', mode=MODE_TYPE, tag=(24, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved25 = NULL(name='reserved25', mode=MODE_TYPE, tag=(25, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved26 = NULL(name='reserved26', mode=MODE_TYPE, tag=(26, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved27 = NULL(name='reserved27', mode=MODE_TYPE, tag=(27, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved28 = NULL(name='reserved28', mode=MODE_TYPE, tag=(28, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved29 = NULL(name='reserved29', mode=MODE_TYPE, tag=(29, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved30 = NULL(name='reserved30', mode=MODE_TYPE, tag=(30, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved31 = NULL(name='reserved31', mode=MODE_TYPE, tag=(31, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved32 = NULL(name='reserved32', mode=MODE_TYPE, tag=(32, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved33 = NULL(name='reserved33', mode=MODE_TYPE, tag=(33, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved34 = NULL(name='reserved34', mode=MODE_TYPE, tag=(34, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved35 = NULL(name='reserved35', mode=MODE_TYPE, tag=(35, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved36 = NULL(name='reserved36', mode=MODE_TYPE, tag=(36, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved37 = NULL(name='reserved37', mode=MODE_TYPE, tag=(37, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved38 = NULL(name='reserved38', mode=MODE_TYPE, tag=(38, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved39 = NULL(name='reserved39', mode=MODE_TYPE, tag=(39, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved40 = NULL(name='reserved40', mode=MODE_TYPE, tag=(40, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved41 = NULL(name='reserved41', mode=MODE_TYPE, tag=(41, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved42 = NULL(name='reserved42', mode=MODE_TYPE, tag=(42, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved43 = NULL(name='reserved43', mode=MODE_TYPE, tag=(43, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved44 = NULL(name='reserved44', mode=MODE_TYPE, tag=(44, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved45 = NULL(name='reserved45', mode=MODE_TYPE, tag=(45, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved46 = NULL(name='reserved46', mode=MODE_TYPE, tag=(46, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved47 = NULL(name='reserved47', mode=MODE_TYPE, tag=(47, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved48 = NULL(name='reserved48', mode=MODE_TYPE, tag=(48, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved49 = NULL(name='reserved49', mode=MODE_TYPE, tag=(49, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved50 = NULL(name='reserved50', mode=MODE_TYPE, tag=(50, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved51 = NULL(name='reserved51', mode=MODE_TYPE, tag=(51, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved52 = NULL(name='reserved52', mode=MODE_TYPE, tag=(52, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved53 = NULL(name='reserved53', mode=MODE_TYPE, tag=(53, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved54 = NULL(name='reserved54', mode=MODE_TYPE, tag=(54, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved55 = NULL(name='reserved55', mode=MODE_TYPE, tag=(55, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved56 = NULL(name='reserved56', mode=MODE_TYPE, tag=(56, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved57 = NULL(name='reserved57', mode=MODE_TYPE, tag=(57, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved58 = NULL(name='reserved58', mode=MODE_TYPE, tag=(58, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved59 = NULL(name='reserved59', mode=MODE_TYPE, tag=(59, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved60 = NULL(name='reserved60', mode=MODE_TYPE, tag=(60, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved61 = NULL(name='reserved61', mode=MODE_TYPE, tag=(61, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved62 = NULL(name='reserved62', mode=MODE_TYPE, tag=(62, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved63 = NULL(name='reserved63', mode=MODE_TYPE, tag=(63, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved64 = NULL(name='reserved64', mode=MODE_TYPE, tag=(64, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved65 = NULL(name='reserved65', mode=MODE_TYPE, tag=(65, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved66 = NULL(name='reserved66', mode=MODE_TYPE, tag=(66, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved67 = NULL(name='reserved67', mode=MODE_TYPE, tag=(67, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved68 = NULL(name='reserved68', mode=MODE_TYPE, tag=(68, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved69 = NULL(name='reserved69', mode=MODE_TYPE, tag=(69, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved70 = NULL(name='reserved70', mode=MODE_TYPE, tag=(70, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved71 = NULL(name='reserved71', mode=MODE_TYPE, tag=(71, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved72 = NULL(name='reserved72', mode=MODE_TYPE, tag=(72, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved73 = NULL(name='reserved73', mode=MODE_TYPE, tag=(73, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved74 = NULL(name='reserved74', mode=MODE_TYPE, tag=(74, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved75 = NULL(name='reserved75', mode=MODE_TYPE, tag=(75, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved76 = NULL(name='reserved76', mode=MODE_TYPE, tag=(76, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved77 = NULL(name='reserved77', mode=MODE_TYPE, tag=(77, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved78 = NULL(name='reserved78', mode=MODE_TYPE, tag=(78, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reserved79 = NULL(name='reserved79', mode=MODE_TYPE, tag=(79, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse80 = NULL(name='reservedForFutureISOCENuse80', mode=MODE_TYPE, tag=(80, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse81 = NULL(name='reservedForFutureISOCENuse81', mode=MODE_TYPE, tag=(81, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse82 = NULL(name='reservedForFutureISOCENuse82', mode=MODE_TYPE, tag=(82, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse83 = NULL(name='reservedForFutureISOCENuse83', mode=MODE_TYPE, tag=(83, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse84 = NULL(name='reservedForFutureISOCENuse84', mode=MODE_TYPE, tag=(84, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse85 = NULL(name='reservedForFutureISOCENuse85', mode=MODE_TYPE, tag=(85, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse86 = NULL(name='reservedForFutureISOCENuse86', mode=MODE_TYPE, tag=(86, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_contLAC = SEQ(name='contLAC', mode=MODE_TYPE, tag=(87, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcLac', 'LacData')))
+    _LacContainer_reservedForFutureISOCENuse88 = NULL(name='reservedForFutureISOCENuse88', mode=MODE_TYPE, tag=(88, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse89 = NULL(name='reservedForFutureISOCENuse89', mode=MODE_TYPE, tag=(89, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse90 = NULL(name='reservedForFutureISOCENuse90', mode=MODE_TYPE, tag=(90, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse91 = NULL(name='reservedForFutureISOCENuse91', mode=MODE_TYPE, tag=(91, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse92 = NULL(name='reservedForFutureISOCENuse92', mode=MODE_TYPE, tag=(92, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse93 = NULL(name='reservedForFutureISOCENuse93', mode=MODE_TYPE, tag=(93, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse94 = NULL(name='reservedForFutureISOCENuse94', mode=MODE_TYPE, tag=(94, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse95 = NULL(name='reservedForFutureISOCENuse95', mode=MODE_TYPE, tag=(95, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse96 = NULL(name='reservedForFutureISOCENuse96', mode=MODE_TYPE, tag=(96, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse97 = NULL(name='reservedForFutureISOCENuse97', mode=MODE_TYPE, tag=(97, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse98 = NULL(name='reservedForFutureISOCENuse98', mode=MODE_TYPE, tag=(98, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse99 = NULL(name='reservedForFutureISOCENuse99', mode=MODE_TYPE, tag=(99, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse100 = NULL(name='reservedForFutureISOCENuse100', mode=MODE_TYPE, tag=(100, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse101 = NULL(name='reservedForFutureISOCENuse101', mode=MODE_TYPE, tag=(101, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse102 = NULL(name='reservedForFutureISOCENuse102', mode=MODE_TYPE, tag=(102, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse103 = NULL(name='reservedForFutureISOCENuse103', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse104 = NULL(name='reservedForFutureISOCENuse104', mode=MODE_TYPE, tag=(104, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse105 = NULL(name='reservedForFutureISOCENuse105', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse106 = NULL(name='reservedForFutureISOCENuse106', mode=MODE_TYPE, tag=(106, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse107 = NULL(name='reservedForFutureISOCENuse107', mode=MODE_TYPE, tag=(107, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse108 = NULL(name='reservedForFutureISOCENuse108', mode=MODE_TYPE, tag=(108, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse109 = NULL(name='reservedForFutureISOCENuse109', mode=MODE_TYPE, tag=(109, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse110 = NULL(name='reservedForFutureISOCENuse110', mode=MODE_TYPE, tag=(110, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse111 = NULL(name='reservedForFutureISOCENuse111', mode=MODE_TYPE, tag=(111, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _LacContainer_reservedForFutureISOCENuse112 = NULL(name='reservedForFutureISOCENuse112', mode=MODE_TYPE, tag=(112, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    LacContainer._cont = ASN1Dict([
+        ('integer', _LacContainer_integer),
+        ('reserved1', _LacContainer_reserved1),
+        ('octetstring', _LacContainer_octetstring),
+        ('universalString', _LacContainer_universalString),
+        ('beaconId', _LacContainer_beaconId),
+        ('t-apdu', _LacContainer_t_apdu),
+        ('dsrcApplicationEntityId', _LacContainer_dsrcApplicationEntityId),
+        ('dsrc-Ase-Id', _LacContainer_dsrc_Ase_Id),
+        ('attrIdList', _LacContainer_attrIdList),
+        ('attrList', _LacContainer_attrList),
+        ('reserved10', _LacContainer_reserved10),
+        ('reserved11', _LacContainer_reserved11),
+        ('reserved12', _LacContainer_reserved12),
+        ('reserved13', _LacContainer_reserved13),
+        ('reserved14', _LacContainer_reserved14),
+        ('time', _LacContainer_time),
+        ('vector', _LacContainer_vector),
+        ('reserved17', _LacContainer_reserved17),
+        ('reserved18', _LacContainer_reserved18),
+        ('reserved19', _LacContainer_reserved19),
+        ('reserved20', _LacContainer_reserved20),
+        ('reserved21', _LacContainer_reserved21),
+        ('reserved22', _LacContainer_reserved22),
+        ('reserved23', _LacContainer_reserved23),
+        ('reserved24', _LacContainer_reserved24),
+        ('reserved25', _LacContainer_reserved25),
+        ('reserved26', _LacContainer_reserved26),
+        ('reserved27', _LacContainer_reserved27),
+        ('reserved28', _LacContainer_reserved28),
+        ('reserved29', _LacContainer_reserved29),
+        ('reserved30', _LacContainer_reserved30),
+        ('reserved31', _LacContainer_reserved31),
+        ('reserved32', _LacContainer_reserved32),
+        ('reserved33', _LacContainer_reserved33),
+        ('reserved34', _LacContainer_reserved34),
+        ('reserved35', _LacContainer_reserved35),
+        ('reserved36', _LacContainer_reserved36),
+        ('reserved37', _LacContainer_reserved37),
+        ('reserved38', _LacContainer_reserved38),
+        ('reserved39', _LacContainer_reserved39),
+        ('reserved40', _LacContainer_reserved40),
+        ('reserved41', _LacContainer_reserved41),
+        ('reserved42', _LacContainer_reserved42),
+        ('reserved43', _LacContainer_reserved43),
+        ('reserved44', _LacContainer_reserved44),
+        ('reserved45', _LacContainer_reserved45),
+        ('reserved46', _LacContainer_reserved46),
+        ('reserved47', _LacContainer_reserved47),
+        ('reserved48', _LacContainer_reserved48),
+        ('reserved49', _LacContainer_reserved49),
+        ('reserved50', _LacContainer_reserved50),
+        ('reserved51', _LacContainer_reserved51),
+        ('reserved52', _LacContainer_reserved52),
+        ('reserved53', _LacContainer_reserved53),
+        ('reserved54', _LacContainer_reserved54),
+        ('reserved55', _LacContainer_reserved55),
+        ('reserved56', _LacContainer_reserved56),
+        ('reserved57', _LacContainer_reserved57),
+        ('reserved58', _LacContainer_reserved58),
+        ('reserved59', _LacContainer_reserved59),
+        ('reserved60', _LacContainer_reserved60),
+        ('reserved61', _LacContainer_reserved61),
+        ('reserved62', _LacContainer_reserved62),
+        ('reserved63', _LacContainer_reserved63),
+        ('reserved64', _LacContainer_reserved64),
+        ('reserved65', _LacContainer_reserved65),
+        ('reserved66', _LacContainer_reserved66),
+        ('reserved67', _LacContainer_reserved67),
+        ('reserved68', _LacContainer_reserved68),
+        ('reserved69', _LacContainer_reserved69),
+        ('reserved70', _LacContainer_reserved70),
+        ('reserved71', _LacContainer_reserved71),
+        ('reserved72', _LacContainer_reserved72),
+        ('reserved73', _LacContainer_reserved73),
+        ('reserved74', _LacContainer_reserved74),
+        ('reserved75', _LacContainer_reserved75),
+        ('reserved76', _LacContainer_reserved76),
+        ('reserved77', _LacContainer_reserved77),
+        ('reserved78', _LacContainer_reserved78),
+        ('reserved79', _LacContainer_reserved79),
+        ('reservedForFutureISOCENuse80', _LacContainer_reservedForFutureISOCENuse80),
+        ('reservedForFutureISOCENuse81', _LacContainer_reservedForFutureISOCENuse81),
+        ('reservedForFutureISOCENuse82', _LacContainer_reservedForFutureISOCENuse82),
+        ('reservedForFutureISOCENuse83', _LacContainer_reservedForFutureISOCENuse83),
+        ('reservedForFutureISOCENuse84', _LacContainer_reservedForFutureISOCENuse84),
+        ('reservedForFutureISOCENuse85', _LacContainer_reservedForFutureISOCENuse85),
+        ('reservedForFutureISOCENuse86', _LacContainer_reservedForFutureISOCENuse86),
+        ('contLAC', _LacContainer_contLAC),
+        ('reservedForFutureISOCENuse88', _LacContainer_reservedForFutureISOCENuse88),
+        ('reservedForFutureISOCENuse89', _LacContainer_reservedForFutureISOCENuse89),
+        ('reservedForFutureISOCENuse90', _LacContainer_reservedForFutureISOCENuse90),
+        ('reservedForFutureISOCENuse91', _LacContainer_reservedForFutureISOCENuse91),
+        ('reservedForFutureISOCENuse92', _LacContainer_reservedForFutureISOCENuse92),
+        ('reservedForFutureISOCENuse93', _LacContainer_reservedForFutureISOCENuse93),
+        ('reservedForFutureISOCENuse94', _LacContainer_reservedForFutureISOCENuse94),
+        ('reservedForFutureISOCENuse95', _LacContainer_reservedForFutureISOCENuse95),
+        ('reservedForFutureISOCENuse96', _LacContainer_reservedForFutureISOCENuse96),
+        ('reservedForFutureISOCENuse97', _LacContainer_reservedForFutureISOCENuse97),
+        ('reservedForFutureISOCENuse98', _LacContainer_reservedForFutureISOCENuse98),
+        ('reservedForFutureISOCENuse99', _LacContainer_reservedForFutureISOCENuse99),
+        ('reservedForFutureISOCENuse100', _LacContainer_reservedForFutureISOCENuse100),
+        ('reservedForFutureISOCENuse101', _LacContainer_reservedForFutureISOCENuse101),
+        ('reservedForFutureISOCENuse102', _LacContainer_reservedForFutureISOCENuse102),
+        ('reservedForFutureISOCENuse103', _LacContainer_reservedForFutureISOCENuse103),
+        ('reservedForFutureISOCENuse104', _LacContainer_reservedForFutureISOCENuse104),
+        ('reservedForFutureISOCENuse105', _LacContainer_reservedForFutureISOCENuse105),
+        ('reservedForFutureISOCENuse106', _LacContainer_reservedForFutureISOCENuse106),
+        ('reservedForFutureISOCENuse107', _LacContainer_reservedForFutureISOCENuse107),
+        ('reservedForFutureISOCENuse108', _LacContainer_reservedForFutureISOCENuse108),
+        ('reservedForFutureISOCENuse109', _LacContainer_reservedForFutureISOCENuse109),
+        ('reservedForFutureISOCENuse110', _LacContainer_reservedForFutureISOCENuse110),
+        ('reservedForFutureISOCENuse111', _LacContainer_reservedForFutureISOCENuse111),
+        ('reservedForFutureISOCENuse112', _LacContainer_reservedForFutureISOCENuse112),
+        ])
+    LacContainer._ext = []
+    
+    _all_ = [
+        LacInitialiseCommRequest,
+        LacInitialiseCommResponse,
+        _LacDataTxRequest_fill,
+        _LacDataTxRequest_mode,
+        _LacDataTxRequest_eid,
+        _LacDataTxRequest_accessCredentials,
+        ___LacDataTxRequest_attrList__item__attributeId,
+        ___LacDataTxRequest_attrList__item__attributeValue,
+        __LacDataTxRequest_attrList__item_,
+        _LacDataTxRequest_attrList,
+        _LacDataTxRequest_iid,
+        LacDataTxRequest,
+        LacDataTxResponse,
+        _LacTerminateComm_mode,
+        _LacTerminateComm_eid,
+        _LacTerminateComm_eventType,
+        _LacTerminateComm_accessCredentials,
+        _LacTerminateComm_eventParameter,
+        _LacTerminateComm_iid,
+        LacTerminateComm,
+        LacContextMark,
+        _LacData_lacOperator,
+        _LacData_rseId,
+        _LacData_latitude,
+        _LacData_longitude,
+        _LacData_altitude,
+        _LacData_tollCharger,
+        _LacData_chargeObject,
+        _LacData_distanceToObject,
+        _LacData_lacTime,
+        _LacData_macTc,
+        _LacData_mac2,
+        LacData,
+        _ChargeObjectId_regimeId,
+        _ChargeObjectId_chargeObjectDesignation,
+        ChargeObjectId,
+        _TollCharger_tollContext,
+        _TollCharger_chargeReportFinalRecipient,
+        TollCharger,
+        _MacTc_keyRef,
+        _MacTc_algorithmId,
+        _MacTc_mac,
+        _MacTc_nonce,
+        MacTc,
+        MacTcAlgorithm,
+        _ApplicationContextMark_lacContextMark,
+        _ApplicationContextMark_ac_cr_reference,
+        _ApplicationContextMark_rndOBE,
+        ApplicationContextMark,
+        __LacTApdus_actionRequest_mode,
+        __LacTApdus_actionRequest_eid,
+        __LacTApdus_actionRequest_actionType,
+        __LacTApdus_actionRequest_accessCredentials,
+        __LacTApdus_actionRequest_actionParameter,
+        __LacTApdus_actionRequest_iid,
+        _LacTApdus_actionRequest,
+        __LacTApdus_actionResponse_fill,
+        __LacTApdus_actionResponse_eid,
+        __LacTApdus_actionResponse_iid,
+        __LacTApdus_actionResponse_responseParameter,
+        __LacTApdus_actionResponse_ret,
+        _LacTApdus_actionResponse,
+        _LacTApdus_eventReportRequest,
+        _LacTApdus_eventReportResponse,
+        _LacTApdus_setRequest,
+        _LacTApdus_setResponse,
+        _LacTApdus_reserved6,
+        _LacTApdus_reserved7,
+        _LacTApdus_initialisationRequest,
+        _LacTApdus_initialisationResponse,
+        LacTApdus,
+        _LacContainer_integer,
+        _LacContainer_reserved1,
+        _LacContainer_octetstring,
+        _LacContainer_universalString,
+        _LacContainer_beaconId,
+        _LacContainer_t_apdu,
+        _LacContainer_dsrcApplicationEntityId,
+        _LacContainer_dsrc_Ase_Id,
+        _LacContainer_attrIdList,
+        ___LacContainer_attrList__item__attributeId,
+        ___LacContainer_attrList__item__attributeValue,
+        __LacContainer_attrList__item_,
+        _LacContainer_attrList,
+        _LacContainer_reserved10,
+        _LacContainer_reserved11,
+        _LacContainer_reserved12,
+        _LacContainer_reserved13,
+        _LacContainer_reserved14,
+        _LacContainer_time,
+        __LacContainer_vector__item_,
+        _LacContainer_vector,
+        _LacContainer_reserved17,
+        _LacContainer_reserved18,
+        _LacContainer_reserved19,
+        _LacContainer_reserved20,
+        _LacContainer_reserved21,
+        _LacContainer_reserved22,
+        _LacContainer_reserved23,
+        _LacContainer_reserved24,
+        _LacContainer_reserved25,
+        _LacContainer_reserved26,
+        _LacContainer_reserved27,
+        _LacContainer_reserved28,
+        _LacContainer_reserved29,
+        _LacContainer_reserved30,
+        _LacContainer_reserved31,
+        _LacContainer_reserved32,
+        _LacContainer_reserved33,
+        _LacContainer_reserved34,
+        _LacContainer_reserved35,
+        _LacContainer_reserved36,
+        _LacContainer_reserved37,
+        _LacContainer_reserved38,
+        _LacContainer_reserved39,
+        _LacContainer_reserved40,
+        _LacContainer_reserved41,
+        _LacContainer_reserved42,
+        _LacContainer_reserved43,
+        _LacContainer_reserved44,
+        _LacContainer_reserved45,
+        _LacContainer_reserved46,
+        _LacContainer_reserved47,
+        _LacContainer_reserved48,
+        _LacContainer_reserved49,
+        _LacContainer_reserved50,
+        _LacContainer_reserved51,
+        _LacContainer_reserved52,
+        _LacContainer_reserved53,
+        _LacContainer_reserved54,
+        _LacContainer_reserved55,
+        _LacContainer_reserved56,
+        _LacContainer_reserved57,
+        _LacContainer_reserved58,
+        _LacContainer_reserved59,
+        _LacContainer_reserved60,
+        _LacContainer_reserved61,
+        _LacContainer_reserved62,
+        _LacContainer_reserved63,
+        _LacContainer_reserved64,
+        _LacContainer_reserved65,
+        _LacContainer_reserved66,
+        _LacContainer_reserved67,
+        _LacContainer_reserved68,
+        _LacContainer_reserved69,
+        _LacContainer_reserved70,
+        _LacContainer_reserved71,
+        _LacContainer_reserved72,
+        _LacContainer_reserved73,
+        _LacContainer_reserved74,
+        _LacContainer_reserved75,
+        _LacContainer_reserved76,
+        _LacContainer_reserved77,
+        _LacContainer_reserved78,
+        _LacContainer_reserved79,
+        _LacContainer_reservedForFutureISOCENuse80,
+        _LacContainer_reservedForFutureISOCENuse81,
+        _LacContainer_reservedForFutureISOCENuse82,
+        _LacContainer_reservedForFutureISOCENuse83,
+        _LacContainer_reservedForFutureISOCENuse84,
+        _LacContainer_reservedForFutureISOCENuse85,
+        _LacContainer_reservedForFutureISOCENuse86,
+        _LacContainer_contLAC,
+        _LacContainer_reservedForFutureISOCENuse88,
+        _LacContainer_reservedForFutureISOCENuse89,
+        _LacContainer_reservedForFutureISOCENuse90,
+        _LacContainer_reservedForFutureISOCENuse91,
+        _LacContainer_reservedForFutureISOCENuse92,
+        _LacContainer_reservedForFutureISOCENuse93,
+        _LacContainer_reservedForFutureISOCENuse94,
+        _LacContainer_reservedForFutureISOCENuse95,
+        _LacContainer_reservedForFutureISOCENuse96,
+        _LacContainer_reservedForFutureISOCENuse97,
+        _LacContainer_reservedForFutureISOCENuse98,
+        _LacContainer_reservedForFutureISOCENuse99,
+        _LacContainer_reservedForFutureISOCENuse100,
+        _LacContainer_reservedForFutureISOCENuse101,
+        _LacContainer_reservedForFutureISOCENuse102,
+        _LacContainer_reservedForFutureISOCENuse103,
+        _LacContainer_reservedForFutureISOCENuse104,
+        _LacContainer_reservedForFutureISOCENuse105,
+        _LacContainer_reservedForFutureISOCENuse106,
+        _LacContainer_reservedForFutureISOCENuse107,
+        _LacContainer_reservedForFutureISOCENuse108,
+        _LacContainer_reservedForFutureISOCENuse109,
+        _LacContainer_reservedForFutureISOCENuse110,
+        _LacContainer_reservedForFutureISOCENuse111,
+        _LacContainer_reservedForFutureISOCENuse112,
+        LacContainer,
+    ]
+
 class EfcDsrcApplication:
 
     _name_  = 'EfcDsrcApplication'
@@ -3936,4 +4624,4 @@ class EfcDsrcGeneric:
         VST,
     ]
 
-init_modules(EfcDataDictionary, EfcCcc, EfcDsrcApplication, EfcDsrcGeneric)
+init_modules(EfcDataDictionary, EfcCcc, EfcLac, EfcDsrcApplication, EfcDsrcGeneric)
