@@ -1,0 +1,3316 @@
+EfcInfoExchange {iso(1) standard(0) 12855 version5(5)}
+DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+-- ******************************************************************
+-- IMPORT section - Imports all relevant data definitions from relevant other standards
+-- ******************************************************************
+IMPORTS
+-- ********* ISO 14906:2018/Amd 1:2019 (EFC modules)
+	AttributeList{}, EfcContainer, ObeConfiguration
+	FROM EfcDsrcGeneric {iso(1) standard(0) 14906 generic(1) version10(10)}
+
+-- ********* ISO 12813:2019 *********
+	CccContainer
+	FROM EfcCcc {iso(1) standard(0) 12813 version5(5)}
+
+-- ********* ISO 13141:2015/Amd 1:2017 *********
+	LacContainer
+	FROM EfcLac {iso(1) standard(0) 13141 version3(3)}
+
+-- ********* ISO 17573-3:2021 *********
+	AbsolutePosition3d, ActualNumberOfPassengers, AggregatedSingleTariffClassSession, ChargeObjectId, ContractSerialNumber, ContractValidity, CopValue, 
+	DateAndTime, DateCompact, DetectedChargeObject, DieselEmissionValues, Distance, DriverCharacteristics, Duration, 
+	EfcContextMark, EmissionUnit, EngineCharacteristics, EnvironmentalCharacteristics, EquipmentIccId, EquipmentObuId, EquipmentStatus, EuroValue, ExhaustEmissionValues,
+	Int1Unsigned, Int2Signed, Int2Unsigned, Int4Unsigned, Int8Signed, Int8Unsigned,
+	LocalVehicleClassId, LocationClassId, Lpn, PaymentFee, PaymentMeans, PaymentMeansBalance, PayUnit, Period, PersonalAccountNumber, Provider, 
+	ReceiptContract, RelativePosition3d, ResultOp, SessionLocation, StationType, TariffClassDescription, TariffClassId, TimeClassId, UserClassId, 
+	ValidityOfContract, VehicleAuthenticator, VehicleAxles, VehicleClass, VehicleDescription, VehicleDimensions, VehicleWeightLaden, VehicleWeightLimits
+	FROM EfcDataDictionary {iso(1) standard(0) 17573 dd(3) version1(1)}
+
+;
+-- ******************************************************************
+-- Level 0: data types to be moved to the next version of ISO 17573-3
+-- ******************************************************************
+
+VehicleIdentificationNumber ::= SEQUENCE{
+	vin VisibleString, -- 17 characters VIN
+	fill BIT STRING (SIZE(9)) -- set to '000000000'
+}
+
+TrailerAxles ::= INTEGER (0..7) -- number of axles of the trailer when available
+
+TractorAxles ::= INTEGER (0..7) -- number of axles of the tractor
+
+
+-- ******************************************************************
+-- Level 0: data types copied from ISO 9594-8 to fully defined the required encryption algorithms in a harmonized way for the back office exchange
+-- ******************************************************************
+
+-- ================
+-- Classes
+-- ================
+ALGORITHM-IDENTIFIER ::= CLASS {
+	&id		OBJECT IDENTIFIER UNIQUE,
+	&Type	OPTIONAL
+} WITH SYNTAX { OID &id [PARAMETERS &Type] }
+
+ALGORITHM ::= CLASS {
+	&id		OBJECT IDENTIFIER UNIQUE,
+	&Type	OPTIONAL
+} WITH SYNTAX { OID &id [PARMS &Type] }
+
+AlgorithmIdentifier { ALGORITHM-IDENTIFIER:InfoObjectSet } ::= SEQUENCE {
+	algorithm	ALGORITHM-IDENTIFIER.&id({InfoObjectSet}),
+	parameters	ALGORITHM-IDENTIFIER.&Type({InfoObjectSet}{@.algorithm}) OPTIONAL
+}
+
+-- ==============
+-- Algorithms
+-- ==============
+-- Allowed EME-OAEP and EMSA-PSS digest algorithms.
+OaepPssDigestAlgorithms		ALGORITHM-IDENTIFIER ::= {
+	{OID oidSha256				PARAMETERS NULL}, -- all other hash algorithms are not needed
+	... -- Allows for future expansion --
+}
+
+-- Allowed mask generation function algorithms.
+Pkcs1MgfAlgorithms			ALGORITHM-IDENTIFIER ::= {
+	{OID oidMgf1				PARAMETERS HashAlgorithm},
+	... -- Allows for future expansion --
+}
+
+-- Allowed PKCS #1 algorithms.
+Pkcs1Algorithms				ALGORITHM-IDENTIFIER ::= {
+	{OID oidRsa					PARAMETERS NULL} |
+	{OID oidSha256WithRsa		PARAMETERS NULL} |
+	{OID oidRsaSsaPss			PARAMETERS RsaSsaPssParameters},
+	... -- Allows for future expansion --
+}
+
+-- Allowed ECC algorithms.
+EccAlgorithms				ALGORITHM-IDENTIFIER ::= {
+	{OID oidEcc					PARAMETERS EccParameters},
+	... -- Allows for future expansion --
+}
+
+-- Allowed DES algorithms.
+DesAlgorithms				ALGORITHM-IDENTIFIER ::= {
+	{OID oidDes					PARAMETERS NULL},
+	... -- Allows for future expansion --
+}
+
+-- Allowed AES algorithms.
+AesAlgorithms				ALGORITHM-IDENTIFIER ::= {
+	{OID oidAes128Ecb			PARAMETERS NULL} |
+	{OID oidAes256Ecb			PARAMETERS NULL},
+	... -- Allows for future expansion --
+}
+
+-- ==============
+-- Functions
+-- ==============
+HashAlgorithm ::= AlgorithmIdentifier { {OaepPssDigestAlgorithms} }
+
+MaskGenAlgorithm ::= AlgorithmIdentifier { {Pkcs1MgfAlgorithms} }
+
+RsaSsaPssAlgorithmIdentifier ::= AlgorithmIdentifier { {Pkcs1Algorithms} }
+
+RsaAlgorithmIdentifier ::= AlgorithmIdentifier { {Pkcs1Algorithms} }
+
+EccAlgorithmIdentifier ::= AlgorithmIdentifier { {EccAlgorithms} }
+
+DesAlgorithmIdentifier ::= AlgorithmIdentifier { {DesAlgorithms} }
+
+AesAlgorithmIdentifier ::= AlgorithmIdentifier { {AesAlgorithms} }
+
+
+-- ==============
+-- Definitions
+-- ==============
+
+-- SHA256 hash algorithm 
+sha256		HashAlgorithm ::= {
+	algorithm	oidSha256
+--	parameters	Sha256Parameters : NULL
+}
+
+Sha256Parameters ::= NULL
+
+-- MGF1 algorithm 
+mgf1Sha256	MaskGenAlgorithm ::= {
+	algorithm	oidMgf1,
+	parameters	HashAlgorithm : sha256
+}
+
+-- RSA SSA PSS algorithm 
+rsaSsaPss	RsaSsaPssAlgorithmIdentifier ::= {
+	algorithm	oidRsaSsaPss,
+	parameters	RsaSsaPssParameters : {
+		hashAlgorithm		sha256,
+		maskGenAlgorithm	mgf1Sha256,
+		saltLength			32,
+		trailerField		trailerFieldBC
+	}
+}
+
+RsaSsaPssParameters ::= SEQUENCE {
+	hashAlgorithm		[0] HashAlgorithm DEFAULT sha256,
+	maskGenAlgorithm	[1] MaskGenAlgorithm DEFAULT mgf1Sha256,
+	saltLength			[2] INTEGER DEFAULT 32,
+	trailerField		[3] TrailerField DEFAULT trailerFieldBC
+}
+
+TrailerField ::= INTEGER {
+	trailerFieldBC	(1)
+}
+
+-- RSA algorithm 
+rsaEncryption		RsaAlgorithmIdentifier ::= {
+	algorithm	oidRsa
+--	parameters	RsaParameters : NULL
+}
+
+RsaParameters ::= NULL
+
+-- ECC algorithm 
+eccEncryption EccAlgorithmIdentifier ::= {
+	algorithm	oidEcc,
+	parameters	EccParameters : {
+		namedCurve		secp192r1 -- select appropriate named eliptic curve from RFC 5480
+	}
+}
+
+EccParameters ::= SEQUENCE {
+	namedCurve		OBJECT IDENTIFIER
+--	implicitCurve	NULL
+--	specifiedCurve	SpecifiedECDomain
+}
+-- implicitCurve and specifiedCurve MUST NOT be used in PKIX.
+-- Details for SpecifiedECDomain can be found in [X9.62].
+-- Any future additions to this CHOICE should be coordinated with ANSI X9.
+
+-- DES algorithm 
+desEncryption	DesAlgorithmIdentifier ::= {
+	algorithm	oidDes
+--	parameters	DesParameters : NULL
+}
+
+DesParameters ::= NULL
+
+-- AES 128 ECB algorithm 
+aesEncryption AesAlgorithmIdentifier ::= {
+	algorithm	oidAes128Ecb
+--	parameters	AesParameters : NULL 
+}
+
+AesParameters ::= NULL
+
+-- ==============
+-- List of OIDs
+-- ==============
+	oidAes				OBJECT IDENTIFIER ::= { iso(1) standard(0) encryption-algorithms(18033) part3(3) cipher-128-bit(2) aes(1) }
+	oidAes128Ecb		OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) country(16) us(840) organization(1) gov(101) csor(3) nistAlgorithms(4) aes(1) aes128-ECB(1) }
+	oidAes256Ecb		OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) country(16) us(840) organization(1) gov(101) csor(3) nistAlgorithms(4) aes(1) aes256-ECB(41) }
+	oidDes				OBJECT IDENTIFIER ::= { iso(1) standard(0) iso9979(9979) des(4) }
+	oidMgf1				OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1) id-mgf1(8) }
+	oidRsa				OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1) rsaEncryption(1) }
+	oidSha256WithRsa	OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1) sha256WithRSAEncryption(11) }
+	oidRsaSsaPss		OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1) rsassa-pss(10) }
+	oidSha256 			OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) country(16) us(840) organization(1) gov(101) csor(3) nistAlgorithms(4) hashalgs(2) sha256(1) }
+
+	oidEcc				OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) ansi-x962(10045) curves(3) prime(1) prime256v1(7) }
+--	oidEcPublicKey		OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) ansi-X9-62(10045) keyType(2) 1 }
+--	oidEcDsaWithSha256	OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 2 }
+
+-- Named eliptic curves from RFC 5480
+	secp192r1 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3) prime(1) 1 }
+
+CertificateSerialNumber ::= INTEGER
+
+
+-- ******************************************************************
+-- Level 0: data types copied from ISO 9594-2 to avoid importing them due to many data types and imports from yet other standards
+-- ******************************************************************
+
+Name ::= CHOICE {
+	rdnSequence		RDNSequence -- only one possibility for now 
+}
+
+RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+
+RelativeDistinguishedName ::= SET SIZE (1..MAX) OF AttributeTypeAndValue
+
+AttributeTypeAndValue ::= SEQUENCE {
+	type	AttributType,
+	value	AttributValue,
+	... 
+}
+
+AttributType ::= OBJECT IDENTIFIER --LDAP v3 OIDs to be used according to RFC 2253 section 2.3
+
+AttributValue ::= OCTET STRING --Defined by AttributType
+
+-- list of OIDs
+	oidCommonName				OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) commonName(3) }
+	oidLocalityName				OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) localityName(7) }
+	oidStateOrProvinceName		OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) stateOrProvinceName(8) }
+	oidOrganizationName			OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) organizationName(10) }
+	oidOrganizationalUnitName	OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) organizationalUnitName(11) }
+	oidCountryName				OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) countryName(6) }
+	oidStreetAddress 			OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) ds(5) attributeType(4) streetAddress(9) }
+	oidDomainComponent 			OBJECT IDENTIFIER ::= { itu-t(0) data(9) pss(2342) ucl(19200300) pilot(100) pilotAttributeType(1) domainComponent(25) }
+	oidUserId		 			OBJECT IDENTIFIER ::= { itu-t(0) data(9) pss(2342) ucl(19200300) pilot(100) pilotAttributeType(1) uid(1) }
+
+-- Used as name of certificate issuer in three data types (EncryptionKeyId, MacKeyObject, TbsAuthenticatorEfc)
+-- At least oidCountry, oidOrganizationName and oidCommonName shall be defined to uniquely identify an issuer.
+
+
+-- ******************************************************************
+-- Level 1: APDU definition
+-- ******************************************************************
+
+InfoExchange ::= SEQUENCE {
+	infoExchangeContent			InfoExchangeContent,
+	infoExchangeAuthenticator	AuthenticatorEfc OPTIONAL -- calculated over the single attribute InfoExchangeContent
+}
+
+InfoExchangeContent ::= SEQUENCE {
+	apci	ApciFields,	-- Header
+	adus	Adus		-- Sequence of individual Adus of the same type
+}
+
+ApciFields ::= SEQUENCE {
+	aidIdentifier			AidIdentifier, -- 12855 protocol version number
+	apduOriginator			Provider, -- Source of the content of the APDU
+	informationSenderId		Provider, -- Sender of this content, may differ from apduOriginator
+	informationRecipientId	Provider, -- If the value of the CountryCode and the IssuerIdentifier is zero, the PDU is meant to be sent to all connected entities. If the value of the IssuerIdentifier inside Provider is zero, the PDU is meant to be sent to all entities of the stated country.
+	apduIdentifier			ApduIdentifier, -- Shall be unique together with APDUOriginator
+	previousApduId			RelatedApduId OPTIONAL, -- shall be used if not the first APDU 
+	nextApduId				RelatedApduId OPTIONAL, -- shall be used to indicate an additional APDU, containing continued information of this APDU (multi-part message)
+	inResponseToApduId		RelatedApduId OPTIONAL,
+	apduDate				GeneralizedTime
+}
+
+AidIdentifier ::= INTEGER {
+	iso12855x2015		(0),
+	isoDIS12855x2020	(1),
+	isoFDIS12855x2021	(2),
+	iso12855x2022		(3), -- date potentially to be adjusted
+	-- 4-15 reserved for future ISO base standard use
+	cen16986x2016		(16),
+	cen16986x2022		(17) -- date potentially to be adjusted
+	-- 18-31 reserved for future CEN profile use
+	-- 32-255 reserved for private use in conjunction with the informationSenderId the informationRecipientId identifying the TC
+}(0..255)
+
+ApduIdentifier ::= Int8Unsigned
+
+Adus ::= CHOICE {
+	requestAdus					[1] SEQUENCE OF RequestAdu,
+	ackAdus						[2] SEQUENCE OF AckAdu,
+	trustObjectAdus				[3] SEQUENCE OF TrustObjectAdu,
+	efcContextDataAdus			[4] SEQUENCE OF EfcContextDataAdu,
+	exceptionListAdus			[5] SEQUENCE OF ExceptionListAdu,
+	reportAbnormalObeAdus		[6] SEQUENCE OF ReportAbnormalObeAdu,
+	tollDeclarationAdus			[7] SEQUENCE OF TollDeclarationAdu,
+	billingDetailsAdus			[8] SEQUENCE OF BillingDetailsAdu,
+	paymentClaimAdus			[9] SEQUENCE OF PaymentClaimAdu,
+	reportQaAdus				[10] SEQUENCE OF ReportQaAdu,
+	statusAdus					[11] SEQUENCE OF StatusAdu,
+	provideUserDetailsAdus		[12] SEQUENCE OF ProvideUserDetailsAdu,
+	reportCccEventAdus			[13] SEQUENCE OF ReportCccEventAdu,
+	provideUserIdListAdus		[14] SEQUENCE OF ProvideUserIdListAdu,
+	paymentAnnouncementAdus		[15] SEQUENCE OF PaymentAnnouncementAdu,
+	contractIssuerListAdus		[16] SEQUENCE OF ContractIssuerListAdu,
+	userComplaintAdus			[17] SEQUENCE OF UserComplaintAdu,
+	userComplaintResponseAdus	[18] SEQUENCE OF UserComplaintResponseAdu, 
+	mediaSettlementDataAdus		[19] SEQUENCE OF MediaSettlementDataAdu 
+}
+
+RelatedApduId ::= SEQUENCE {
+	apduOriginator			Provider,
+	apduIdentifier			ApduIdentifier
+}
+
+AuthenticatorEfc ::= SEQUENCE {
+	tbsAuthenticatorEfc		TbsAuthenticatorEfc,
+	signatureAlgorithm		AlgorithmIdentifier { {Pkcs1Algorithms} } OPTIONAL,
+	signatureValue			OCTET STRING -- signature of tbsAuthenticator
+}
+
+TbsAuthenticatorEfc ::= SEQUENCE {
+	version					Int2Unsigned DEFAULT 1,
+	signatureAlgorithm		AlgorithmIdentifier { {Pkcs1Algorithms} },
+	issuer					Name,
+	serialNumber			CertificateSerialNumber, -- signers certificate serial number
+	apduContentDigest		ApduContentDigest, -- hash and hash algorithm identifier of authenticated payload
+	signatureDate			GeneralizedTime,
+	certificates			SEQUENCE OF EncryptionKeyId OPTIONAL, 
+	signingCertificateHash	CertHash OPTIONAL 
+}
+
+ApduContentDigest ::= SEQUENCE {
+	hashAlgorithm			AlgorithmIdentifier { {OaepPssDigestAlgorithms} }, -- hash algorithm used for payload
+	hashedMessageContent	OCTET STRING -- hash over payload
+}
+
+CertHash ::= SEQUENCE {
+	hashAlgorithm	AlgorithmIdentifier { {OaepPssDigestAlgorithms} },
+	certHash		OCTET STRING
+}
+
+-- ******************************************************************
+-- Level 2: Adu definitions
+-- ******************************************************************
+
+-- ******************************************************************
+-- RequestAdu
+-- ******************************************************************
+RequestAdu ::= CHOICE {
+	genericRequest				[1] SEQUENCE {
+		apduIdentifier					ApduIdentifier OPTIONAL,
+		requestedAduType				AduType OPTIONAL,
+		aduIdentifier					SEQUENCE OF AduIdentifier OPTIONAL, --to request one or several Adus
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	exceptionListRequest		[2] SEQUENCE {
+		requestedAduType				AduType (exceptionListAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		period							Period OPTIONAL,
+		exceptionListType				ExceptionListType OPTIONAL,
+		exceptionListVersion			ExceptionListVersion OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	trustObjectRequest			[3] SEQUENCE {
+		requestedAduType				AduType (trustObjectAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		trustObjectSpec					TrustObjectSpec OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	tollDeclarationRequest		[4] SEQUENCE {
+		requestedAduType				AduType (tollDeclarationAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		userId							UserId OPTIONAL,
+		startTime						GeneralizedTime OPTIONAL,
+		endTime							GeneralizedTime OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	userDetailsRequest			[5] SEQUENCE {
+		requestedAduType				AduType (provideUserDetailsAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		userId							UserId,
+		listOfParametersRequested		SEQUENCE OF UserParameterRequest OPTIONAL,
+		userDetailsRequestReason		UserDetailsRequestReason OPTIONAL,
+		period							Period OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	cccEventRequest				[6] SEQUENCE {
+		requestedAduType				AduType (reportCccEventAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		userId							UserId OPTIONAL,
+		startTime						GeneralizedTime OPTIONAL,
+		endTime							GeneralizedTime OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	userListRequest				[7] SEQUENCE {
+		requestedAduType				AduType (provideUserIdListAdu),
+		aduIdentifier					AduIdentifier OPTIONAL,
+		userIdRequestType				UserIdRequestType,
+		userId							UserId OPTIONAL,
+		userIdRequestTime				GeneralizedTime OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+	},
+	mediaSettlementDataRequest	[8] SEQUENCE {
+		requestedAduType				AduType (mediaSettlementDataAdu) ,
+		aduIdentifier					AduIdentifier OPTIONAL,
+		period							Period OPTIONAL,
+		equipmentIccId					EquipmentIccId OPTIONAL, 
+		mediaSettlementListVersion		VersionId OPTIONAL,
+		actionCode						ActionCode (send | resend) OPTIONAL
+		}
+}
+
+AduType ::= INTEGER {
+	requestAdu					(1),
+	ackAdu						(2),
+	trustObjectAdu				(3),
+	efcContextDataAdu			(4),
+	exceptionListAdu			(5),
+	reportAbnormalObeAdu		(6),
+	tollDeclarationAdu			(7),
+	billingDetailsAdu			(8),
+	paymentClaimAdu				(9),
+	reportQaAdu					(10),
+	statusAdu					(11),
+	provideUserDetailsAdu		(12),
+	reportCccEventAdu			(13),
+	provideUserIdListAdu		(14),
+	paymentAnnouncementAdu		(15),
+	contractIssuerListAdu		(16),
+	userComplaintAdu			(17),
+	userComplaintResponseAdu	(18), 
+	mediaSettlementDataAdu		(19)
+	-- 21-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+-- ********* Level 3: genericRequest *********
+-- no specific data types needed
+
+-- ********* Level 3: exceptionListRequest *********
+-- specific data types defined at ExceptionListAdu
+
+-- ********* Level 3: requestedTrustObject *********
+TrustObjectSpec ::= SEQUENCE {
+	typeOfTrustObject		RequestedTrustObjectType,
+	purposesOfTrustObject	SEQUENCE OF TrustObjectPurpose OPTIONAL
+}
+
+RequestedTrustObjectType ::= CHOICE {
+	certificates				[1]	CertificateType,
+	publicKeys					[2]	PublicKeyType,
+	dsrcMasterKeys				[3]	NULL, -- send only tag [3] to indicate the requested TrustObject
+	macMasterKeys				[4]	NULL, -- send only tag [4] to indicate the requested TrustObject
+	dsrcKeyRefs					[5]	ReferenceType,
+	otherTrustObjects			[6]	TrustObjectType,
+	...
+	}
+
+-- ********* Level 3: tollDeclarationRequest *********
+-- UserId defined under "General definitions used in various Adus"
+
+-- ********* Level 3: userDetailsRequest *********
+UserParameterRequest ::= INTEGER {
+	contractSerialNumber			(1),
+	contractValidity				(2),
+	driverCharacteristics			(3),
+	efcContextMark					(4),
+	environmentalCharacteristics	(5),
+	engineCharacteristics			(6),
+	equipmentObuId					(7), 
+	equipmentStatus					(8),
+	paymentMeans					(9),
+	paymentMeansBalance				(10),
+	payUnit							(11),
+	personalAccountNumber			(12),
+	provider						(13),
+	receiptContract					(14),
+	validityOfContract				(15),
+	vehicleAuthenticator			(16),
+	vehicleClass					(17),
+	vehicleDimensions				(18),
+	vehicleLicencePlateNumber		(19),
+	vehicleIdentificationNumber		(20),
+	vehicleWeightLaden				(21),
+	vehicleWeightLimits				(22),
+	vehicleAxles					(23),
+	exhaustEmissionValues			(24),
+	dieselEmissionValues			(25),
+	userPostalAddress				(26),
+	preferredUserLanguage			(27),
+	icc								(28)
+	-- 29-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+UserDetailsRequestReason ::= INTEGER {
+	generalInterest					(0),
+	allowingCalculatingFee			(1),
+	incompleteCccReadout			(2),
+	forwardingEnforcementTicket		(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ********* Level 3: cccEventRequest *********
+-- UserId defined under "General definitions used in various Adus"
+
+-- ********* Level 3: userListRequest *********
+-- UserIdRequestType defined under ProvideUserIdListAdu
+-- UserId defined under "General definitions used in various Adus"
+
+
+-- ******************************************************************
+-- AckAdu
+-- ******************************************************************
+AckAdu ::= SEQUENCE {
+	apduIdentifier					ApduIdentifier,
+	apduAckCode						ApduReasonCode,
+	apduAckText						UTF8String (SIZE (0.. 1024)) OPTIONAL,
+	issues SEQUENCE OF SEQUENCE { -- add an issue for each issue inside an Adu, all non-listed Adus are OK
+			issueAduIdentifier				AduIdentifier OPTIONAL, --shall not be specified if the issue applies to all Adus in an APDU
+			issueLocation					UTF8String (SIZE (0..512)) OPTIONAL, -- identifies the element inside an Adu by an XPATH expression
+		issueContent					UTF8String (SIZE (0.. 1024)) OPTIONAL,
+		issueCode						AduReasonCode,
+		issueText						UTF8String (SIZE (0..1024)) OPTIONAL
+	} OPTIONAL,
+	actionCode						ActionCode OPTIONAL
+}
+
+ApduReasonCode ::= INTEGER {
+	-- provides status information for the whole Adu and is Adu type independent
+	obsoleteApdu			(1), -- APDU is no longer valid or to be used
+	apduOk					(2), -- APDU was accepted
+	apduNotOk				(3), -- APDU rejected
+	sequenceError			(4), -- APDU rejected because sent out of the logical sequence of a transaction
+	otherReason				(5), -- APDU rejected but no predefined reason code exists
+	protocolVersionError	(6), -- APDU rejected because protocol Version not supported
+	originatorRejected		(7), -- APDU rejected because Apdu Originator unknown
+	recipientUnknown		(8), -- APDU rejected because Information Recipient unknown
+	relatedApduUnknown		(9), -- APDU rejected because related APDU unknown
+	requestSentTooOften		(10) -- APDU rejected because sent too often
+	-- 11-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+AduReasonCode ::= INTEGER {
+	invalidAdu												(0),
+	notSupportedAdu											(1),
+	aduPartiallyRejected									(2),
+	-- 3-99 reserved for future CEN and ISO use
+	trustObjectExpired										(100),
+	trustObjectUnreadable									(101),
+	-- 102-199 reserved for future CEN and ISO use
+	contextDataChargeObjectIdRejected						(200),
+	contextDataChargeObjectDescriptionRejected				(201),
+	contextDataSystemTypeRejected							(202),
+	contextDataChargeObjectTypeRejected						(203),
+	contextDataTollChargerRejected							(204),
+	contextDataChargeObjectValidityStartRejected			(205),
+	contextDataChargeObjectValidityEndRejected				(206),
+	-- 207-399 reserved for future CEN and ISO use
+	exceptionListsVersionRejected							(400),
+	exceptionListsTypeRejected								(401),
+	exceptionListsUserIdRejected							(402),
+	exceptionListsBlockTypeRejected							(403),
+	exceptionListsReasonTypeRejected						(404), 
+	exceptionListsDateAndTimeRejected						(405),
+	exceptionListsDiscountIdUnknown							(406),
+	exceptionListsDiscountClassNotApplicable 				(407),
+	-- 406-499 reserved for future CEN and ISO use
+	abnormalObeUserIdRejected								(500),
+	abnormalObeDateAndTimeRejected							(501),
+	abnormalObeReasonCodeRejected							(502),
+	-- 503-599 reserved for future CEN and ISO use
+	tollDeclarationDuplicateTollDeclarationIdRejected		(600),
+	tollDeclarationActionCodeRejected						(601),
+	tollDeclarationChargeReportStructureRejected			(602),
+	tollDeclarationActionCodeSendSentTooOftenRejected		(603),
+	tollDeclarationInvalidChargeObjectRejected				(604),
+	tollDeclarationActionCodeAdjustSentTooOftenRejected		(605),
+	tollDeclarationTariffClassIdRejected					(606),
+	tollDeclarationTariffRejected							(607),
+	tollDeclarationDuplicateVehiclePassageRejected			(608),
+	tollDeclarationInvalidDetectedChargeObjectManyRejected	(609),
+	tollDeclarationTollChargerIssueRejected					(610), -- Toll declaration declined by TC due to error in TC system, further organizational handling required between TC and TSP
+	tollDeclarationTollContextRejected						(611),
+	tollDeclarationTollFeeRejected							(612),
+	-- 613-699 reserved for future CEN and ISO use
+	billingDetailsIssuerIdRejected							(700),
+	billingDetailsClaimIdRejected							(701),
+	billingDetailsTollChargerIdRejected						(702),
+	billingDetailsContextIdRejected							(703),
+	billingDetailsUserIdRejected							(704),
+	billingDetailsPeriodRejected							(705),
+	billingDetailsAmountRejected							(706),
+	billingDetailsContextNameRejected						(707),
+	billingDetailsAppliedUserClassRejected					(708),
+	billingDetailsDeclaredVehicleClassRejected				(709),
+	billingDetailsAppliedTimeClassRejected					(710),
+	billingDetailsEntranceTimeRejected						(711),
+	billingDetailsEntranceChargeObjectRejected				(712),
+	billingDetailsIntermediateSectionRejected				(713),
+	billingDetailsExitChargeObjectRejected					(714),
+	billingDetailsExitTimeRejected							(715),
+	billingDetailsReferenceRejected							(716),
+	-- 717-799 reserved for future CEN and ISO use
+	claimRejectedByTSP										(800),
+	claimApprovedByTSP										(801),
+	paymentClaimAduIdentifierRejected						(802),
+	paymentClaimStartDateTimeRejected						(803),
+	paymentClaimEndDateTimeRejected							(804),
+	paymentClaimUserIdRejected								(805),
+	paymentClaimAmountRejected								(806),
+	paymentClaimStatusRejected								(807),
+	paymentClaimTypeOfFeeRejected							(808),
+	paymentClaimRelatedApduIdRejected						(809),
+	-- 810-1199 reserved for future CEN and ISO use
+	reportQaAccepted										(1200),
+	reportQaNotAccepted										(1201),
+	paymentGuaranteeAccepted								(1202),
+	smCCBackEndDataCheckingThresholdExceeded				(1203),
+	-- 1204-2999 reserved for future CEN and ISO use
+	semanticError											(3000),
+	-- 3001-3009 reserved for future CEN and ISO use
+	actionCodeNotSupported									(3010),
+	-- 3011-3999 reserved for future CEN and ISO use
+	acceptedWithWarning										(4000)
+	-- 4001-10000 reserved for future CEN and ISO use
+	-- 10001-65535 reserved for private use
+} (0..65535)
+
+-- ******************************************************************
+-- StatusAdu
+-- ******************************************************************
+StatusAdu ::= SEQUENCE {
+	generalStatusCode	GeneralStatusCode,
+	apduStatusCode		SEQUENCE {
+		apdu				ApduIdentifier,
+		reasonOfAduStruct	SEQUENCE OF SEQUENCE {
+			aduIdentifier		AduIdentifier OPTIONAL,
+			reason				AduReasonCode
+		}
+	} OPTIONAL,
+	actionCode			ActionCode OPTIONAL
+}
+
+GeneralStatusCode ::= INTEGER {
+	notReadyToReceive	(1),
+	readyToReceive		(2)
+	-- 3-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- TrustObjectAdu
+-- ******************************************************************
+TrustObjectAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier, 
+	replacedTrustObject		AduIdentifier OPTIONAL, 
+	purposesOfTrustObject	SEQUENCE OF TrustObjectPurpose,
+	startValidity			GeneralizedTime OPTIONAL,
+	endValidity				GeneralizedTime OPTIONAL,
+	trustObjectStatus		TrustObjectStatus,
+	trustObject				TrustObjectCode OPTIONAL, -- shall be present, if TrustObjectStatus=valid (0)
+	actionCode				ActionCode OPTIONAL,
+	...
+}
+
+TrustObjectPurpose ::= INTEGER { -- used for defining the intended usage of the key
+	trustObjects			(0), -- Unspecified purpose
+	dsrcCharging			(1), -- To validate authenticators from DSRC Charging Applications
+	dsrcAccessCredentials	(2), -- To calculate Access Credentials for DSRC Charging Applications
+	obeInterrogation		(3), -- To validate authenticators received during a CCC transaction
+	obeInterrogationAC		(4), -- To calculate Access Credentials for CCC
+	sigExceptionList		(5), -- To authenticate received Exception Lists
+	sigContextData			(6), -- To authenticate received Context Data
+	sigBillingDetails		(7), -- To authenticate received Billing Details
+	sigFiscalObjects		(8), -- To authenticate received Fiscal Objects
+	sigCommunication		(9), -- To authenticate received Adus by infoExchangeAuthenticator
+	encCommunication		(10), -- To decrypt received Adus
+	dsrcKeyEncryption		(11), -- To encrypt DSRC keys
+	secChannelEstablishment	(12), -- Certificate to establish IPSec (VPN)
+	certIssuing				(13), -- Certificate to issue certificates
+	sigUserCommunication	(14), -- User Certificate to verify communication via, e.g. E-Mail
+	certRevocationListing	(15), -- Certificate Revocation List
+	sigChargeReport			(16) -- Certificate or certificate chain to validate Charge Report
+	-- 17-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+TrustObjectStatus ::= INTEGER {
+	valid	(0),
+	expired	(1),
+	revoked	(2),
+	updated (3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- Key management
+-- ******************************************************************
+TrustObjectCode ::= CHOICE {
+	certificate			[1] CertificateObject,
+	publicKey			[2] PublicKeyObject,
+	dsrcMasterKeys		[3] DsrcKeyObject,
+	macMasterKey		[4] MacKeyObject,
+	dsrcKeyRef			[5] DsrcKeyRef,
+	otherTrustObject	[6] GenericTrustObject,
+	...
+}
+
+-- ********* Level 3: CertificateObject *********
+CertificateObject ::= SEQUENCE {
+	certificateType		CertificateType,
+	certificate			OCTET STRING -- Public-key certificate according to ISO 9594-8
+}
+
+CertificateType ::= INTEGER {
+	certTcHTTPS		(0),
+	certTcMAIL		(1),
+	certTcNSIG		(2),
+	certTcTA		(3), -- sub CA
+	certTcpRoot		(4), -- root CA
+	certTspHTTPS	(5),
+	certTspMAIL		(6),
+	certTspNSIG		(7),
+	certTspTA		(8), -- sub CA
+	certTspRoot		(9), -- root CA
+	certTspCR		(10) -- charge report verification
+	-- 11-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ********* Level 3: PublicKeyObject *********
+PublicKeyObject ::= SEQUENCE {
+	publicKeyType			PublicKeyType,
+	serialNumber			Int8Unsigned, --for X.509 it is 20 byte defined as INTEGER
+	issuer					Provider,
+	algorithmIdentifier		CHOICE {
+		rsa 					[1]	AlgorithmIdentifier { {Pkcs1Algorithms} }, 
+		ecc 					[2]	AlgorithmIdentifier { {EccAlgorithms} }
+	}, -- definition of the public key algorithm, e.g. RSA, ECC
+	publicKey				OCTET STRING
+}
+
+PublicKeyType ::= INTEGER {
+	kpupTcSignature		(0),
+	kpupTcEncrypt		(1),
+	kpupTspSignature	(2),
+	kpupTspEncrypt		(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ********* Level 3: DsrcKeyObject *********
+DsrcKeyObject ::= SEQUENCE {
+	encryptionKeyId		EncryptionKeyId,
+	timestamp			UTCTime, -- time of the encryption
+	dsrcKeys			SEQUENCE OF SEQUENCE {
+		efcCm				EfcCm,
+		key					EncrKey
+	}
+}
+
+EncryptionKeyId ::= CHOICE {
+	certificate			[1] SEQUENCE {
+		serialNumber			CertificateSerialNumber, -- receivers certificate serial number
+		issuer					Name -- receivers certificate issuer, CA name
+	},
+	publicKey			[2] SEQUENCE {
+		serialNumber			Int8Unsigned, --for X.509 it is 20 byte defined as INTEGER
+		issuer					Provider
+	}
+}
+
+EfcCm ::= SEQUENCE {
+	efcContextMark	EfcContextMark,
+	bitmask			OCTET STRING (SIZE(3)),	-- map of the data elements TypeOfContract
+	-- + ContextVersion; 0 indicates discard; 1 indicate consider
+	efcContextMarkVersion	EfcContextMarkVersion OPTIONAL 
+}
+
+EncrKey ::= SEQUENCE {
+	keyType			KeyType,
+	keyRef			Int1Unsigned, -- associated value of KeyRef or AC_CRKeyRef
+	encrKey			OCTET STRING (CONSTRAINED BY { -- encryption key using the certificate referred to by serialNumber and issuer of key -- }),
+	kVC				OCTET STRING (SIZE(3)) (CONSTRAINED BY { -- Key Verification Code according to ISO 11568 part 2 calculated encrypting one block size of zeros with the plain key, then truncated to leftmost three bytes to obtain keyVerificationCode --}),
+	keyDescription	PrintableString OPTIONAL -- Description of the key
+}
+
+KeyType ::= SEQUENCE {
+	normativeReference	CHOICE {
+		des		[1] AlgorithmIdentifier { {DesAlgorithms} }, -- according to ISO 14906 annex F
+		aes		[2] AlgorithmIdentifier { {AesAlgorithms} } -- according to ISO 14906 annex H
+	} OPTIONAL, -- specifies the standard identifying the key encryption
+	keyUsage			KeyUsage
+}
+
+KeyUsage ::= INTEGER {
+	authentication		(0),
+	accessCredentials	(1),
+	reserved			(2), --kept for legacy reasons, not to be used
+	encryption			(3),
+	otherUsage			(4)
+	-- 5..27 reserved for future CEN and ISO use
+	-- 128..255 reserved for private use
+}(0..255)
+
+-- ********* Level 3: MacKeyObject *********
+MacKeyObject ::= SEQUENCE {
+	serialNumber		CertificateSerialNumber, -- receivers certificate serial number
+	issuer				Name, -- receivers certificate issuer, CA name
+	timestamp			UTCTime, -- time of the encryption
+	algorithmIdentifier	CHOICE {
+		des					[1]	AlgorithmIdentifier { {DesAlgorithms} },
+		aes					[2]	AlgorithmIdentifier { {AesAlgorithms} }
+	}, -- MAC algorithm definition
+	masterKeyRef		Int4Unsigned,
+	encrKey				OCTET STRING (CONSTRAINED BY { -- encryption using the certificate referred to by serialNumber and issuer of Key -- }),
+	kVC					OCTET STRING (SIZE(3)) (CONSTRAINED BY { -- Key Verification Code according to ISO 11568 part 2 calculated encrypting one block size of zeros with the plain key, then truncated to leftmost three bytes to obtain keyVerificationCode -- })
+}
+
+-- ********* Level 3: DsrcKeyRef *********
+DsrcKeyRef ::= SEQUENCE {
+	efcContextMark			EfcContextMark,
+	keyRef					Int1Unsigned,
+	referenceType			ReferenceType,
+	efcContextMarkVersion	EfcContextMarkVersion OPTIONAL 
+}
+
+ReferenceType ::= INTEGER {
+	cccNonRepKeyRef			(0),
+	cccAuthenticationKeyRef	(1),
+	lacAuthenticationKeyRef	(2)
+	-- 3-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ********* Level 3: GenericTrustObject *********
+GenericTrustObject ::= SEQUENCE {
+	typeOfTrustObject		TrustObjectType,
+	genericTrustObject		OCTET STRING
+}
+
+TrustObjectType ::= INTEGER {
+	certificate				(0),
+	symmetricKey			(1),
+	crl						(2),
+	cdp						(3),
+	ocsp					(4),
+	encryptedSymmetricKey	(5),
+	publicKey				(6),
+	otherTrustObject		(7)
+	-- 8-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+
+-- ******************************************************************
+-- ReportQaAdu
+-- ******************************************************************
+ReportQaAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	qualityParameterId		QualityParameterId, -- bilaterally agreed between TSP and TC
+	qualityParameterName	UTF8String OPTIONAL, -- printable name of the parameter
+	qualityParameterValue	REAL OPTIONAL,
+	qualityParameterStatus	QualityParameterStatus,
+	actionCode				ActionCode OPTIONAL
+}
+
+QualityParameterId ::= INTEGER {
+	reserved	(0),
+	-- charge report metrics according to ISO 17444-1
+	cmCr1		(1),
+	cmCr2		(2),
+	cmCr3		(3),
+	cmCr4		(4),
+	cmCr5		(5),
+	-- 6-50 reserved for future CEN and ISO use
+	-- 51-100 reserved for future private use
+	cmDcr1		(101),
+	cmDcr2		(102),
+	cmDcr3		(103),
+	cmDcr4		(104),
+	-- 105-150 reserved for future CEN and ISO use
+	-- 151-200 reserved for future private use
+	cmCcr1		(201),
+	cmCcr2		(202),
+	cmCcr3		(203),
+	-- 204-250 reserved for future CEN and ISO use
+	-- 251-300 reserved for future private use
+
+	-- toll declaration metrics according to ISO 17444-1
+	cmTd1		(301),
+	cmTd2		(302),
+	cmTd3		(303),
+	cmTd4		(304),
+	cmTd5		(305),
+	-- 306-350 reserved for future CEN and ISO use
+	-- 351-400 reserved for future private use
+	cmDtd1		(401),
+	cmDtd2		(402),
+	cmDtd3		(403),
+	cmDtd4		(404),
+	-- 405-450 reserved for future CEN and ISO use
+	-- 451-500 reserved for future private use
+	cmCtd1		(501),
+	cmCtd2		(502),
+	cmCtd3		(503),
+	-- 505-550 reserved for future CEN and ISO use
+	-- 551-600 reserved for future private use
+
+	-- billing detail metrics according to ISO 17444-1
+	cmBd1		(601),
+	cmBd2		(602),
+	cmBd3		(603),
+	cmBd4		(604),
+	cmBd5		(605),
+	cmBd6		(606),
+	cmBd7		(607),
+	cmBd8		(608),
+	cmBd9		(609),
+	-- 610-650 reserved for future CEN and ISO use
+	-- 651-700 reserved for future private use
+
+	-- payment claim metrics according to ISO 17444-1
+	cmPc1		(701),
+	cmPc2		(702),
+	cmPc3		(703),
+	cmPc4		(704),
+	cmPc5		(705),
+	cmPc6		(706),
+	-- 707-750 reserved for future CEN and ISO use
+	-- 751-800 reserved for future private use
+
+	-- user account metrics according to ISO 17444-1
+	cmUa1		(801),
+	cmUa2		(802),
+	cmUa3		(803),
+	cmUa4		(804),
+	cmUa5		(805),
+	-- 806-850 reserved for future CEN and ISO use
+	-- 851-900 reserved for future private use
+
+	-- end-to-end metrics according to ISO 17444-1
+	cmE2E1		(901),
+	cmE2E2		(902),
+	cmE2E3		(903),
+	cmE2E4		(904)
+	-- 905-950 reserved for future CEN and ISO use
+	-- 951-1000 reserved for future private use
+
+	-- 1001-20000 reserved for future CEN and ISO use
+	-- 20001-65535 reserved for private use
+}(0..65535)
+
+QualityParameterStatus ::= INTEGER {
+	accordingToAgreedMeasureMethodology		(0),
+	measuredAsShortTermSample				(1),
+	longTermAverage							(2),
+	singleWorstValue						(3),
+	trendWarning							(4),
+	initiateActions							(5),
+	escalationWarning						(6),
+	escalationWasActivated					(7)
+	-- 8-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+
+-- ******************************************************************
+-- ExceptionListAdu
+-- ******************************************************************
+ExceptionListAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	exceptionListVersion	ExceptionListVersion,
+	exceptionListType		ExceptionListType,
+	exceptionValidityStart	GeneralizedTime OPTIONAL,
+	exceptionValidityEnd	GeneralizedTime OPTIONAL,
+	exceptionListEntries	SEQUENCE OF ExceptionListEntry,
+	actionCode				ActionCode OPTIONAL
+}
+
+ExceptionListVersion ::= Int8Unsigned
+
+ExceptionListType ::= INTEGER {
+	blackListFull				(1), --Full list of users for which TSP temporarily or permanently rejects responsibility
+	whiteListFull				(2), --Full list of users for which TSP accepts responsibility
+	discountedListFull			(3), --List of users who are entitled to discounts
+	-- 4-10 reserved for future full lists 
+	blackListIncremental		(11), --Incremental update of list of users for which TSP temporarily or permanently rejects responsibility
+	whiteListIncremental		(12), --Incremental update of list of users for which TSP accepts responsibility
+	discountedListIncremental	(13) --List of users who are entitled to discounts
+	-- 14-20 reserved for future incremental lists
+	-- 21-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+ExceptionListEntry ::= SEQUENCE {
+	userId						UserId,
+	replacedUserId				UserId OPTIONAL,
+	statusType					ExceptionListStatusType OPTIONAL,
+	reasonCode					SEQUENCE OF ExceptionListReasonType,
+	entryValidityStart			GeneralizedTime OPTIONAL,
+	entryValidityEnd			GeneralizedTime OPTIONAL, --may optionally be used for discountedList to e.g. have different discount schemes for 2019 and 2020, shall not be used for other ExceptionListType
+	nominalVehicleParameters	NominalVehicleParameters OPTIONAL,
+	ordinalVehicleParameters	OrdinalVehicleParameters OPTIONAL,
+	actionRequested				ExceptionListActionType OPTIONAL,
+	efcContextMark				EfcContextMark OPTIONAL,
+	mediaProviderID				Provider OPTIONAL,
+	applicableDiscounts			SEQUENCE OF SEQUENCE {
+		discountId					DiscountId,
+		proofDocuments				OCTET STRING OPTIONAL --Place holder for any proof documents 
+	} OPTIONAL
+}
+
+ExceptionListStatusType ::= INTEGER {
+	-- limitations resulting by putting a service user in the exception list
+	allApplications						(0),
+	locallyBlocked						(1),
+	blockedForSchemesRequiringOdometer	(2),
+	noLimits							(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+ExceptionListReasonType ::= INTEGER {
+	-- The reason code indicates why a user has been put on the exception list
+	notToBeDisclosed					(0),
+	obeDeactivated						(1),
+	obeIsStolen							(2),
+	temporaryTechnicalProblem			(3),
+	suspicionOnTechnicalManipulation	(4),
+	latePayment							(5), -- commercial conditions
+	noPayment							(6), -- commercial conditions
+	contractHolderInsolvent				(7),
+	whiteListedUser						(8), -- to support whitelists
+	suOptOut							(9),
+	suTemporalSuspension				(10),
+	contractClosedByTSP					(11), -- and OBE not yet returned
+	contractClosedBySU					(12), -- and OBE not yet returned
+	obeNotValid							(13),
+	obeIsLost							(14),
+	obeNonExistent						(15), -- not produced by TSP
+	obeOnStock							(16), -- not yet issued by TSP
+	obeReturnedEndOfContract			(17),
+	obeReturnedMalfunction				(18),
+	suspicionOnUseOfJammingDevice		(19),
+	iccWhiteListedUser					(20),
+	iccNotValid							(21),
+	iccIsStolen							(22),
+	iccIsLost							(23),
+	iccNonExistent						(24), -- not produced by media provider
+	iccOnStock							(25), -- not yet issued by media provider
+	iccReturnedEndOfContract			(26),
+	iccReturnedMalfunction				(27),
+	iccNoPayment						(28),
+	discountedUser						(29)
+	-- 30-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+ExceptionListActionType ::= INTEGER {
+	rejectObe		(1),
+	invalidateObe	(2), --set blacklist bit, if supported by TC
+	acceptObe		(3),
+	removeObe		(4),
+	removeUserId	(5)
+	-- 5-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- ReportAbnormalObeAdu
+-- ******************************************************************
+ReportAbnormalObeAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	userId					UserId,
+	dateAndTime				GeneralizedTime,
+	efcContextMark			EfcContextMark OPTIONAL,
+	abnormalObeReason		SEQUENCE OF SEQUENCE {
+		abnormalObeReasonCode	AbnormalObeReasonCode, 
+		additionalInformation	UTF8String
+	},
+	tollEventId				TollEventId OPTIONAL,
+	actionCode				ActionCode OPTIONAL
+}
+
+AbnormalObeReasonCode ::= INTEGER {
+	reasonNotToBeDisclosed						(0),
+	obeIsDefect									(1),
+	obeIsNotWorkingProperly						(2),
+	userShowsFraudBehaviour						(3),
+	userShowsViolatingBehaviour					(4),
+	licensePlateDifferenceBetweenObeAndVehicle	(5), 
+	numberOfAxlesMismatch						(6),
+	euroEmissionCategoryProofMissing			(7),
+	euroEmissionCategoryMismatch				(8),
+	engineCharacteristicsProofMissing			(9),
+	engineCharacteristicsMismatch				(10),
+	co2EmissionValueProofMissing				(11),
+	co2EmissionValueMismatch					(12),
+	obeMissingOnWhiteList						(13),
+	obeOnBlacklistButTolling					(14), 
+	vehicleWeightMismatch						(15), 
+	obeAtExitStationWithoutEntryStation			(16), 
+	transactionsFromMultipleObe					(17), 
+	obeDeclaredVehicleClassNotAllowed			(18), 
+	missingUserIdInUserlist						(19), 
+	chargeReportDeliveredTooLate				(20), 
+	velocityAccuracy							(21) 
+	-- 22-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- PaymentClaimAdu
+-- ******************************************************************
+PaymentClaimAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier, -- was paymentClaimId in ISO 12855 up to 2015
+	startDateTime			GeneralizedTime,
+	endDateTime				GeneralizedTime OPTIONAL,
+	userId					UserId OPTIONAL,
+	paymentClaimAmount		PaymentAmount, 
+	paymentClaimStatus		PaymentClaimStatus,
+	typeOfFee				TypeOfFee OPTIONAL,
+	referenceDetailList		SEQUENCE OF ReferenceDetail OPTIONAL,
+	paymentReference		UTF8String OPTIONAL,
+	paymentClaimDetails		SEQUENCE OF PaymentClaimDetail OPTIONAL, 
+	paymentClaimReference	UTF8String (SIZE(16)) OPTIONAL, 
+	discountId				DiscountId OPTIONAL, 
+	discountReference		UTF8String OPTIONAL, 
+	actionCode				ActionCode OPTIONAL,
+	...
+}
+
+PaymentClaimStatus ::= INTEGER {
+	firstVersion	(0),
+	amendedVersion	(1)
+	-- 3-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+TypeOfFee ::= INTEGER {
+	toll			(0),
+	discount		(1),
+	creditnote		(2),
+	penalty			(3),
+	processingFee	(4)
+	-- 5-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+-- ReferenceDetail defined under "General definitions used in various Adus"
+
+PaymentClaimDetail ::= SEQUENCE {
+	paymentDetailCode 				Int2Unsigned,
+	paymentDetailNumber				Int2Unsigned OPTIONAL,
+	paymentDetailType				UTF8String OPTIONAL,
+	paymentDetailText				UTF8String OPTIONAL,
+	paymentDetailQuantity 			Int8Signed OPTIONAL,
+	paymentDetailRate				Int8Signed OPTIONAL,
+	paymentDetailBasicAmount 		PaymentAmount OPTIONAL, 
+	paymentDetailAmountVATExcl		PaymentAmount OPTIONAL, 
+	paymentDetailAmountTotal 		PaymentAmount OPTIONAL 
+} 
+
+-- ******************************************************************
+-- EfcContextDataAdu
+-- ******************************************************************
+EfcContextDataAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	entityOverview			SEQUENCE OF EntityOverview OPTIONAL,
+	tollContextProperties	SEQUENCE {
+		tollContextOverview				TollContextOverview OPTIONAL,
+		tariffTable						SEQUENCE OF TariffTable OPTIONAL,
+		currencyConversionTable			CurrencyConversionTable OPTIONAL,
+		tariffClassDefinition			TariffClassDefinition OPTIONAL,
+		localVehicleClassDefinition		LocalVehicleClassDefinition OPTIONAL,
+		timeClassDefinition				TimeClassDefinition OPTIONAL,
+		userClassDefinition				UserClassDefinition OPTIONAL,
+		locationClassDefinition			LocationClassDefinition OPTIONAL
+	},
+	tollContextType			CHOICE {
+		generalContext			[1] GeneralContextData,
+		meshedContext			[2] MeshedContextData
+	} OPTIONAL,
+	actionCode				ActionCode OPTIONAL
+}
+
+-- ********* Level 3: EntityOverview *********
+EntityOverview ::= SEQUENCE {
+	entityId						Provider,
+	entityType						EntityType,
+	relatedEntityId					SEQUENCE OF RelatedEntityId OPTIONAL,
+	entityClass						UTF8String OPTIONAL, -- for grouping of entities to be handled the same way
+	nameLine1						UTF8String,
+	nameLine2						UTF8String OPTIONAL,
+	addressLine1					UTF8String,
+	addressLine2					UTF8String OPTIONAL,
+	poBox							UTF8String OPTIONAL,
+	zip								UTF8String,
+	city							UTF8String,
+	country							UTF8String,
+	countryCode						UTF8String, --according to ISO 3166-1-Alpha-2 code elements
+	description						UTF8String OPTIONAL,
+	mainContact						EntityContact,
+	customerServiceContact			EntityContact OPTIONAL, -- for customer service issues
+	itContact						EntityContact, -- for technical issues
+	operationalContact				EntityContact, -- for automated error messages
+	commercialContact				EntityContact, -- for commercial issues
+	webSite							UTF8String OPTIONAL,
+	companyRegistrationNumber		UTF8String OPTIONAL,
+	companyRegistrationRegistrar	UTF8String OPTIONAL,
+	vatId							SEQUENCE OF UTF8String OPTIONAL, -- valid VAT number according to local country rules
+	established						GeneralizedTime OPTIONAL,
+	bankDetails						SEQUENCE OF BankDetails,
+	entityOverviewVersion			VersionAndValidity
+}
+
+RelatedEntityId ::= SEQUENCE {
+	entityID				Provider,
+	relationDescription		UTF8String
+}
+
+EntityType ::= INTEGER {
+	tc			(1),
+	tsp			(2),
+	centralHUB	(3),
+	localHUB	(4),
+	groupOfTc	(5)
+	-- 6-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+EntityContact ::= SEQUENCE {
+	contact					UTF8String, -- group, avoid single persons
+	telWorkingTime			UTF8String,
+	telOutsideWorkingTime	UTF8String,
+	email					UTF8String,
+	mobile					UTF8String OPTIONAL,
+	telFax					UTF8String OPTIONAL,
+	workingTime				SEQUENCE OF WorkingTime
+}
+
+WorkingTime ::= SEQUENCE {
+	wtStart			GeneralizedTime,
+	wtEnd			GeneralizedTime,
+	timeZone		INTEGER (-720..720) -- offset in minutes to UTC
+}
+
+BankDetails ::= SEQUENCE {
+	bankAccount		UTF8String OPTIONAL,
+	sortCode		UTF8String OPTIONAL,
+	bic				UTF8String OPTIONAL,
+	iban			UTF8String OPTIONAL, --according to ISO 13616-1
+	currencyCode	UTF8String --according to ISO 4217
+}
+
+TimeInterval ::= INTEGER {
+	day		(1),
+	week	(2),
+	month	(3),
+	year	(4)
+	-- 5-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- ********* Level 3: General EFC context data - tollContextProperties
+-- ******************************************************************
+
+-- ********* Level 4: TollContextOverview *********
+TollContextOverview ::= SEQUENCE {
+	tollContext						Provider,
+	tollContextPartitions			SEQUENCE OF TollContextPartitionId, -- at least one partition shall be defined
+	tollContextName					UTF8String OPTIONAL,
+	tollContextOverviewVersion		VersionAndValidity,
+	...
+}
+
+TollContextPartitionId ::= Int1Unsigned
+
+-- ********* Level 4: TariffTable *********
+TariffTable ::= SEQUENCE {
+	applicablePartitions	SEQUENCE OF TollContextPartitionId,
+	tariffs					SEQUENCE OF Tariff,
+	defaultCurrency			PayUnit, -- from 14906, provides for currency and unit
+	typeOfTariff			TypeOfTariff OPTIONAL,
+	tariffTableVersion		VersionAndValidity,
+	...
+}
+
+TypeOfTariff ::= INTEGER {
+	reserved	(0),
+	fee			(1),
+	tax			(2),
+	custom		(3)
+	-- value 0 not used
+	-- values 4-127 reserved for future CEN and ISO use
+	-- values 128-255 reserved for private use
+}(0..255)
+
+Tariff ::= SEQUENCE { --definition of base fee(s) per ChargeUnit to be multiplied with defined section, area or cordon
+	tariffClass						TariffClassId,
+	chargeUnit						ChargeUnit,
+	roundingRuleForChargeUnit		RoundingRule,
+	basicFeePerChargeUnit			Int4Unsigned, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified 
+	offsetFee						Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified
+	minFee							Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified
+	thresholdFee					Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified
+	maxFee							MaxFee OPTIONAL,
+	orderOfFeeModification			OrderOfFeeModification OPTIONAL,
+	roundingRuleForFee				RoundingRule,
+	vatRate							INTEGER (0..10000) OPTIONAL, -- in 0.01%
+	roundingRuleForVat				RoundingRule OPTIONAL,
+	intervalScaleParameters			SEQUENCE OF IntervalScaleParameter OPTIONAL,
+	alternativeCurrency				Currency OPTIONAL,
+	infrastructureFeePerChargeUnit	Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified
+	externalCostsPerChargeUnit		ExternalCostsPerChargeUnit OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified
+	availableDiscounts				CHOICE { 
+		volumeDiscounts					[1]	SEQUENCE OF VolumeDiscount,
+		userDiscount					[2]	SEQUENCE OF UserDiscount,
+		...
+	} OPTIONAL
+}
+
+ChargeUnit ::= CHOICE {
+	distance	[1] Distance,
+	time		[2] Duration,
+	event		[3] Int1Unsigned,
+	...
+}
+
+RoundingRule ::= INTEGER {
+	no			(0), -- no rounding
+	up			(1), -- always rounding up to next larger value of the minor currency unit
+	down		(2), -- always rounding down to next lower value of the minor currency unit
+	accounting	(3) -- rounding according to accounting rules (as e.g. defined in DIN 1333)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+MaxFee ::= SEQUENCE {
+	perDay				Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified 
+	perWeek				Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified 
+	perMonth			Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified 
+	perYear				Int4Unsigned OPTIONAL, -- in times of PayUnit (currency and units) specified in TariffTable and multiplied with the alternativeCurrency, if specified 
+	... --It is not defined how the summation of the fee has to be calculated, to be compared to the MaxFee. This has to be defined in addition to the values provided here (e.g. summation of fees for the same PAN)
+}
+
+OrderOfFeeModification ::= INTEGER {
+	unspecified			(0),
+	minThresholdMax		(1),
+	minMaxThresholg		(2),
+	thresholdMinMax		(3),
+	thresholdMaxMin		(4),
+	maxMinThreshold		(5),
+	maxThresholdMin		(6)
+	-- 7-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}
+
+IntervalScaleParameter ::= SEQUENCE {
+	vehicleMaxLadenWeightIntervals SEQUENCE {
+		zeroOffset						VehicleMaxLadenWeight,
+		resolution						VehicleMaxLadenWeight,
+		max								VehicleMaxLadenWeight
+	},
+	factorAtZeroOffset	Int4Unsigned, -- value /100, 100 = 1
+	factorAtMax			Int4Unsigned -- value /100, 100 = 1
+}
+-- The actual weight of a vehicle used in IntervalcaleParameters is either included in 
+-- TollDeclarationAdu -> ChargeReport -> UsageStatement -> ListOfRawUsageData -> VehicleDescription (imported from ISO 17573-3)-> ladenWeight
+-- BillingDetailsAdu -> UsageList -> usageListEntry -> ... -> AssociatedEventData-> dsrcData -> VehicleDescription -> ladenWeight
+ 
+ 
+VehicleMaxLadenWeight ::= Int2Unsigned
+	-- same definition as in ISO 17573-3 in VehicleWeightLimits:
+	-- Maximum permissible total weight including payload, according to ISO 1176,
+	-- 10 kg units, rounded down to the next 10 kg step.
+
+Currency ::= INTEGER(1..999) -- Currency code according to ISO 4217
+
+ExternalCostsPerChargeUnit ::= SEQUENCE {
+	airPollutionFeePerChargeUnit	Int4Unsigned OPTIONAL,
+	noisePollutionFeePerChargeUnit	Int4Unsigned OPTIONAL,
+	accidentFeePerChargeUnit		Int4Unsigned OPTIONAL,
+	co2FeePerChargeUnit				Int4Unsigned OPTIONAL,
+	crossFinancingPerChargeUnit		Int4Unsigned OPTIONAL
+}(	WITH COMPONENTS {..., airPollutionFeePerChargeUnit PRESENT }|
+	WITH COMPONENTS {..., noisePollutionFeePerChargeUnit PRESENT}|
+	WITH COMPONENTS {..., accidentFeePerChargeUnit PRESENT}|
+	WITH COMPONENTS {..., co2FeePerChargeUnit PRESENT}|
+	WITH COMPONENTS {..., crossFinancingPerChargeUnit PRESENT})
+
+
+-- ********* Level 5: VolumeDiscount *********
+VolumeDiscount ::= SEQUENCE { 
+	discountId				DiscountId,
+	discountDescription		SEQUENCE OF TextualDescription OPTIONAL,
+	activationFee			PaymentAmount OPTIONAL,
+	timeInterval			TimeInterval OPTIONAL,
+	relevantChargeObjects	SEQUENCE OF ChargeObjectId OPTIONAL, -- list of ChargeObjectIds which need to be passed for a billing detail to be considered for the volume discount
+	amountOfFee				SEQUENCE OF SEQUENCE{
+		minAmountOfFee			PaymentAmount OPTIONAL,
+		discountLevel			DiscountLevel
+	} OPTIONAL,
+	numberOfTrips			SEQUENCE OF SEQUENCE{
+		minNumberOfTrips		Int8Unsigned,
+		discountLevel			DiscountLevel
+	} OPTIONAL
+}
+
+TextualDescription ::= SEQUENCE {
+	textLanguage			LanguageID,
+	textDescription			UTF8String
+}
+
+DiscountLevel ::= SEQUENCE {
+	discountPercentage		INTEGER (0..1000), -- in 0,1%
+	discountAggregation		BOOLEAN DEFAULT FALSE
+}
+
+-- ********* Level 5: UserDiscount *********
+UserDiscount ::= SEQUENCE {
+	discountId				DiscountId,
+	discountDescription		SEQUENCE OF TextualDescription OPTIONAL,
+	userCategory			UserCategory,
+	discountLevel			DiscountLevel
+}
+
+UserCategory ::= INTEGER {
+	genericDiscounted	(0),
+	serviceContractor	(1),
+	enforcementAgent	(2),
+	sanitaryOperator	(3),
+	disabledUser		(4),
+	officialAuthority	(5),
+	fireBrigade			(6)
+-- 6-127 reserved for future CEN and ISO use
+-- 128-255 reserved for private use
+} (0..255)
+
+DiscountId ::= Int2Unsigned
+
+-- ********* Level 4: CurrencyConversionTable *********
+CurrencyConversionTable ::= SEQUENCE {
+	conversions						SEQUENCE OF SEQUENCE {
+		alternativeCurrency				Currency,
+		conversionRate					Int4Unsigned -- in 0,0001 units
+	},
+	currencyConversionTableVersion	VersionAndValidity
+}
+
+-- ********* Level 4: List of TariffClasses *********
+TariffClassDefinition ::= SEQUENCE {
+	tariffClasses					SEQUENCE OF TariffClass,
+	tariffClassDefinitionVersion	VersionAndValidity,
+	...
+}
+
+TariffClass ::= SEQUENCE {
+	tariffClassId			TariffClassId,
+	tariffClassDescription	UTF8String OPTIONAL,
+	localVehicleClasses		SEQUENCE OF LocalVehicleClassId,
+	timeClasses				SEQUENCE OF TimeClassId OPTIONAL,
+	locationClasses			SEQUENCE OF LocationClassId OPTIONAL,
+	userClasses				SEQUENCE OF UserClassId OPTIONAL
+}
+
+-- ********* Level 4: List of LocalVehicleClasses *********
+LocalVehicleClassDefinition ::= SEQUENCE {
+	localVehicleClasses				SEQUENCE OF LocalVehicleClass,
+	localVehicleClassVersion		VersionAndValidity OPTIONAL,
+	...
+}
+
+LocalVehicleClass ::= SEQUENCE {
+	localVehicleClassId				LocalVehicleClassId,
+	localVehicleClassDescription	UTF8String OPTIONAL,
+	nominalVehicleParameters		NominalVehicleParameters,
+	ordinalVehicleParameters		OrdinalVehicleParameters OPTIONAL,
+	priorityValue					Int1Unsigned OPTIONAL -- 0: lowest priority, 255: highest priority
+}
+
+NominalVehicleParameters ::= SEQUENCE { --defined as explicit values
+	vehicleClasses				SEQUENCE OF VehicleClass,
+	vehicleTrainAxles			SEQUENCE OF INTEGER (0..15) OPTIONAL, -- same definition as in ISO 14906 in VehicleAxles: number of axles, including drop axles of the entire train
+	euroValues					SEQUENCE OF EuroValue OPTIONAL, -- use according to ISO 14906
+	copValues					SEQUENCE OF CopValue OPTIONAL, -- use according to ISO 14906
+	engineCharacteristics		SEQUENCE OF EngineCharacteristics OPTIONAL, -- use according to ISO 14906
+	vehicleCategoryType			SEQUENCE OF VehicleCategoryType OPTIONAL,
+	...
+}
+
+OrdinalVehicleParameters ::= SEQUENCE { --defined as ranges of values
+	vehicleLengthOverall		SEQUENCE OF VehicleLengthOverallRange OPTIONAL,
+	vehicleHeightOverall		SEQUENCE OF VehicleHeightOverallRange OPTIONAL,
+	vehicleWidthOverall			SEQUENCE OF VehicleWidthOverallRange OPTIONAL,
+	vehicleFirstAxleHeight		SEQUENCE OF VehicleFirstAxleHeightRange OPTIONAL,
+	vehicleTractorAxlesNumber	SEQUENCE OF VehicleTractorAxlesNumberRange OPTIONAL,
+	vehicleTrailerAxlesNumber	SEQUENCE OF VehicleTrailerAxlesNumberRange OPTIONAL,
+	vehicleMaxLadenWeight		SEQUENCE OF VehicleMaxLadenWeightRange OPTIONAL,
+	vehicleTrainMaximumWeight	SEQUENCE OF VehicleTrainMaximumWeightRange OPTIONAL,
+	vehicleWeightUnladen		SEQUENCE OF VehicleWeightUnladenRange OPTIONAL,
+	vehicleWeightLaden			SEQUENCE OF VehicleWeightLadenRange OPTIONAL,
+	euroValue					SEQUENCE OF EuroValueRange OPTIONAL,
+	copValue					SEQUENCE OF CopValueRange OPTIONAL,
+	vehicleClass				SEQUENCE OF VehicleClass OPTIONAL, 
+	co2EmissionValue			SEQUENCE OF CO2EmissionValueRange OPTIONAL, -- not to be used in Europe
+	dieselEmissionValue			SEQUENCE OF DieselEmissionValueRange OPTIONAL,
+	exhaustEmissionValue		SEQUENCE OF ExhaustEmissionValueRange OPTIONAL,
+	...
+}
+
+VehicleCategoryType ::= INTEGER {
+	vehicleLiableToToll		(0), 
+	handicappedPeople		(1),
+	military				(2),
+	police					(3),
+	roadMaintenance			(4),
+	circusTruck				(5),
+	mobileShopTruck			(6),
+	truckCarryingMilk		(7),
+	truckCarryingTimber		(8),
+	publicTransport			(9),
+	enforcementAgent		(10),
+	ambulance				(11),
+	fireBrigade				(12),
+	officialAuthority		(13),
+	agriculturalVehicle		(14),
+	bus						(15),
+	mobileHome				(16),
+	mobileCrane				(17),
+	exceptionalTransport	(18),
+	emperor					(19)
+	-- 20-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+-- ********* Level 5: OrdinalVehicleParameters *********
+VehicleLengthOverallRange ::= SEQUENCE {
+	lowerLimit		VehicleLengthOverall,
+	upperLimit		VehicleLengthOverall
+}
+
+VehicleLengthOverall ::= Int1Unsigned
+	-- same definition as in ISO 17573-3 in VehicleDimensions:
+	-- Nominal maximum overall length of the vehicle according to ISO 612,
+	-- in dm, rounded to the next dm
+
+VehicleHeightOverallRange ::= SEQUENCE {
+	lowerLimit		VehicleHeightOverall,
+	upperLimit		VehicleHeightOverall
+}
+
+VehicleHeightOverall ::= Int1Unsigned
+	-- same definition as in ISO 14906 in VehicleDimensions:
+	-- Nominal overall unladen height, according to ISO 612, in dm, rounded to the next dm.
+
+VehicleWidthOverallRange ::= SEQUENCE {
+	lowerLimit		VehicleWidthOverall,
+	upperLimit		VehicleWidthOverall
+}
+
+VehicleWidthOverall ::= Int1Unsigned
+	-- same definition as in ISO 14906 in VehicleDimensions:
+	-- Nominal overall width, according to ISO 612, in dm, rounded to the next dm.
+
+VehicleFirstAxleHeightRange ::= SEQUENCE {
+	lowerLimit		VehicleFirstAxleHeight,
+	upperLimit		VehicleFirstAxleHeight
+}
+
+VehicleFirstAxleHeight ::= Int1Unsigned
+	-- same definition as in ISO 14906 in VehicleAxles:
+	-- bonnet height, measured over the front axle, in dm, rounded to the next dm.
+
+VehicleTractorAxlesNumberRange ::= SEQUENCE {
+	lowerLimit		TractorAxles,
+	upperLimit		TractorAxles
+}
+
+VehicleTrailerAxlesNumberRange ::= SEQUENCE {
+	lowerLimit		TrailerAxles,
+	upperLimit		TrailerAxles
+}
+
+VehicleMaxLadenWeightRange ::= SEQUENCE {
+	lowerLimit		VehicleMaxLadenWeight,
+	upperLImit		VehicleMaxLadenWeight
+}
+
+VehicleTrainMaximumWeightRange ::= SEQUENCE {
+	lowerLimit		VehicleTrainMaximumWeight,
+	upperLimit		VehicleTrainMaximumWeight
+}
+
+VehicleTrainMaximumWeight ::= Int2Unsigned
+	-- same definition as in ISO 14906 in VehicleWeightLimits:
+	-- Maximum permissible weight of the complete vehicle train, as defined in ISO 1176, in 10 kg units, rounded down to the next 10 kg step
+
+VehicleWeightUnladenRange ::= SEQUENCE {
+	lowerLimit		VehicleWeightUnladen,
+	upperLimit		VehicleWeightUnladen
+}
+
+VehicleWeightUnladen ::= Int2Unsigned
+	-- same definition as in ISO 14906 in VehicleWeightLimits:
+	-- Nominal unladen weight, according to ISO 1176, in 10 kg units, rounded down to the next 10 kg step
+
+VehicleWeightLadenRange ::= SEQUENCE {
+	lowerLimit		VehicleWeightLaden,
+	upperLimit		VehicleWeightLaden
+}
+
+EuroValueRange ::= SEQUENCE {
+	lowerLimit		EuroValue, -- same definition as in ISO 14906
+	upperLimit		EuroValue -- same definition as in ISO 14906
+}
+
+CopValueRange ::= SEQUENCE {
+	lowerLimit		CopValue, -- same definition as in ISO 14906
+	upperLimit		CopValue -- same definition as in ISO 14906
+}
+
+CO2EmissionValueRange ::= SEQUENCE {
+	lowerLimit		CO2EmissionValue,
+	upperLimit		CO2EmissionValue
+}
+
+CO2EmissionValue ::= Int2Unsigned --according to vehicle registration documents in g/km as specified in ISO 14906
+
+DieselEmissionValueRange ::= SEQUENCE {
+	particulate			SEQUENCE {
+		emissionUnit		EmissionUnit,
+		valueRange			SEQUENCE {
+			lowerLimit			INTEGER (0..32767),
+			upperLimit			INTEGER (0..32767)
+		}
+	} OPTIONAL,
+	absorptionCoeffRange	SEQUENCE {
+		lowerLimit				Int2Unsigned,
+		upperLimit				Int2Unsigned
+	}
+} -- definitions for all data elements as specified in ISO14906
+
+ExhaustEmissionValueRange ::= SEQUENCE {
+	emissionUnit			EmissionUnit,
+	emissionCORange		SEQUENCE {
+		lowerLimit			INTEGER (0..32767),
+		upperLimit			INTEGER (0..32767)
+	} OPTIONAL,
+	emissionHCRange		SEQUENCE {
+		lowerLimit			Int2Unsigned,
+		upperLimit			Int2Unsigned
+	} OPTIONAL,
+	emissionNOXRange	SEQUENCE {
+		lowerLimit			Int2Unsigned,
+		upperLimit			Int2Unsigned
+	} OPTIONAL,
+	emissionHCNOXRange	SEQUENCE {
+		lowerLimit			Int2Unsigned,
+		upperLimit			Int2Unsigned
+	} OPTIONAL
+} -- definitions for all data elements as specified in ISO14906
+
+EngineCharacteristicsRange ::= SEQUENCE {
+	lowerLimit		EngineCharacteristics,
+	upperLimit		EngineCharacteristics
+}
+
+-- ********* Level 4: List of TimeClasses *********
+TimeClassDefinition ::= SEQUENCE {
+	timeClasses					SEQUENCE OF TimeClass,
+	timeClassDefinitionVersion	VersionAndValidity OPTIONAL,
+	...
+}
+
+TimeClass ::= SEQUENCE {
+	timeClassId				TimeClassId,
+	timeClassDescription	UTF8String OPTIONAL,
+	nominalTimeParameters	NominalTimeParameters OPTIONAL,
+	ordinalTimeParameters	SEQUENCE OF OrdinalTimeParameters OPTIONAL, -- either nominal or ordinal or both time parameters shall be present
+	priorityValue			Int1Unsigned OPTIONAL -- 0: lowest priority, 255: highest priority
+}
+
+NominalTimeParameters ::= SEQUENCE {
+	weekdays				SEQUENCE OF Weekday OPTIONAL,
+	dates					SEQUENCE OF DateCompact OPTIONAL,
+	classesSetExternally	SEQUENCE OF INTEGER {
+		reserved				(0), -- value 0 not used
+		congestionChargeLevel1	(1),
+		congestionChargeLevel2	(2)
+		-- 3-127 reserved for future CEN and ISO use
+		-- 127-255 reserved for private use
+	} (0..255) OPTIONAL
+}
+
+Weekday ::= INTEGER {
+	reserved	(0), -- value 0 not used
+	monday		(1),
+	tuesday		(2),
+	wednesday	(3),
+	thursday	(4),
+	friday		(5),
+	saturday	(6),
+	sunday		(7)
+} (0..7)
+
+OrdinalTimeParameters ::= SEQUENCE {
+	weekdays					SEQUENCE OF SEQUENCE {
+		startDay					Weekday,
+		endDay						Weekday
+	} OPTIONAL,
+	absoluteTimeOfDay			SEQUENCE OF SEQUENCE {
+		startTime					Time,
+		endTime						Time
+	} OPTIONAL,
+	relativeTimePeriods			SEQUENCE OF SEQUENCE {
+		minPeriod					Int2Unsigned OPTIONAL, -- in minutes
+		maxPeriod					Int2Unsigned OPTIONAL -- in minutes
+	} OPTIONAL,
+	periodsInYear				SEQUENCE OF SEQUENCE {
+		startDay					DateCompact,
+		endDay						DateCompact
+	} OPTIONAL
+}
+
+Time ::= SEQUENCE {
+	hours	INTEGER (0..23),
+	mins	INTEGER (0..59),
+	secs	INTEGER (0..59)
+}
+
+-- ********* Level 4: List of LocationClasses *********
+LocationClassDefinition ::= SEQUENCE {
+	locationClasses					SEQUENCE OF LocationClass,
+	locationClassDefinitionVersion	VersionAndValidity OPTIONAL,
+	...
+}
+
+LocationClass ::= SEQUENCE {
+	locationClassId				LocationClassId,
+	locationClassDecription		UTF8String OPTIONAL,
+	locationType				LocationType OPTIONAL
+}
+
+LocationType ::= INTEGER {
+	notDefined			(0),
+	normalTollRoad		(1),
+	specialTollRoad		(2),
+	nonTollRoad			(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ********* Level 4: List of UserClasses *********
+UserClassDefinition ::= SEQUENCE {
+	userClasses					SEQUENCE OF UserClass,
+	userClassDefinitionVersion	VersionAndValidity OPTIONAL,
+	...
+}
+
+UserClass ::= SEQUENCE {
+	userClassId					UserClassId,
+	userClassDescription		UTF8String OPTIONAL,
+	contractTypes				SEQUENCE OF ContractTypes OPTIONAL,
+	minimumNumberOfPassengers	ActualNumberOfPassengers OPTIONAL,
+	-- according to ISO 14906 (0..255), actual number of passengers (i.e. human beings) present in the vehicle, including the driver
+	priorityValue				Int1Unsigned OPTIONAL -- 0: lowest priority, 255: highest priority
+}
+
+ContractTypes ::= SEQUENCE {
+	contractProvider	Provider,
+	typeOfContract		OCTET STRING(SIZE(2))
+}
+
+-- ******************************************************************
+-- ********* Level 3: GeneralContextData
+-- ******************************************************************
+GeneralContextData ::= SEQUENCE {
+	tollContextPartitionOverviews	SEQUENCE OF TollContextPartitionOverview OPTIONAL,
+	tollContextPartitionLayouts		SEQUENCE OF TollContextPartitionLayout OPTIONAL,
+	tollContextVersion				VersionAndValidity OPTIONAL,
+	...
+}
+
+-- ********* Level 4: TollContextPartitionOverview *********
+TollContextPartitionOverview ::= SEQUENCE {
+	tollContextPartitionId				TollContextPartitionId,
+	tollContextPartitionName			UTF8String OPTIONAL,
+	tollContextPartitionType			TollSchemeType,
+	operationalStatus					OperationalStatus,
+	timeZone							INTEGER (-720..720), -- offset in minutes to UTC
+	dstInformation						SEQUENCE {
+		dstOffset								INTEGER (-120..120) OPTIONAL, -- daylight savings time offset in minutes to standard local time
+		dstStartDate							GeneralizedTime, -- Start and end date of DST is different in various regions (e.g. USA: 2020-03-08, Austria: 2020-03-29)
+		dstEndDate								GeneralizedTime
+	} OPTIONAL,
+	tollContextPartitionBoundingPolygon	Polygon OPTIONAL,
+	sendChargeReportIfEntering			BOOLEAN OPTIONAL,
+	precedenceLevel						Int1Unsigned OPTIONAL,
+	chargeReportFinalRecipient			Provider OPTIONAL,
+	tollContextPartitionOverviewVersion	VersionAndValidity,
+	...
+}
+
+TollSchemeType ::= INTEGER {
+	roadSectionPricing	(0),
+	areaPricingDistance	(1),
+	areaPricingTime		(2),
+	cordonPricing		(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+OperationalStatus ::= SEQUENCE {
+	startsOperationAt	GeneralizedTime,
+	stopsOperationAt	GeneralizedTime OPTIONAL
+}
+
+Polygon ::= SEQUENCE OF Point
+
+
+-- ********* Level 4: TollContextPartitionLayout *********
+TollContextPartitionLayout ::= SEQUENCE {
+	tollContextPartitionId			TollContextPartitionId,
+	layoutDescription				Layout,
+	geoRefPoint						Point OPTIONAL,
+	tollContextPartitionVersion		VersionAndValidity,
+	...
+}
+
+Layout ::= CHOICE {
+	sectionLayoutDescription		[1] SectionLayout,
+	gdfLayoutDescription			[2] GdfLayout,
+	areaPricingLayout				[3] AreaPricingLayout,
+	cordonPricingLayout				[4] CordonPricingLayout,
+	...
+}
+
+-- ********* Level 5: SectionLayout *********
+SectionLayout ::= SEQUENCE {
+	tolledRoads		SEQUENCE OF TolledRoad OPTIONAL,
+	sections		SEQUENCE OF Section
+}
+
+TolledRoad ::= SEQUENCE {
+	tollRoadId				TollRoadId,
+	tollRoadCountryCode		UTF8String OPTIONAL, --according to ISO 3166-1-Alpha-2 code elements
+	tollRoadNetworkName		UTF8String OPTIONAL, -- network name of toll road (e.g. A1, E57)
+	tollRoadName			UTF8String OPTIONAL, -- full name of toll road
+	tollRoadDescription		UTF8String OPTIONAL,
+	tollRoadDirection 		SEQUENCE {
+		startSection			ChargeObjectId,
+		endSection				ChargeObjectId
+	} OPTIONAL
+}
+
+TollRoadId ::= Int2Unsigned
+
+Section ::= SEQUENCE {
+	chargeObjectId				ChargeObjectId,
+	chargeObjectName			UTF8String OPTIONAL,
+	chargeObjectRefPoint		AbsolutePosition3d OPTIONAL,
+	networkPoints				SEQUENCE OF Point OPTIONAL,
+	tollPath					Link OPTIONAL, -- mandatory for GNSS systems, optional for DSRC systems
+	liabilityRules				LiabilityRules OPTIONAL,
+	pathStructureTowards		SEQUENCE OF Link OPTIONAL,
+	supportingInformation		SEQUENCE OF SupportingPoint OPTIONAL,
+	pathStructureOnwards		SEQUENCE OF Link OPTIONAL,
+	chargeDistance				Distance,
+	realDistance				Distance OPTIONAL,
+	locationClass				LocationClassId,
+	applicableTimeClasses		SEQUENCE OF TimeClassId OPTIONAL,
+	tollRoadId					TollRoadId OPTIONAL,
+	previousChargeObjects		SEQUENCE OF ChargeObjectId OPTIONAL,
+	nextChargeObjects			SEQUENCE OF ChargeObjectId OPTIONAL,
+	typeOfSection				TypeOfSection OPTIONAL,
+	...
+}
+
+-- PointId defined under general section
+
+Link ::= SEQUENCE {
+	linkId				LinkId,
+	startPoint			Point,
+	intermediatePoints	SEQUENCE OF Point OPTIONAL,
+	endPoint			Point
+}
+
+LinkId ::= Int4Unsigned
+
+-- Point defined under general section
+
+LiabilityRules ::= CHOICE {
+	tollPoints1			[1] SEQUENCE(SIZE(1..2)) OF Point, --section is billed, if one or both defined points are passed, timeWhenUsed is set at passage of first point
+	minTollPath			[2] Link, --timeWhenUsed is set at passage of entire minimum toll path
+	minimumUsage		[3] INTEGER(0..1000), --value in 0,1%, timeWhenUsed is set at passage of entire minimum usage part
+	tollPoints2			[4] SEQUENCE(SIZE(2)) OF Point -- section is billed, if both points are passed, timeWhenUsed is set at passage of second point
+}
+
+SupportingPoint ::= SEQUENCE {
+	supportPoint				Point,
+	supportPointDescription		UTF8String,
+	distanceToNextRoad			Distance OPTIONAL
+}
+
+TypeOfSection ::= INTEGER {
+	notDefined					(0),
+	manual						(1),
+	closedEntry					(2),
+	closedExit					(3),
+	checkpoint					(4),
+	openRoadTolling				(5),
+	freeFlowPhysicalTollPoint	(6),
+	freeFlowVirtualTollPoint	(7)
+	-- 8-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+
+-- ********* Level 5: SectionLayoutGdf *********
+GdfLayout ::= SEQUENCE OF SectionGdf
+
+SectionGdf ::= SEQUENCE {
+	efcLayerId				Int1Unsigned, -- unique within the toll context
+	tollContextName			UTF8String OPTIONAL,
+	chargeObjects			SEQUENCE OF GdfChargeObject,
+	referencedGdfSource		GdfSource
+}
+
+GdfChargeObject ::= SEQUENCE {
+	chargeObjectId				ChargeObjectId,
+	locationClass				LocationClassId OPTIONAL,
+	applicableTimeClasses		SEQUENCE OF TimeClassId OPTIONAL,
+	tollRelevantLength			Distance,
+	equivalentMeasuredLength	Distance OPTIONAL,
+	tollRoad					TollRoad,
+	liabilityRules				CHOICE {
+		tollPoint					[1] GdfReference, -- check if point has been passed
+		minTollPath					[2] SEQUENCE {
+			firstPoint					GdfReference,
+			secondPoint					GdfReference
+		-- check if point has been passed
+		},
+		minimumUsage				[3] INTEGER (1 .. 1000) -- in 0.1 %
+	}
+}
+
+TollRoad ::= SEQUENCE {
+	efcNodeFrom		EfcNodeId, -- unique within the toll context
+	efcLink			SEQUENCE {
+		roadElementsTowardChargePoint	SEQUENCE OF RoadElementsTowardChargePoint,
+		junctionIdTo					GdfReference
+	},
+	efcNnodeTo		EfcNodeId -- unique within the toll context
+}
+
+EfcNodeId ::= SEQUENCE {
+	efcContextSpecificId	ChargeObjectId, -- unique within the toll context
+	sectionName				UTF8String OPTIONAL,
+	gdfSpecificId			GdfReference OPTIONAL
+}
+
+GdfReference ::= SEQUENCE {
+	datasetId		Int4Unsigned, --according to ISO 20524-1 chapter 12.2.7 this is an int4Unsigned
+	layerId			Int4Unsigned, --according to ISO 20524-1 chapter 12.2.7 this is an int4Unsigned
+	sectionId		Int4Unsigned, --according to ISO 20524-1 chapter 12.2.7 this is an int4Unsigned
+	objectId		Int4Unsigned --according to ISO 20524-1 chapter 12.2.7 this is an int4Unsigned
+}
+
+RoadElementsTowardChargePoint ::= SEQUENCE {
+	junctionIdFrom	GdfReference,
+	gdfRoadElement	GdfReference
+}
+
+GdfSource ::= SEQUENCE {
+	dataProvider	UTF8String,
+	albumId			Int4Unsigned,
+	versionNumber	UTF8String
+}
+
+-- ********* Level 5: AreaLayout *********
+AreaPricingLayout ::= SEQUENCE OF AreaLayout
+
+AreaLayout ::= SEQUENCE {
+	areaId					AreaId,
+	areaBorder				Polygon,
+	locationClass			LocationClassId OPTIONAL,
+	applicableTimeClasses	SEQUENCE OF TimeClassId OPTIONAL,
+	roadNetworks			SEQUENCE OF RoadNetwork OPTIONAL
+}
+
+AreaId ::= Int1Unsigned
+
+RoadNetwork ::= SEQUENCE {
+	networkId			Int1Unsigned,
+	locationClass		LocationClassId,
+	roadNetworkObjects	SEQUENCE OF RoadNetworkObject
+}
+
+RoadNetworkObject ::= SEQUENCE {
+	chargeObjectId			ChargeObjectId,
+	chargeObjectName		UTF8String OPTIONAL,
+	chargeObjectRefPoint	AbsolutePosition3d OPTIONAL, 
+	networkPoints			SEQUENCE OF Point OPTIONAL,
+	tollPath				Link,
+	supportingInformation	SEQUENCE OF SupportingPoint OPTIONAL,
+	applicableTimeClasses	SEQUENCE OF TimeClassId OPTIONAL
+}
+
+-- ********* Level 5: CordonLayout *********
+CordonPricingLayout ::= SEQUENCE OF CordonLayout
+
+CordonLayout ::= SEQUENCE {
+	cordonId			CordonId,
+	cordonBorderPolygon SEQUENCE OF CordonBorderSegment
+}
+
+CordonId ::= Int1Unsigned
+
+CordonBorderSegment ::= SEQUENCE {
+	cordonSegmentId			CordonSegmentId,
+	startPoint				AbsolutePosition3d, -- The startPoint of the next segment is the end point of the previous segment.
+	cordonEntryLocation		CordonEntryLocation OPTIONAL,
+	cordonExitLocation		CordonExitLocation OPTIONAL
+}(	WITH COMPONENTS {..., cordonEntryLocation PRESENT }| 
+	WITH COMPONENTS {..., cordonExitLocation PRESENT})
+
+CordonSegmentId ::= Int4Unsigned
+
+CordonEntryLocation ::= SEQUENCE {
+	entryLocationId			ChargeObjectId,
+	entryLocationName		UTF8String OPTIONAL,
+	entryLocationClassId	LocationClassId, -- to be defined, when cordon is tolled on entry
+	applicableTimeClasses	SEQUENCE OF TimeClassId OPTIONAL -- to be defined, when cordon is tolled on entry
+}
+
+CordonExitLocation ::= SEQUENCE {
+	exitLocationId			ChargeObjectId,
+	exitLocationName		UTF8String OPTIONAL, 
+	exitLocationClass		SEQUENCE OF SEQUENCE {
+		locationClassId			LocationClassId, -- to be defined, when cordon is tolled on exit, has to be identical to locationClassId of entryLocation
+		entryLocation			SEQUENCE OF ChargeObjectId OPTIONAL
+	},
+	applicableTimeClasses	SEQUENCE OF TimeClassId OPTIONAL -- to be defined, when cordon is tolled on exit
+}
+
+
+-- ******************************************************************
+-- ********* Level 3: MeshedContextData
+-- ******************************************************************
+MeshedContextData ::= SEQUENCE {
+	highWaysList					SEQUENCE OF HighWay	OPTIONAL,
+	tollChargersList				SEQUENCE OF TollCharger	OPTIONAL,
+	intermediateCheckList			SEQUENCE OF IntermediateCheck OPTIONAL,
+	intermediateDoubleChecksList	SEQUENCE OF IntermediateDoubleCheck OPTIONAL,
+	tollDef				SEQUENCE {
+		tollComponentsDef	TollComponentsDefinition OPTIONAL,
+		tollTable			TollTable OPTIONAL
+	}	OPTIONAL
+}
+
+-- ********* Level 4: Highway for meshed context layout *********
+HighWay ::= SEQUENCE {
+	hwId				TollContextPartitionId,
+	hwCountryCode		UTF8String OPTIONAL, --according to ISO 3166-1-Alpha-2 code elements
+	hwNetworkName		UTF8String OPTIONAL, 
+	hwRoadName			UTF8String OPTIONAL, 
+	hwDescription		UTF8String OPTIONAL,
+	hwLayout			HighWayLayout,
+	roadConventionalDirection SEQUENCE {
+		roadStart			VertexId,
+		roadEnd				VertexId
+	},
+	hwType INTEGER {
+		closedSystemStandAlone		(1), -- stand alone closed tolling system
+		closedSystemInterconnected	(2), -- part of a network of connected closed tolling systems
+		openSystem					(3)	-- open tolling system
+	} (0..255),
+	operatedBy			Provider OPTIONAL,
+	version				VersionAndValidity
+}
+
+HighWayLayout ::=	SEQUENCE {
+	parentHighWayId			TollContextPartitionId,
+	layoutDefinition		CHOICE {
+		physicalRoadDescription		[1] PhysicalRoadDescription,
+		logicalRoadDescription		[2] LogicalRoadDescription
+	},
+	version					VersionAndValidity
+}
+
+-- ********* Level 5: PhysicalRoadDescription for meshed context layout *********
+PhysicalRoadDescription ::= SEQUENCE {
+	vertices	SEQUENCE OF PhysicalVertex,
+	edges		SEQUENCE OF PhysicalEdge
+}
+
+PhysicalVertex ::= SEQUENCE {
+	phId			VertexId, -- unique in one interconnected ClosedSystem
+	description		UTF8String OPTIONAL,
+	vertexType		INTEGER {
+		beforeEntry					(1), -- entry station: start-point of the segment before the station
+		entry						(2), -- entry station: end-point of the segment before the station and start-point of the bifurcation segments
+		entryFork1					(3), -- entry station: end-point of a bifurcation segment to one road direction
+		entryFork2					(4), -- entry station: end-point of a bifurcation segment to the other road direction
+		afterExit					(5), -- exit station: end-point of the segment after the station
+		exit						(6), -- exit station: start-point of the segment after the station and end-point of the junction segments
+		exitJoint1					(7), -- exit station: start-point of a junction segment from one road direction
+		exitJoint2					(8), -- exit station: start-point of a junction segment from the other road direction
+		road1Fork1					(9), -- start-point of the bifurcation segments to one road 2 direction
+		road1Fork2					(10), -- start-point of the bifurcation segments to the other road 2 direction
+		road1Joint1					(11), -- end-point of a junction segment from one road 2 direction
+		road1Joint2					(12), -- end-point of a junction segment from the other road 2 direction
+		road2Fork1					(13), -- start-point of the bifurcation segments to one road 1 direction
+		road2Fork2					(14), -- start-point of the bifurcation segments to the other road 1 direction)
+		road2Joint1					(15), -- end-point of a junction segments from one road 1 direction
+		road2Joint2					(16), -- end-point of a junction segments from the other road 1 direction
+		changeLocationClassPoint	(17), -- point of location class change
+		intermediateCheckPoint		(18), -- intermediate check point between entry and exit
+		boundaryPoint				(19) -- boundary point between two Toll Chargers domains or two road of the same Toll Charger
+		-- 20-127 reserved for future CEN and ISO use
+		-- 128-255 reserved for private use
+	} (1..255)
+}
+
+PhysicalEdge ::= SEQUENCE {
+	phId			PhysicalEdgeId,
+	description		UTF8String OPTIONAL,
+	locationClass	LocationClassId OPTIONAL,
+	chargeDistance	Distance,
+	realDistance	Distance OPTIONAL
+}
+
+PhysicalEdgeId ::= SEQUENCE {
+	startOfEdge			VertexId,
+	endOfEdge			VertexId
+} -- directed edge: the direction is from startOfEdge to endOfEdge
+
+VertexId ::= Int4Unsigned
+
+-- ********* Level 5: LogicalRoadDescription for meshed context layout *********
+LogicalRoadDescription ::= SEQUENCE {
+	vertices	SEQUENCE OF LogicalVertex,
+	edges		SEQUENCE OF LogicalEdge
+}
+
+LogicalVertex ::= SEQUENCE {
+	lVertexId					VertexId, -- unique in a ClosedSystemPartitionLayout of interconnectedClosedSystem type
+	lVertexDescription			UTF8String OPTIONAL,
+	absolutePointCoordinates	AbsolutePosition3d OPTIONAL,
+	lVertexType					INTEGER {
+		entryOnlyStation				(1), -- entry station (no exit)
+		exitOnlyStation					(2), -- exit station (no entry)
+		entryAndExitStation				(3), -- entry and exit station
+		intermediateCheckPoint			(4), -- check point between entry and exit
+		boundaryPoint					(5), -- boundary point between two roads of different Toll Chargers or two roads of the same Toll Charger
+		intersectionPoint4Directions	(6), -- intersection point between two highways: four directions
+		intersectionPoint3Directions	(7), -- intersection point between two highways: three directions
+		intersectionPoint2Directions	(8) -- intersection point between two highways: two directions
+		-- 9-127 reserved for future CEN and ISO use
+		-- 128-255 reserved for private use
+	} (0..255),
+	boundaryAlsoOperatedBy		Provider OPTIONAL, -- used only if vertexType = boundaryPoint
+	additionalDistance			EdgeSegment OPTIONAL -- unused if vertexType = boundaryPoint or intermediateCheckPoint
+}
+
+LogicalEdge ::= SEQUENCE {
+	leId					LogicalEdgeId,
+	leDescription			UTF8String OPTIONAL,
+	leCharacteristics		CHOICE {
+		forClosedSystems SEQUENCE {
+			fromStartOfEdgeSegments	SET OF EdgeSegment OPTIONAL,
+			fromEndOfEdgeSegments	SET OF EdgeSegment OPTIONAL
+		},
+		forOpenSystems		Distance
+	} OPTIONAL
+}
+
+EdgeSegment ::= SEQUENCE {
+	locationClass		LocationClassId,
+	chargeDistance		Distance
+}
+
+LogicalEdgeId ::= SEQUENCE {
+	startOfEdge		VertexId,
+	endOfEdge		VertexId
+} -- undirected edge
+
+
+-- ********* Level 4: TollCharger for meshed context layout *********
+TollCharger ::= SEQUENCE {
+	tcDefinition SEQUENCE {
+		id				Provider,
+		description		UTF8String OPTIONAL
+		},
+	version		VersionAndValidity
+}
+
+-- ********* Level 4: IntermediateCheck for meshed context layout *********
+IntermediateCheck ::= SEQUENCE {
+	ckId					IntermediateCheckId,
+	ckDescription			UTF8String OPTIONAL,
+	ckCoordinates			AbsolutePosition3d OPTIONAL,
+	tollsPerDirection		SEQUENCE {
+		fromRoadStart		TollsPerTariffClass	OPTIONAL,
+		fromRoadEnd			TollsPerTariffClass	OPTIONAL,
+		fromAnyDirection	TollsPerTariffClass	OPTIONAL
+	},
+	version					VersionAndValidity
+}
+
+IntermediateCheckId ::= Int4Unsigned
+
+TollsPerTariffClass ::=	SEQUENCE OF SEQUENCE {
+	tariffClassId			TariffClassId,
+	paymentFeeAmount		PaymentAmount
+}
+
+-- ********* Level 4: IntermediateDoubleCheck for meshed context layout *********
+IntermediateDoubleCheck ::= SEQUENCE {
+	dckOrderedCouple SEQUENCE {
+		firstIntermediateCheck SEQUENCE {
+			id						IntermediateCheckId,
+			description				UTF8String OPTIONAL,
+			coordinates				AbsolutePosition3d OPTIONAL
+		},
+		secondIntermediateCheck SEQUENCE {
+			id						IntermediateCheckId,
+			description				UTF8String OPTIONAL,
+			coordinates				AbsolutePosition3d OPTIONAL 
+		}
+	},
+	dckDescription			UTF8String OPTIONAL,
+	tollsPerDirection		TollsPerTariffClass,
+	version					VersionAndValidity
+}
+
+-- ********* Level 4: TollComponentsDefinition for meshed context layout *********
+TollComponentsDefinition ::= SEQUENCE {
+	stationsList			SEQUENCE OF Station OPTIONAL,
+	intermediatePointList	SEQUENCE OF IntermediatePoint OPTIONAL,
+	predefinedPathsList		SEQUENCE OF PredefinedPath OPTIONAL,
+	paymentFeeUnit			PayUnit OPTIONAL,
+	vatRate					INTEGER (0 .. 99999) OPTIONAL, -- in 0.01%
+	version					VersionAndValidity
+}
+
+Station ::= SEQUENCE {
+	stationId					StationId,
+	stationDescription			UTF8String OPTIONAL,
+	absolutePointCoordinates	AbsolutePosition3d OPTIONAL,
+	stationType					INTEGER {
+		entryOnly					(0), -- only entry, no exit
+		exitOnly					(1), -- only exit, no entry
+		entryAndExit				(2), -- entry and exit
+		virtualEntryStationUTurn	(3), -- used for the event: entry station = exitStation AND authorized U-turn
+		virtualEntryStationNoUTurn	(4), -- used for the event: entry station = exitStation AND not authorized U-turn
+		virtualEntryStationFarthest	(5), -- used for the event: entry station not SET OR failure of entry EFC transaction and maximum price to be applied
+		virtualEntryStationNearest	(6), -- used for the event: entry station not SET OR failure of entry EFC transaction and minimum price to be applied
+		barrier						(7),
+		interchange					(8),
+		restArea					(9), -- rest area with mixed flows
+		parking						(10) -- parking
+		-- 11-127 are reserved for future CEN and ISO use
+		-- 128-255 are reserved for private use
+	} (0..255)
+}
+
+StationId ::= Int4Unsigned
+
+IntermediatePoint ::= SEQUENCE {
+	intermediatePointId				IntermediatePointId,
+	intermediatePointDescription	UTF8String OPTIONAL
+}
+
+IntermediatePointId ::= Int4Unsigned
+
+PredefinedPath ::= SEQUENCE {
+	predefinedPathId	PredefinedPathId,
+	pathComposition		SEQUENCE {
+		entryStationId	StationId, -- The StationsIds identifying stations with stationType 3, 4 and 5 are always present in this sequence
+		operatedBy		Provider OPTIONAL, -- identification of the Toll Charger that operates the entry station
+		exitStationId	StationId, -- the exit station is operated by the Toll Charger that sends the message
+		relativePathId	INTEGER (0..255) -- shall be unique in the couple (entryStationId, exitStationId)
+	},
+	intermediateChecks	SEQUENCE OF IntermediatePointId	OPTIONAL, -- identification of the intermediate checkpoints of the path
+	description			UTF8String	OPTIONAL
+}
+
+PredefinedPathId ::= Int4Unsigned
+
+-- ********* Level 4: TollTable for meshed context layout *********
+TollTable ::= SEQUENCE {
+	entriesList	SEQUENCE OF
+		paths		SEQUENCE {
+			pathId				PredefinedPathId,
+			tollsPerTariffClass	TollsPerTariffClass
+		}
+	,
+	version		VersionAndValidity
+}
+
+
+-- ******************************************************************
+-- ProvideUserDetailsAdu
+-- ******************************************************************
+ProvideUserDetailsAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	originalUserIdRequest	UserId, -- in the format of the request
+	userId					UserId,
+	statusFlag				UserStatus OPTIONAL,
+	listOfUserParameters	SEQUENCE OF UserParameterResponse OPTIONAL,
+	actionCode				ActionCode OPTIONAL
+}
+
+UserStatus ::= INTEGER {
+	-- Provides general information on the status of the current status of the user
+	noContractualRelation			(0), -- no contract with TSP (user unknown)
+	standardPrivateUserContract		(1), -- contract as private user
+	standardCommercialUserContract	(2), -- contract as a commercial user
+	tempExceptionListed				(3), -- put on exception list, expect to remove it soon (e.g. because of insufficient credit on the account)
+	permanentExceptionListed		(4), -- put permanently on exception list
+	contractClosed					(5), -- contract with the user has ended
+	noStatus						(6) -- no status information available
+	-- 7-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+UserParameterResponse ::= SEQUENCE {
+	requestedUserParameter	UserParameterRequest OPTIONAL,
+	userParameterResponse	UserParameterResponseDetails OPTIONAL,
+	userParameterStatus		UserParameterStatus OPTIONAL,
+	userInfoValidityPeriod	Period OPTIONAL
+}
+
+UserParameterResponseDetails ::= CHOICE {
+	contractSerialNumber			[1] ContractSerialNumber,
+	contractValidity				[2] ContractValidity,
+	driverCharacteristics			[3] DriverCharacteristics,
+	efcContextMark					[4] EfcContextMark,
+	environmentalCharacteristics	[5] EnvironmentalCharacteristics,
+	engineCharacteristics			[6] EngineCharacteristics,
+	equipmentObuId					[7] EquipmentObuId,
+	equipmentStatus					[8] EquipmentStatus,
+	paymentMeans					[9] PaymentMeans,
+	paymentMeansBalance				[10] PaymentMeansBalance,
+	payUnit							[11] PayUnit,
+	personalAccountNumber			[12] PersonalAccountNumber,
+	provider						[13] Provider,
+	receiptContract					[14] ReceiptContract,
+	validityOfContract				[15] ValidityOfContract,
+	vehicleAuthenticator			[16] VehicleAuthenticator,
+	vehicleClass					[17] VehicleClass,
+	vehicleDimensions				[18] VehicleDimensions,
+	vehicleLicencePlateNumber		[19] Lpn,
+	vehicleIdentificationNumber		[20] VehicleIdentificationNumber,
+	vehicleWeightLaden				[21] VehicleWeightLaden,
+	vehicleWeightLimits				[22] VehicleWeightLimits,
+	vehicleAxles					[23] VehicleAxles,
+	exhaustEmissionValues			[24] ExhaustEmissionValues,
+	dieselEmissionValues			[25] DieselEmissionValues,
+	userPostalAddress				[26] UserPostalAddress,
+	preferredUserLanguage			[27] UTF8String, -- two letter code according to ISO 639-1
+	equipmentIccId					[28] EquipmentIccId,
+	...
+}
+
+UserPostalAddress ::= SEQUENCE {
+	addresseeRoleDescriptor			UTF8String (SIZE (1..10)) OPTIONAL,
+	organisationName				UTF8String (SIZE (1..256)) OPTIONAL,
+	organisationUnit				UTF8String (SIZE (1..256)) OPTIONAL,
+	function						UTF8String (SIZE (1..256)) OPTIONAL,
+	formOfAddress					UTF8String (SIZE (1..50)) OPTIONAL,
+	qualification					UTF8String (SIZE (1..50)) OPTIONAL,
+	surname							UTF8String (SIZE (1..256)) OPTIONAL,
+	givenName						UTF8String (SIZE (1..256)) OPTIONAL,
+	deliveryServicePoint			UTF8String (SIZE (1..256)) OPTIONAL,
+	thoroughfare					UTF8String (SIZE (1..256)) OPTIONAL,
+	postCode						UTF8String (SIZE (1..10)) OPTIONAL,
+	town							UTF8String (SIZE (1..256)) OPTIONAL,
+	region							UTF8String (SIZE (1..256)) OPTIONAL,
+	country							UTF8String (SIZE (1..256)) OPTIONAL,
+	phoneInternationalDiallingCode	UTF8String (SIZE (1..5)) OPTIONAL,
+	phoneDiallingCode				UTF8String (SIZE (1..10)) OPTIONAL,
+	phoneSubscriberNumber			UTF8String (SIZE (1..20)) OPTIONAL,
+	mobileInternationalDiallingCode	UTF8String (SIZE (1..5)) OPTIONAL,
+	mobileDiallingCode				UTF8String (SIZE (1..10)) OPTIONAL,
+	mobileSubscriberNumber			UTF8String (SIZE (1..20)) OPTIONAL,
+	faxInternationalDiallingCode	UTF8String (SIZE (1..5)) OPTIONAL,
+	faxDiallingCode					UTF8String (SIZE (1..10)) OPTIONAL,
+	faxSubscriberNumber				UTF8String (SIZE (1..20)) OPTIONAL,
+	email							UTF8String (SIZE (1..256)) OPTIONAL,
+	companyRegistrationNumber		UTF8String (SIZE (1..30)) OPTIONAL,
+	taxIdentifier					UTF8String (SIZE (1..50)) OPTIONAL,
+	vatIdentifier					UTF8String (SIZE (1..30)) OPTIONAL,
+	...
+}
+
+UserParameterStatus ::= INTEGER { -- Specifies why a requested detail cannot be provided for an attribute
+	userParameterAvailable		(0), -- attribute is available
+	notAvailable				(1), -- attribute is not available
+	localPrivacyRules			(2), -- attribute cannot be sent due to privacy rule
+	missingContractualAgreement	(3) -- attribute cannot be sent due to missing agreement
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- ContractIssuerListAdu
+-- ******************************************************************
+ContractIssuerListAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier,
+	contractIssuerList		SEQUENCE OF ContractIssuerListEntry,
+	versionAndValidity		VersionAndValidity, -- version and time stamp the whole ContractIssuerList becomes valid
+	actionCode				ActionCode OPTIONAL
+}
+
+ContractIssuerListEntry ::= SEQUENCE {
+	efcContextMark			EfcContextMark,
+	efcContextMarkVersion	EfcContextMarkVersion OPTIONAL,
+	equipmentClass			INTEGER (0..32767),
+	manufacturerId			Int2Unsigned, -- as defined in 14906
+	uniquePartOfPAN			UTF8String, -- leftmost unique digits of PAN
+	typeOfEfcApplication	UTF8String, -- EFC application to use for the specific context mark (e.g. 15509, GNSS, PISTA, UNI)
+	securityLevel			SecurityLevel, -- security level to use for the defined EFC application
+	acCrKeyReference		Int1Unsigned, -- Number of key in the keyset to use for access credentials
+	authKeyReference		Int1Unsigned, -- Number of key in the keyset to use for TSP authenticator
+	validFrom				VersionAndValidity -- Time stamp the entry becomes valid
+}
+
+EfcContextMarkVersion ::= INTEGER {
+	en15509Version0				(0), -- current version
+	en15509Version2007			(1),
+	en15509Version2014			(2),
+	en15509Version2021			(3),
+	-- 4-39 reserved for future CEN and ISO use
+	iso12813Version0			(40), -- current version
+	iso12813Version2009			(41),
+	iso12813Version2015			(42),
+	iso12813Version2015Amd12017	(43),
+	iso12813Version2019			(44),
+	-- 45-79 reserved for future CEN and ISO use
+	iso13141Version0			(80), -- current version
+	iso13141Version2010			(81),
+	iso13141Version2015			(82),
+	iso13141Version2015Amd12017	(83)
+	-- 84-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+SecurityLevel ::= INTEGER {
+	secLevel0		(0), -- no access credentials
+	secLevel1		(1), -- security level 1
+	secLevel2		(2) -- security level 2
+	-- 3-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- ReportCccEventAdu
+-- ******************************************************************
+ReportCccEventAdu ::= SEQUENCE {
+	aduIdentifier		AduIdentifier,
+	cccRecord			CccEvent,
+	actionCode			ActionCode OPTIONAL
+}
+
+CccEvent ::= SEQUENCE {
+	userId				UserId OPTIONAL,
+	timeOfEvent			GeneralizedTime OPTIONAL,
+	locationOfEvent		Point OPTIONAL,
+	cccMessages			DsrcData{CccContainer}, -- need to be CCC message containers
+	initiatedActions	SEQUENCE OF InitiatedAction
+}
+
+InitiatedAction ::= INTEGER { -- The attribute indicates the action the TC performed as a result of the CCC data
+	vehicleWasStopped		(0), -- Vehicle stopped following the CCC Result
+	violationCaseIndicated	(1), -- CCC Result indicated that a violation may have occurred
+	evidenceDataGathered	(2), -- CCC data has been retained as evidence of violation
+	putOnTSPExceptionList	(3), -- Request to add UserID to the TSP Exception List made
+	putOnTCExceptionList	(4) -- UserId added to the TC Exception List
+	-- 5-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- PaymentAnnouncementAdu
+-- ******************************************************************
+PaymentAnnouncementAdu ::= SEQUENCE {
+	aduIdentifier			AduIdentifier, -- was paymentAnnouncementID in ISO 12855 up to 2015
+	dueDate					GeneralizedTime,
+	totalAmount				PaymentAmount OPTIONAL,
+	paymentStatus			PaymentStatus,
+	numberOfItems			Int8Unsigned OPTIONAL,
+	referenceDetailsList	SEQUENCE OF SEQUENCE {
+		referenceDetailList		SEQUENCE OF ReferenceDetail,
+		amount					PaymentAmount,
+		paymentMeansType		PaymentMeansType OPTIONAL,
+		valueDate				GeneralizedTime OPTIONAL,
+		interestAmount			PaymentAmount OPTIONAL 
+	} OPTIONAL,
+	attachment				OCTET STRING OPTIONAL, -- for adding optional documents like a PDF report etc.
+	paymentReference		UTF8String OPTIONAL,
+	actionCode				ActionCode OPTIONAL
+}
+
+PaymentStatus ::= INTEGER {
+	paid			(0), -- paid by TSP (before or on due date without interest, after due date including interest)
+	newOverdue		(1), -- not yet paid by TSP, interest accumulating until payment
+	notYetDue		(2), -- not yet due and not yet paid by TSP
+	reserved1		(3), -- kept for legacy reasons/no usage
+	due				(4), -- due on this date but not yet paid by TSP
+	reserved2		(5), -- kept for legacy reasons/no usage
+	reserved3		(6) -- kept for legacy reasons/no usage
+	-- 7-100 reserved for future CEN and ISO use
+	-- 101-255 reserved for private use
+}(0..255)
+
+-- ReferenceDetail defined under "General definitions used in various Adus"
+
+PaymentMeansType ::= INTEGER {
+	cash						(0),
+	prepaid						(1),
+	creditCard					(2),
+	fleetCard					(3),
+	nonEuroCurrencyCash			(4), -- kept for legacy reasons/no usage
+	nonEuroCurrencyPrepaid		(5), -- kept for legacy reasons/no usage
+	nonEuroCurrencyEcCreditcard	(6), -- kept for legacy reasons/no usage
+	nonEuroCurrencyFleetCard	(7), -- kept for legacy reasons/no usage
+	advancedPaymentProvider		(8),
+	debitCard					(9),
+	nonEuroCurrencyCreditcard	(10), -- kept for legacy reasons/no usage
+	bankTransfer				(11),
+	sepaDirectDebit				(12),
+	-- 13-127 reserved for future CEN and ISO use
+	-- 128-254 reserved for private use
+	unknown (255)
+}(0..255)
+
+-- ******************************************************************
+-- ProvideUserIdListAdu
+-- ******************************************************************
+ProvideUserIdListAdu ::= SEQUENCE {
+	aduIdentifier				AduIdentifier,
+	originalUserIdRequestType	UserIdRequestType,
+	originalUserId				UserId OPTIONAL,
+	userIdList					SEQUENCE OF UserId OPTIONAL,
+	actionCode					ActionCode OPTIONAL
+}
+
+UserIdRequestType ::= INTEGER {
+	allUserIdsToGivenCustomer	(0)
+	-- 1-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+-- ******************************************************************
+-- TollDeclarationAdu
+-- ******************************************************************
+TollDeclarationAdu ::= SEQUENCE {
+	aduIdentifier				AduIdentifier,
+	tollDeclarationId			TollDeclarationId OPTIONAL, --shall be specified if issuerId is different from apduOriginator
+	chargeReport				SEQUENCE OF ChargeReport,
+	actionCode					ActionCode OPTIONAL
+}
+
+TollDeclarationId ::= SEQUENCE {
+	issuerId			Provider,
+	declarationId		Int8Unsigned
+}
+
+ChargeReport ::= SEQUENCE {
+	obeId						ObeId OPTIONAL,
+	vehicleLPNr					Lpn OPTIONAL,
+	paymentMeans				PaymentMeans OPTIONAL,
+	serviceProviderContract		EfcContextMark,
+	tollContext					Provider OPTIONAL,
+	chargeReportFinalRecipient	Provider OPTIONAL,
+	timeOfReport				GeneralizedTime OPTIONAL,
+	reportPeriod				Period OPTIONAL,
+	appliedTollContextVersion	VersionId OPTIONAL,
+	usageStatementList			SEQUENCE OF UsageStatement,
+	sumVatForThisSession		PaymentFee OPTIONAL,
+	chargeReportCounter			Int4Unsigned OPTIONAL,
+	mileage						Distance OPTIONAL,
+	listOfCccContainers			SEQUENCE OF DsrcData{CccContainer} OPTIONAL,
+	frontEndVersion				FrontEndVersion OPTIONAL,
+	...
+}
+
+UsageStatement ::= SEQUENCE {
+	usageStatementId					Int2Unsigned OPTIONAL,
+	tollContext							Provider OPTIONAL,
+	chargeReportFinalRecipient			Provider OPTIONAL,
+	aggregatedFee						AggregatedFee OPTIONAL,
+	sumVat								PaymentFee OPTIONAL,
+	aggregatedSingleTariffClassSession	AggregatedSingleTariffClassSession OPTIONAL,
+	listOfChargeObjects					SEQUENCE OF DetectedChargeObject OPTIONAL,
+	listOfDsrcUsageData					SEQUENCE OF DsrcUsageData OPTIONAL,
+	listOfRawUsageData					ListOfRawUsageData OPTIONAL,
+	noUsage								BOOLEAN OPTIONAL,
+	additionalUsageInformation			OCTET STRING OPTIONAL,
+	costCentre							UTF8String OPTIONAL,
+	...
+}
+
+AggregatedFee ::= SEQUENCE {
+	timePeriodCovered	Period,
+	feeExclVat			PaymentFee,
+	sumVat				PaymentFee OPTIONAL
+}
+
+DsrcUsageData ::= CHOICE {
+	data14906		[1] DsrcData{EfcContainer},		-- EN ISO 14906
+	data12813		[2] DsrcData{CccContainer},		-- EN ISO 12813
+	data13141		[3] DsrcData{LacContainer},		-- EN ISO 13141
+	...
+}	-- contains EFC attributes as defined in DSRC standards
+
+ListOfRawUsageData ::= SEQUENCE {
+	rawDataList				SEQUENCE OF MeasuredRawData,
+	currentTariffClass		TariffClassDescription OPTIONAL,
+	vehicleDescription		VehicleDescription OPTIONAL,
+	...
+}
+
+MeasuredRawData ::= SEQUENCE {
+	measuredPosition	AbsolutePosition3d OPTIONAL,
+	timeWhenMeasured	GeneralizedTime OPTIONAL,
+	additionalGnssData	OCTET STRING OPTIONAL,
+	...
+}
+
+FrontEndVersion ::= SEQUENCE {
+	frontEndSWVersion	UTF8String (SIZE (0..50)),
+	frontEndHWVersion	UTF8String (SIZE (0..50))
+}
+
+-- ******************************************************************
+-- BillingDetailsAdu
+-- ******************************************************************
+BillingDetailsAdu ::= SEQUENCE {
+	aduIdentifier				AduIdentifier,
+	billingDetailsInfo			BillingDetailsInfo OPTIONAL, -- kept for legacy systems
+	tollContext					Provider,
+	userId						UserId OPTIONAL,
+	paymentMeans				PaymentMeans OPTIONAL,
+	relatedBillingDetails		CHOICE {
+		relatedAduIdentifier		[1]		AduIdentifier,
+		relatedBillingDetailsInfo	[2]		BillingDetailsInfo
+	} OPTIONAL,
+	period						Period OPTIONAL,
+	billingDetailsAmount		PaymentAmount,
+	usage						SEQUENCE { 
+		tollContextName				UTF8String OPTIONAL,
+		costCenter					UTF8String OPTIONAL,
+		usageList					SEQUENCE OF UsageList
+	},
+	refTollDeclaration			SEQUENCE OF CHOICE {
+		refAduIdentifier			[1]		AduIdentifier,
+		refTollDeclarationId		[2]		TollDeclarationId
+	} OPTIONAL,
+	paymentReference			UTF8String OPTIONAL,
+	actionCode					ActionCode OPTIONAL
+}
+
+BillingDetailsInfo ::= SEQUENCE {
+	issuerId					Provider,
+	billingDetailsNum			Int8Unsigned,
+	dateOfService				GeneralizedTime OPTIONAL,
+	billingDetailsReference		UTF8String (SIZE(0..32)) OPTIONAL 
+}
+
+-- ********* Level 3: UsageList *********
+UsageList ::= SEQUENCE {
+	usageListEntry		CHOICE {
+		forSectionedRoads	[1] SEQUENCE {
+			invoiceAggregationNumber	UTF8String OPTIONAL,
+			howManyTimes				Int8Unsigned,
+			usedSections				SEQUENCE OF	UsedSection OPTIONAL,
+			appliedTariffTableVersion	VersionId OPTIONAL, --optional reference to TariffTable version
+			appliedLocalVehicleClass	AppliedLocalVehicleClass, --reference to the TariffClass
+			appliedTimeClass			AppliedTimeClass, --reference to the TariffClass
+			appliedUserClass			AppliedUserClass, --reference to the TariffClass
+			vehicleDescription			VehicleDescription OPTIONAL,
+			usageDistance				Distance OPTIONAL, --sum of usedSectionDistance in usedSections (if present there) 
+			usageFee					PaymentAmount OPTIONAL, --sum of usedSectionFee in usedSections (if present there)
+			usageFeeQualifier			FeeQualifier OPTIONAL,
+			usageExternalCosts			ExternalCosts OPTIONAL -- sum of the external costs, shall correspond to usedSections (if present there)
+		},
+		forTravellingInArea	[2] SEQUENCE {
+			areaDisplayName				UTF8String,
+			usedArea					CHOICE {
+				usedAreaId					[1]	AreaId, --reference to the AreaPricingLayout defined in the TollContextPartitionLayout
+				usedAreaObject				[2]	AreaLayout --or direct definition of the used area here
+			},
+			accumulatedDistance			Distance,
+			beginOfAccumulation			GeneralizedTime OPTIONAL,
+			endOfAccumulation			GeneralizedTime OPTIONAL,
+			associatedEventData			SEQUENCE OF AssociatedEventData OPTIONAL,
+			appliedTariffTableVersion	VersionId OPTIONAL, --optional reference to TariffTable version
+			appliedLocalVehicleClass	AppliedLocalVehicleClass, --reference to the TariffClass
+			appliedTimeClass			AppliedTimeClass, --reference to the TariffClass
+			appliedLocationClass		AppliedLocationClass, --reference to the TariffClass
+			appliedUserClass			AppliedUserClass, --reference to the TariffClass
+			vehicleDescription			VehicleDescription OPTIONAL,
+			usageFee					PaymentAmount OPTIONAL,
+			usageFeeQualifier			FeeQualifier OPTIONAL,
+			usageExternalCosts			ExternalCosts OPTIONAL
+		},
+		forStayingInArea	[3] SEQUENCE {
+			areaDisplayName				UTF8String,
+			usedArea					CHOICE { 
+				usedAreaId					[1]	AreaId, --reference to the AreaPricingLayout defined in the TollContextPartitionLayout
+				usedAreaObject				[2]	AreaLayout --or direct definition of the used area here
+			},
+			entranceTime				GeneralizedTime OPTIONAL,
+			stayedDuration				Duration,
+			associatedEventData			SEQUENCE OF AssociatedEventData OPTIONAL,
+			appliedTariffTableVersion	VersionId OPTIONAL, --optional reference to TariffTable version
+			appliedLocalVehicleClass	AppliedLocalVehicleClass, --reference to the TariffClass
+			appliedTimeClass			AppliedTimeClass, --reference to the TariffClass
+			appliedLocationClass		AppliedLocationClass, --reference to the TariffClass
+			appliedUserClass			AppliedUserClass, --reference to the TariffClass
+			vehicleDescription			VehicleDescription OPTIONAL,
+			usageFee					PaymentAmount OPTIONAL,
+			usageFeeQualifier			FeeQualifier OPTIONAL,
+			usageExternalCosts			ExternalCosts OPTIONAL
+		},
+		forCordonCrossings	[4] SEQUENCE {
+			chargeObject					CHOICE {
+				entryLocation					[1]	CHOICE { 
+					entryChargeObject					[1]	ChargeObjectId, --reference to the CordonPricingLayout defined in the TollContextPartitionLayout
+					entryLocationObject					[2]	CordonEntryLocation --or direct definition of the used cordon here
+				},
+				exitLocation					[2]	CHOICE {
+					exitChargeObject					[1]	ChargeObjectId, --reference to the CordonPricingLayout defined in the TollContextPartitionLayout
+					exitLocationObject					[2]	CordonExitLocation --or direct definition of the used cordon here
+				}
+			},
+			entryTime						GeneralizedTime OPTIONAL,
+			exitTime						GeneralizedTime,
+			associatedEventData				SEQUENCE OF AssociatedEventData OPTIONAL,
+			appliedTariffTableVersion		VersionId OPTIONAL, --optional reference to TariffTable version
+			appliedLocalVehicleClass		AppliedLocalVehicleClass, --reference to the TariffClass
+			appliedTimeClass				AppliedTimeClass, --reference to the TariffClass
+			appliedEntranceLocationClass	AppliedLocationClass, --reference to the TariffClass, entrance and exit location may have a different locationClass
+			appliedExitLocationClass		AppliedLocationClass, --reference to the TariffClass, entrance and exit location may have a different locationClass
+			appliedUserClass				AppliedUserClass, --reference to the TariffClass
+			vehicleDescription				VehicleDescription OPTIONAL, --moved from DetectedChargeObject but moved one level up to correspond to tariff classes
+			usageFee						PaymentAmount OPTIONAL, 
+			usageFeeQualifier				FeeQualifier OPTIONAL,
+			usageExternalCosts				ExternalCosts OPTIONAL
+		},
+		freeTextDetail		[5] SEQUENCE {
+			textLanguage				LanguageID,
+			textDetail					UTF8String,
+			associatedEventData			SEQUENCE OF AssociatedEventData OPTIONAL,
+			--appliedTariffTableVersion, appliedLocalVehicleClass, appliedTimeClass, appliedLocationClass, appliedUserClass omitted, as everything is included in textDetail
+			usageFee					PaymentAmount OPTIONAL, 
+			usageFeeQualifier			FeeQualifier OPTIONAL,
+			usageExternalCosts			ExternalCosts OPTIONAL
+		},
+		forMeshedSystem	[6] SEQUENCE {
+			travelsList					SEQUENCE OF Travel	OPTIONAL,
+			checkPointsCrossingList		SEQUENCE OF CheckPointCrossing OPTIONAL,
+			invoiceAggregationNumber	UTF8String	OPTIONAL
+		},
+		noUsageDetails		[7]	BOOLEAN 
+	},
+	includedDiscounts	SEQUENCE OF SEQUENCE {
+		textLanguage		LanguageID OPTIONAL,
+		textDetail			UTF8String OPTIONAL,
+		appliedDiscountId	DiscountId,
+		discountAmount		PaymentAmount, 
+		discountQualifier	DiscountQualifier
+	} OPTIONAL,
+	usageInformation	SEQUENCE OF BillingDetailsUsageInformation OPTIONAL
+}
+
+-- ********* Level 4: AppliedUserClass, AppliedTimeClass, AppliedVehicleClass, AppliedLocationClass *********
+-- allows the use of Descriptions (UTF8Strings) without a reference to the TariffClass in EfcContextData (Ids)
+AppliedUserClass ::= SEQUENCE {
+	appliedUserClassId				UserClassId OPTIONAL,
+	appliedUserClassDescription		UTF8String OPTIONAL
+}
+
+AppliedTimeClass ::= SEQUENCE {
+	appliedTimeClassId				TimeClassId OPTIONAL,
+	appliedTimeClassDescription		UTF8String OPTIONAL
+}
+
+AppliedLocalVehicleClass ::= SEQUENCE {
+	appliedLocalVehicleClassId				LocalVehicleClassId OPTIONAL,
+	appliedLocalVehicleClassDescription		UTF8String OPTIONAL
+}
+
+AppliedLocationClass ::= SEQUENCE {
+	appliedLocationClassId				LocationClassId OPTIONAL,
+	appliedLocationClassDescription		UTF8String OPTIONAL
+}
+
+-- ********* Level 4: data types for forSectionedRoads *********
+UsedSection ::= SEQUENCE {
+	tollContext					Provider OPTIONAL,
+	usedChargeObjectId			ChargeObjectId OPTIONAL, --optional reference to the ChargeObject from the SectionLayout 
+	directUsageInformation SEQUENCE {
+		usedChargeObjectName		UTF8String, -- name of the used section when usedChargeObjectId is not specified by EfcContextData 
+		usedSectionDistance 		Distance -- length of the used section when usedChargeObjectId is not specified by EfcContextData
+	} OPTIONAL, 
+	appliedLocationClass		AppliedLocationClass OPTIONAL, --optional reference to the LocationClass of the section (may differ from section to section)
+	tollEventId					TollEventId OPTIONAL, --optional reference to a toll event either directly or indicating a usageStatement
+	tollEventTime				GeneralizedTime OPTIONAL,
+	modeOfOperation				ModeOfOperation	OPTIONAL,
+	associatedEventData			SEQUENCE OF AssociatedEventData OPTIONAL, -- optional attachment of associated event data to a used section
+	usedSectionFee				PaymentAmount OPTIONAL, -- optional indication of the fee for the used section. The sum of these fees shall correspond to usageFee in UsageList (if present here)
+	usedSectionFeeQualifier		FeeQualifier OPTIONAL,
+	usedSectionExternalCosts	ExternalCosts OPTIONAL, -- optional indication of the external costs for the used section. The sum of these fees shall correspond to usageExternalCosts in UsageList (if present here)
+	usageInformation			SEQUENCE OF BillingDetailsUsageInformation OPTIONAL
+}
+
+ModeOfOperation ::= INTEGER {
+	normal		(1),
+	degraded	(2),
+	virtual		(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+FeeQualifier ::= INTEGER {
+	standardCharge	(0),
+	tollSubstitute	(1),
+	belatedPayment	(2),
+	reimbursement	(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+ExternalCosts ::= SEQUENCE {
+	externalCostsAir			PaymentAmount OPTIONAL, -- external costs for air pollution
+	externalCostsNoise			PaymentAmount OPTIONAL, -- external costs for noise
+	externalCostsAccident		PaymentAmount OPTIONAL, -- external costs for accidents
+	externalCostsCo2			PaymentAmount OPTIONAL, -- external costs for CO2 effects
+	externalCostsCrossFinancing	PaymentAmount OPTIONAL, -- external costs (mark-up) for cross-financing of other projects not related to the road being tolled
+	externalCostsTotal			PaymentAmount OPTIONAL, -- including the sum of all external costs and applying the rounding rules
+	...
+}(	WITH COMPONENTS {..., externalCostsAir PRESENT }| 
+	WITH COMPONENTS {..., externalCostsNoise PRESENT}| 
+	WITH COMPONENTS {..., externalCostsAccident PRESENT}| 
+	WITH COMPONENTS {..., externalCostsCo2 PRESENT}|
+	WITH COMPONENTS {..., externalCostsCrossFinancing PRESENT}|
+	WITH COMPONENTS {..., externalCostsTotal PRESENT})
+
+BillingDetailsUsageInformation ::= INTEGER {
+	noUsageInformation	(0), -- no additional information available
+	userIdUnknown		(1) -- userId was not known to the entity that generated the billing detail (not on the white list)
+	-- 2-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+LanguageID ::= UTF8String -- two letter language code according to ISO 639-1
+
+DiscountQualifier ::= INTEGER { -- provides the reason of considered toll charger discount
+	noDiscount			(0),
+	timeDiscount		(1),
+	vehicleDiscount		(2),
+	tripDiscount		(3),
+	userDiscount		(4),
+	dayOfWeekDiscount	(5),
+	holidayDiscount		(6),
+	routeDiscount		(7),
+	companyDiscount		(8),
+	eligibleForDiscount (9)
+	-- 10-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+} (0..255)
+
+-- ********* Level 4: data types for meshed system layout *********
+Travel ::= SEQUENCE {
+	travelDescription	CHOICE {
+		-- travel description by means of the actual path
+		actualPathByPhysicalEdges		[1] SEQUENCE OF SEQUENCE {
+			edgeID							PhysicalEdgeId,
+			event							EventIdentification	OPTIONAL
+		},
+		actualPathByPhysicalVertices	[2] SEQUENCE OF SEQUENCE {
+			vertexID						VertexId,
+			event							EventIdentification	OPTIONAL
+		},
+		actualPathByLogicalEdges		[3] SEQUENCE OF SEQUENCE {
+			edgeID							LogicalEdgeId,
+			event							EventIdentification	OPTIONAL
+		},
+		actualPathByLogicalVertices		[4] SEQUENCE OF SEQUENCE {
+			vertexID						VertexId,
+			event							EventIdentification	OPTIONAL
+		},
+		-- travel description by means of the predefined path
+		predefinedPath					[5] SEQUENCE {
+			predefinedPathId				PredefinedPathId,
+			entryEvent						EventIdentification	OPTIONAL,
+			intermediateEvents				SEQUENCE OF SEQUENCE {
+				intermediatePointId				IntermediatePointId,
+				eventIdentification				EventIdentification	OPTIONAL
+			} OPTIONAL,
+			exitEvent				EventIdentification	OPTIONAL
+		}
+	},
+	fee					PaymentAmount OPTIONAL,
+	feeQualifier		FeeQualifier OPTIONAL
+}
+
+EventIdentification ::= SEQUENCE {
+	time					GeneralizedTime OPTIONAL,
+	associatedEventData		AssociatedEventData OPTIONAL
+}
+
+CheckPointCrossing ::= SEQUENCE {
+	pathByCheckPoints	SEQUENCE OF SEQUENCE {
+		direction				INTEGER (0..1000),
+			-- Allowed values:
+			--	997 from start point to end point
+			--	998 from end point to start point
+			-- of the highway. Start and end points of the highway are specified by
+			-- means of HighWaysList.definition.roadConventionalDirection
+		checkPoint				IntermediatePointId,
+		eventIdentification		EventIdentification OPTIONAL,
+		fee						PaymentAmount OPTIONAL
+	},
+	aggregatedFee		PaymentAmount OPTIONAL,
+	feeQualifier		FeeQualifier OPTIONAL
+}
+
+
+-- ********* Level 4: AssociatedEventData *********
+AssociatedEventData ::= SEQUENCE {
+	cccRecord				CccEvent OPTIONAL,
+	imageRecord				ImageRecord OPTIONAL,
+	anprRecord				AnprRecord OPTIONAL,
+	classificationRecord	ClassificationRecord OPTIONAL,
+	operatorRecord			OperatorRecord OPTIONAL,
+	dsrcData				DsrcData{EfcContainer} OPTIONAL
+}
+
+-- ********* Level 5: CccEvent *********
+-- see ReportCccEventAdu
+
+-- ********* Level 5: ImageRecord *********
+ImageRecord ::= SEQUENCE {
+	imageToBeSigned			SEQUENCE {
+		imageRecordId			RecordId,
+		imageDateTime			GeneralizedTime,
+		imageCameraId			UTF8String,
+		imageReference			UTF8String OPTIONAL,
+		imageData				OCTET STRING OPTIONAL
+	},
+	subRecordAuthenticator	AuthenticatorEfc OPTIONAL
+}
+
+-- ********* Level 5: AnprRecord *********
+AnprRecord ::= SEQUENCE {
+	anprToBeSigned SEQUENCE {
+		anprRecordId		RecordId,
+		associatedImages		SEQUENCE OF SEQUENCE {
+			anprImage				RecordId,
+			contextImage			RecordId
+		},
+		imageDateTime			GeneralizedTime,
+		imageCameraId			UTF8String,
+		determinedVRM			SEQUENCE {
+			anprResult				OCTET STRING (SIZE(14)),
+			anprConfidence			INTEGER(0..100),
+			secondaryAnprResult		OCTET STRING (SIZE(14)) OPTIONAL,
+			manualResult			OCTET STRING (SIZE(14)) OPTIONAL,
+			operatorId				Int2Unsigned
+		},
+		vehicleDetails			SEQUENCE {
+			vehicleMake				UTF8String OPTIONAL,
+			vehicleModel			UTF8String OPTIONAL,
+			vehicleColour			UTF8String OPTIONAL
+		}
+	},
+	subRecordAuthenticator	AuthenticatorEfc OPTIONAL
+}
+
+-- ********* Level 5: ClassificationRecord *********
+ClassificationRecord ::= SEQUENCE {
+	classificationToBeSigned	SEQUENCE {
+		classificationRecordId		RecordId,
+		derivedLocalvehicleClass	VehicleClass OPTIONAL,
+		nominalVehicleParameters	NominalVehicleParameters OPTIONAL,
+		ordinalVehicleParameters	OrdinalVehicleParameters OPTIONAL
+	},
+	subRecordAuthenticator		AuthenticatorEfc OPTIONAL
+}
+
+-- ********* Level 5: OperatorRecord *********
+OperatorRecord ::= SEQUENCE {
+	operatorToBeSigned SEQUENCE {
+		operatorRecordId	RecordId,
+		operatorData		SEQUENCE {
+			operatorTime		GeneralizedTime,
+			vehicleClass		VehicleClass OPTIONAL, 
+			operatorId			Int2Unsigned OPTIONAL,
+			operatorVrm			OCTET STRING (SIZE(14)) OPTIONAL,
+			operatorPan			UTF8String OPTIONAL, 
+			operatorObuId		EquipmentObuId OPTIONAL,
+			machineReadPan		UTF8String OPTIONAL, 
+			machineReadObuId	UTF8String OPTIONAL, 
+			operatorIccId		EquipmentIccId OPTIONAL, 
+			...
+		}
+	},
+	subRecordAuthenticator AuthenticatorEfc OPTIONAL
+}
+
+-- ********* Level 5: DsrcData *********
+DsrcData{Container} ::= SEQUENCE {
+	dsrcRseData				DsrcRseData OPTIONAL,
+	dsrcAttributesRead		AttributeList{Container} OPTIONAL,
+	dsrcAttributesWritten	AttributeList{Container} OPTIONAL,
+	dsrcAttrAuth			DsrcAttrAuth OPTIONAL,
+	...
+}
+
+DsrcRseData ::= SEQUENCE { -- ObuId and PAN are part of userId contained in BillingDetailsAdu
+	transactionId			Int8Unsigned,
+	transactionDescription	UTF8String OPTIONAL, --optional alphanumerical information
+	rseDateTime				GeneralizedTime,
+	transactionResult		ResultOp,
+	transactionStatus		TransactionStatus,
+	exceptionListMatch		SEQUENCE OF SEQUENCE { 
+		originTSP				Provider,
+		matchVersion			ExceptionListVersion,
+		matchType				ExceptionListType,
+		matchEntry				ExceptionListEntry OPTIONAL
+	} OPTIONAL,
+	tariffID				TariffClassId OPTIONAL,
+	fee						Amount OPTIONAL,
+	feeQualifier			FeeQualifier OPTIONAL,
+	tollStationID			ChargeObjectId OPTIONAL,
+	sessionLocation			SessionLocation OPTIONAL, -- as imported from ISO 14906
+	typeOfTransaction		StationType OPTIONAL, -- as defined in ISO 14906 for a toll station, may change, if lane direction is modified
+	vstData					ObeConfiguration OPTIONAL,
+	...
+}
+
+DsrcAttrAuth ::= SEQUENCE OF SEQUENCE {
+	attrOrigEncoding	BIT STRING, -- the bit string encoding of the AttributeList
+	rndRse				OCTET STRING,
+	keyRef				Int1Unsigned,
+	authCode			OCTET STRING,
+	result				AuthCheckResult
+}
+
+TransactionStatus ::= INTEGER {
+	completed				(1),
+	abortedAfterFirstPhase	(2),
+	abortedAfterSecondPhase	(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+AuthCheckResult ::= INTEGER {
+	notChecked		(1),
+	ok				(2),
+	nok				(3)
+	-- 4-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+
+-- ******************************************************************
+-- UserComplaintAdu (with explicit data type definitions)
+-- ******************************************************************
+UserComplaintAdu ::= SEQUENCE {
+	aduIdentifier					AduIdentifier,
+	issuerId						Provider OPTIONAL,
+	relatedId						RelatedId,
+	userComplaintDescription		UTF8String OPTIONAL,
+	dateOfUserComplaint				GeneralizedTime OPTIONAL,
+	userComplaintReason				UserComplaintReason,
+	additionalUserComplaintInfo		AdditionalUserComplaintInfo OPTIONAL
+}
+
+-- ********* Level 3: RelatedId *********
+RelatedId ::= SEQUENCE {
+	relatedAduType					AduType (billingDetailsAdu|paymentClaimAdu|paymentAnnouncementAdu),
+	relatedAduIdentifier			AduIdentifier
+}
+
+-- ********* Level 3: userComplaintReason *********
+UserComplaintReason ::= CHOICE {
+	wrongVehicleClass				[1] WrongVehicleClass,
+	wrongUsageList					[2] WrongUsageList,
+	wrongCharge						[3] WrongCharge,
+	chargeAlreadyProcessed			[4] RelatedId,
+	otherReason						[5] UTF8String
+}
+
+WrongVehicleClass ::= SEQUENCE {
+	billedVehicleClass		LocalVehicleClassId,
+	claimedVehicleClass		LocalVehicleClassId 
+}
+
+WrongUsageList ::= SEQUENCE {
+	billedUsageList		UsageList,
+	claimedUsageList	UsageList
+}
+
+WrongCharge ::= SEQUENCE {
+	billedCharge	PaymentAmount, 
+	claimedCharge	PaymentAmount 
+}
+
+-- ********* Level 3: AdditionalUserComplaintInfo *********
+AdditionalUserComplaintInfo ::= SEQUENCE {
+	additionalUserComplaintInfoToBeSigned	AdditionalUserComplaintInfoToBeSigned,
+	infoAuthenticator						AuthenticatorEfc OPTIONAL
+}
+
+AdditionalUserComplaintInfoToBeSigned ::= SEQUENCE { 
+	additionalUserComplaintInfoId		Int8Unsigned,
+	dateOfAdditionalUserComplaintInfo	GeneralizedTime,
+	infoData							InfoData
+}
+
+InfoData ::= CHOICE {
+	textItem	[1]	OCTET STRING,
+	binaryItem	[2]	BinaryItem
+}
+
+BinaryItem ::= SEQUENCE {
+	content		OCTET STRING,
+	mediaType	OCTET STRING -- IANA Registry application media-types
+}
+
+
+-- ******************************************************************
+-- UserComplaintResponseAdu
+-- ******************************************************************
+UserComplaintResponseAdu ::= SEQUENCE {
+	aduIdentifier						AduIdentifier,
+	relatedUserComplaintId				AduIdentifier,
+	userComplaintResponse				UserComplaintResponse,
+	dateOfResponse						GeneralizedTime OPTIONAL,
+	retrievedNominalVehicleParameters	NominalVehicleParameters OPTIONAL,
+	retrievedOrdinalVehicleParameters	OrdinalVehicleParameters OPTIONAL,
+	additionalComplaintResponseInfo		AdditionalUserComplaintInfo OPTIONAL
+}
+
+UserComplaintResponse ::= INTEGER {
+	userComplaintAccepted									(0),
+	userComplaintPendingMoreInfoRequested					(1),
+	userComplaintRefusedIncorrectClaimedLocalVehicleClass	(2),
+	userComplaintRefusedIncorrectClaimedUsageList			(3),
+	userComplaintRefusedWrongCharge							(4),
+	userComplaintRefusedChargeAlreadyProcessed				(5),
+	userComplaintRefusedBeyondTimeLimit						(6), -- Request outside of contractually agreed time after billing
+	userComplaintRefusedNoSuitableBillingDetailsInfo		(7), -- no suitable relatedBillingDetailsInfo provided
+	userComplaintRefusedNoSuitableAduIdentifier				(8), -- no suitable relatedAduIdentifier provided
+	userComplaintRefusedNoSuitableAduType					(9), -- no suitable relatedAduType provided
+	userComplaintRefusedOtherReason							(10)
+	-- 11-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+
+-- ******************************************************************
+-- MediaSettlementDataAdu
+-- ******************************************************************
+MediaSettlementDataAdu ::= SEQUENCE {
+	aduIdentifier					AduIdentifier,
+	mediaProviderID					Provider,
+	mediaSettlementList				MediaSettlementList,
+	mediaSettlementListDateAndTime	GeneralizedTime OPTIONAL,
+	mediaSettlementListVersion		VersionId,
+	authenticator					OCTET STRING(SIZE(4)) OPTIONAL -- authenticator by media provider
+}
+
+MediaSettlementList ::= SEQUENCE OF MediaSettlementElement
+
+MediaSettlementElement ::= SEQUENCE {
+	mediaIccId						EquipmentIccId OPTIONAL,
+	mediaIccAmount					PaymentFee OPTIONAL,
+	mediaIccBalance					PaymentMeansBalance OPTIONAL,
+	mediaIccDateAndTime				GeneralizedTime OPTIONAL,
+	mediaPan						PersonalAccountNumber OPTIONAL,
+	mediaMessageTypeIndicator		OCTET STRING (SIZE(2)) OPTIONAL, -- according to ISO 8583
+	mediaProcessingCode				OCTET STRING (SIZE(3)) OPTIONAL, -- according to ISO 8583
+	-- (e.g. Payment: MTI=0200, MPC=000021, Account Transfer: MTI=0200, MPC=000040)
+	mediaAmountTransaction			OCTET STRING (SIZE(6)) OPTIONAL, -- according to ISO 8583, n 12
+	mediaDateLocalTransaction		OCTET STRING (SIZE(2)) OPTIONAL, -- according to ISO 8583, n 4 (MMDD)
+	mediaTimeLocalTransaction		OCTET STRING (SIZE(3)) OPTIONAL, -- according to ISO 8583, n 6 (hhmmss)
+	mediaTransactionDateTime		OCTET STRING (SIZE(5)) OPTIONAL, -- according to ISO 8583, n 10 (MMDDhhmmss)
+	mediaCurrencyCodeTransaction	OCTET STRING (SIZE(2)) OPTIONAL, -- according to ISO 8583, a or n 3(lower 3 numeric)
+	mediaTransactionCounter			Int4Unsigned OPTIONAL,
+	mediaBalance					OCTET STRING (SIZE(6)) OPTIONAL}
+
+
+-- ******************************************************************
+-- General definitions used in various Adus
+-- ******************************************************************
+ActionCode ::= INTEGER {
+	send	(0),
+	revoke	(1),
+	unused	(2),
+	adjust	(3),
+	resend	(4)
+	-- 5-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for future private use
+} (0..255)
+
+AduIdentifier ::= Int8Unsigned
+
+Amount ::= SEQUENCE {
+	netPaymentFee	PaymentFee, -- from ISO 14906
+	vatRate			INTEGER (0..10000) -- in 0.01%
+}
+
+PaymentAmount ::= SEQUENCE {
+	paymentFeeAmount		INTEGER(-9223372036854775808..9223372036854775807),	-- -2^63 to 2^63-1
+	paymentFeeUnit			PayUnit,
+	vatRate					INTEGER (0..10000) OPTIONAL -- in 0.01%
+}
+
+ObeId ::= SEQUENCE {
+	manufacturerId		Int2Unsigned, -- see ObeConfiguration in 14906
+	equipmentObuId		EquipmentObuId
+	}
+
+Point ::= CHOICE {
+	absolutePointCoordinates	[1] AbsolutePosition3d,
+	relativePointCoordinates	[2] RelativePosition3d 
+}
+
+RecordId ::= SEQUENCE { -- Adu independent identifier for identifying records from other sources (e.g. enforcement operator)
+	providerId	Provider OPTIONAL,
+	recordType	RecordType OPTIONAL,
+	uniqueId	Int8Unsigned
+}
+
+RecordType ::= INTEGER {
+	cccRecord				(1),
+	imageRecord				(2),
+	anprRecord				(3),
+	classificationRecord	(4),
+	operatorRecord			(5),
+	dsrcData				(6)
+	-- 7-127 reserved for future CEN and ISO use
+	-- 128-255 reserved for private use
+}(0..255)
+
+ReferenceDetail ::= CHOICE {
+	referencedbillingDetailsInfo	[1]	BillingDetailsInfo, --kept for legacy addressing scheme
+	referencedTollDeclarationId		[2]	TollDeclarationId, --kept for legacy addressing scheme
+	referencedTollEventId			[3]	TollEventId,
+	referencedAduIdentifier			[4]	SEQUENCE {
+		referencedAduIdentifier			AduIdentifier,
+		referencedAduType				AduType (tollDeclarationAdu|billingDetailsAdu)
+	}
+}
+
+TollEventId ::= CHOICE {
+	tollDeclarationEventId		[1] SEQUENCE {
+		chargeReportCounter			Int4Unsigned,
+		usageStatementID			Int2Unsigned
+	},
+	tollTransactionEventId	[2]	Int8Unsigned,
+	transactionCounter		[3]	INTEGER (0..4095)
+}
+
+
+UserId ::= SEQUENCE {
+	pan						PersonalAccountNumber OPTIONAL, -- ISO 14906
+	contractSerialNumber	ContractSerialNumber OPTIONAL, -- ISO 14906
+	licencePlateNumber		Lpn OPTIONAL,
+	obeId					ObeId OPTIONAL,
+	equipmentIccId			EquipmentIccId OPTIONAL, 
+	customerId 				OCTET STRING (SIZE(10)) OPTIONAL 
+}
+
+VersionAndValidity ::= SEQUENCE {
+	version			VersionId,
+	validFrom		GeneralizedTime
+}
+
+VersionId ::= OCTET STRING
+
+END
