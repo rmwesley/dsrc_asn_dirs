@@ -35,7 +35,7 @@ CccDataRetrievalResponse ::= Get-Response {CccContainer} (WITH COMPONENTS {..., 
 CccAuthDataRetrievalRequest ::= Action-Request {CccContainer} (WITH COMPONENTS {mode (TRUE), eid, actionType (0), accessCredentials (SIZE(4)), actionParameter })
 -- uses actionParameter (GetStampedRq)
 
-CccAuthDataRetrievalResponse ::= Action-Response {GetStampedRs{CccContainer}} (WITH COMPONENTS {..., iid ABSENT, responseParameter PRESENT})
+CccAuthDataRetrievalResponse ::= Action-Response {CccContainer} (WITH COMPONENTS {..., iid ABSENT, responseParameter PRESENT})
 
 CccNotificationRequest ::= Action-Request {CccContainer} (WITH COMPONENTS {mode, eid (0), actionType (10), actionParameter }) -- uses actionParameter (SetMMIRq)
 

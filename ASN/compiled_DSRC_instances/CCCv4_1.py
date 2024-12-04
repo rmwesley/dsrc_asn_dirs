@@ -1811,25 +1811,7 @@ class EfcCcc:
     _CccAuthDataRetrievalResponse_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
     _CccAuthDataRetrievalResponse_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
     _CccAuthDataRetrievalResponse_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    _CccAuthDataRetrievalResponse_responseParameter = SEQ(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcDsrcApplication', 'GetStampedRs')), opt=True)
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList = SEQ_OF(name='attributeList', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcCcc', 'CccContainer')))
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_._cont = ASN1Dict([
-        ('attributeId', ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId),
-        ('attributeValue', ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue),
-        ])
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_._ext = None
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList._cont = ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __CccAuthDataRetrievalResponse_responseParameter_authenticator = OCT_STR(name='authenticator', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _CccAuthDataRetrievalResponse_responseParameter._cont = ASN1Dict([
-        ('attributeList', __CccAuthDataRetrievalResponse_responseParameter_attributeList),
-        ('authenticator', __CccAuthDataRetrievalResponse_responseParameter_authenticator),
-        ])
-    _CccAuthDataRetrievalResponse_responseParameter._ext = None
+    _CccAuthDataRetrievalResponse_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcCcc', 'CccContainer')), opt=True)
     _CccAuthDataRetrievalResponse_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
     CccAuthDataRetrievalResponse._cont = ASN1Dict([
         ('fill', _CccAuthDataRetrievalResponse_fill),
@@ -2461,11 +2443,6 @@ class EfcCcc:
         _CccAuthDataRetrievalResponse_fill,
         _CccAuthDataRetrievalResponse_eid,
         _CccAuthDataRetrievalResponse_iid,
-        ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId,
-        ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue,
-        ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_,
-        __CccAuthDataRetrievalResponse_responseParameter_attributeList,
-        __CccAuthDataRetrievalResponse_responseParameter_authenticator,
         _CccAuthDataRetrievalResponse_responseParameter,
         _CccAuthDataRetrievalResponse_ret,
         CccAuthDataRetrievalResponse,

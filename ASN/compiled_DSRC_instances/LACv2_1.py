@@ -17,7 +17,7 @@ from pycrate_asn1rt.init             import init_modules
 class EfcDataDictionary:
 
     _name_  = 'EfcDataDictionary'
-    _oid_   = [1, 0, 17573, 3, 1, 5]
+    _oid_   = [1, 0, 17573, 3, 1, 6]
     
     _obj_ = [
         'Int1Unsigned',
@@ -509,7 +509,7 @@ class EfcDataDictionary:
     
     #-----< ResultOp >-----#
     ResultOp = INT(name='ResultOp', mode=MODE_TYPE)
-    ResultOp._cont = ASN1Dict([('correctTransaction', 0), ('obeStatusNotAccepted', 1), ('equipmentStatusNotAccepted', 2), ('contractNotInWhiteList', 3), ('contractIdentifierInBlackList', 4), ('contractIdentifierNotCorrect', 5), ('expiredContract', 6), ('contractRestrictionsNotFulfilled', 7), ('claimedVehicleCharacteristicsNotValid', 8), ('vehicleClassAuthenticationFailed', 9), ('entryVehicleClassDifferentFromExitVehicleClass', 10), ('entryReceiptMissing', 11), ('entryReceiptNotValid', 12), ('entryTollStationNotValid', 13), ('equipmentNotCertified', 14), ('timeDifference', 15), ('accessCredentialsNotAccepted', 16), ('contractAuthenticatorNotAccepted', 17), ('receiptAuthenticatorNotAccepted', 18), ('claimedVehicleCharacteristicsMissing', 19), ('paymentMeansNotAccepted', 20), ('paymentAuthenticatorNotAccepted', 21), ('paymentMeansInBlackList', 22), ('paymentMeansNotCorrect', 23), ('expiredPaymentMeans', 24), ('paymentMeansRestrictionsNotFulfilled', 25)])
+    ResultOp._cont = ASN1Dict([('correctTransaction', 0), ('obeStatusNotAccepted', 1), ('equipmentStatusNotAccepted', 2), ('contractNotInAccessList', 3), ('contractIdentifierInBlockList', 4), ('contractIdentifierNotCorrect', 5), ('expiredContract', 6), ('contractRestrictionsNotFulfilled', 7), ('claimedVehicleCharacteristicsNotValid', 8), ('vehicleClassAuthenticationFailed', 9), ('entryVehicleClassDifferentFromExitVehicleClass', 10), ('entryReceiptMissing', 11), ('entryReceiptNotValid', 12), ('entryTollStationNotValid', 13), ('equipmentNotCertified', 14), ('timeDifference', 15), ('accessCredentialsNotAccepted', 16), ('contractAuthenticatorNotAccepted', 17), ('receiptAuthenticatorNotAccepted', 18), ('claimedVehicleCharacteristicsMissing', 19), ('paymentMeansNotAccepted', 20), ('paymentAuthenticatorNotAccepted', 21), ('paymentMeansInBlockList', 22), ('paymentMeansNotCorrect', 23), ('expiredPaymentMeans', 24), ('paymentMeansRestrictionsNotFulfilled', 25)])
     ResultOp._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     
     #-----< ReceiptServiceSerialNumber >-----#
@@ -1811,25 +1811,7 @@ class EfcCcc:
     _CccAuthDataRetrievalResponse_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
     _CccAuthDataRetrievalResponse_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
     _CccAuthDataRetrievalResponse_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    _CccAuthDataRetrievalResponse_responseParameter = SEQ(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcDsrcApplication', 'GetStampedRs')), opt=True)
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList = SEQ_OF(name='attributeList', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcCcc', 'CccContainer')))
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_._cont = ASN1Dict([
-        ('attributeId', ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId),
-        ('attributeValue', ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue),
-        ])
-    ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_._ext = None
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList._cont = ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_
-    __CccAuthDataRetrievalResponse_responseParameter_attributeList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __CccAuthDataRetrievalResponse_responseParameter_authenticator = OCT_STR(name='authenticator', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _CccAuthDataRetrievalResponse_responseParameter._cont = ASN1Dict([
-        ('attributeList', __CccAuthDataRetrievalResponse_responseParameter_attributeList),
-        ('authenticator', __CccAuthDataRetrievalResponse_responseParameter_authenticator),
-        ])
-    _CccAuthDataRetrievalResponse_responseParameter._ext = None
+    _CccAuthDataRetrievalResponse_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcCcc', 'CccContainer')), opt=True)
     _CccAuthDataRetrievalResponse_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
     CccAuthDataRetrievalResponse._cont = ASN1Dict([
         ('fill', _CccAuthDataRetrievalResponse_fill),
@@ -2461,11 +2443,6 @@ class EfcCcc:
         _CccAuthDataRetrievalResponse_fill,
         _CccAuthDataRetrievalResponse_eid,
         _CccAuthDataRetrievalResponse_iid,
-        ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeId,
-        ____CccAuthDataRetrievalResponse_responseParameter_attributeList__item__attributeValue,
-        ___CccAuthDataRetrievalResponse_responseParameter_attributeList__item_,
-        __CccAuthDataRetrievalResponse_responseParameter_attributeList,
-        __CccAuthDataRetrievalResponse_responseParameter_authenticator,
         _CccAuthDataRetrievalResponse_responseParameter,
         _CccAuthDataRetrievalResponse_ret,
         CccAuthDataRetrievalResponse,
