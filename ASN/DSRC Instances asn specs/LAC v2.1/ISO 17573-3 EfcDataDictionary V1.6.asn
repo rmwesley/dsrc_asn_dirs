@@ -1,4 +1,4 @@
-EfcDataDictionary {iso(1) standard(0) 17573 dd(3) version1(1) minorVersion5(5)}
+EfcDataDictionary {iso(1) standard(0) 17573 dd(3) version1(1) minorVersion6(6)}
 DEFINITIONS AUTOMATIC TAGS
 ::= BEGIN EXPORTS ALL;
 
@@ -309,8 +309,8 @@ ResultOp ::= INTEGER {
 	correctTransaction								(0),
 	obeStatusNotAccepted							(1),
 	equipmentStatusNotAccepted						(2),
-	contractNotInWhiteList							(3),
-	contractIdentifierInBlackList					(4),
+	contractNotInAccessList							(3), --deprecated term: contractNotInWhiteList
+	contractIdentifierInBlockList					(4), --deprecated term: contractIdentifierInBlackList
 	contractIdentifierNotCorrect					(5),
 	expiredContract									(6), 
 	contractRestrictionsNotFulfilled				(7),
@@ -328,7 +328,7 @@ ResultOp ::= INTEGER {
 	claimedVehicleCharacteristicsMissing			(19),
 	paymentMeansNotAccepted							(20),
 	paymentAuthenticatorNotAccepted					(21),
-	paymentMeansInBlackList							(22),
+	paymentMeansInBlockList							(22), --deprecated term: paymentMeansInBlackList
 	paymentMeansNotCorrect							(23),
 	expiredPaymentMeans								(24),
 	paymentMeansRestrictionsNotFulfilled			(25)
