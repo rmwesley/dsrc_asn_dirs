@@ -1,4 +1,0 @@
-I replaced all the non-ASCII Latin1 (ISO 8859-1) characters in the EfcDsrcGeneric v10.1 comments with ASCII characters:
-  That is, from “UNIX time” to "UNIX time"
-  
-For previous ISO 14906 ASN specs there were many more of such errors...
