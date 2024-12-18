@@ -8,11 +8,6 @@ def treat_t_apdu(t_apdu, timestamp, response=False):
     global transaction_data
     # print(t_apdu)
 
-    if response:
-        transaction_data['last_update_timestamp'] = timestamp
-        transaction_data['exchanged_data'][-1] |= t_apdu
-        return
-
     if 'initialisationRequest' in t_apdu:
         if 'transaction_data' in globals():
             with open(f'{local_transactions_storage_path}/{transaction_data['_id']}.json', 'w') as json_file:
@@ -25,6 +20,13 @@ def treat_t_apdu(t_apdu, timestamp, response=False):
         transaction_data['last_update_timestamp'] = timestamp
 
         transaction_data |= t_apdu
+    elif 'transaction_data' not in globals():
+        print('FIXME: Transaction data not kept because another transaction was tried to be initialized!')
+        return
+    elif response:
+        transaction_data['last_update_timestamp'] = timestamp
+        transaction_data['exchanged_data'][-1] |= t_apdu
+        return
     elif 'initialisationResponse' in t_apdu:
         transaction_data['last_update_timestamp'] = timestamp
         transaction_data |= t_apdu
@@ -51,7 +53,6 @@ def read_json(logs_file_iter, response):
         elif "2024-12-06" in line:
             return
 
-
 with open(beacon_logs_filepath, 'r') as logs_file:
     logs_file_iter = iter(logs_file)
     for line in logs_file_iter:
@@ -59,6 +60,8 @@ with open(beacon_logs_filepath, 'r') as logs_file:
         #     exit()
         if 'ERROR' in line:
             print('ERROR mid-transaction!!')
+            if 'transaction_data' in globals():
+                del transaction_data
 
         if 'T_APDU containing BST in JER' in line:
             timestamp = line[:23]
