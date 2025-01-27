@@ -1,0 +1,500 @@
+KapschOps1955Message {kapsch(1) ops1955(0) messages version1(0) minorVersion1(1)}
+DEFINITIONS AUTOMATIC TAGS 
+::= BEGIN
+EXPORTS ALL;
+IMPORTS
+-- ********* ISO 17573-3:2022 *********
+	ActualNumberOfPassengers, AxleWeightLimits, Co2EmissionValue, ContractSerialNumber, ContractAuthenticator, ContractValidity, 
+	DieselEmissionValues, DriverCharacteristics, EfcContextMark, EngineDetails, EquipmentIccId, EquipmentObuId, EquipmentStatus, ExhaustEmissionValues, 
+	Lpn, PassengerCapacity, PaymentMeans, PaymentMeansBalance, PaymentSecurityData, ReceiptAuthenticator, ReceiptContract, ReceiptDistance, 
+	ReceiptFinancialPart, ReceiptIccId, ReceiptObuId, ReceiptServicePart, ReceiptServiceSerialNumber, ReceiptText, SessionClass, SoundLevel, 
+	TrailerCharacteristics, ValidityOfContract, VehicleAuthenticator, VehicleAxles, VehicleClass, VehicleDimensions, VehicleIdentificationNumber, 
+	VehicleSpecificCharacteristics, VehicleTotalDistance, VehicleWeightLaden, VehicleWeightLimits
+	FROM KapschOps1955DataDictionary {kapsch(1) ops1955(0) datadict version1(0) minorVersion1(1)} WITH SUCCESSORS
+	
+-- ********* ISO/FDIS 14906:2022 application *********
+	AddRq, ChannelRq, ChannelRs, CopyRq, CreditRq, CreditRs, DebitRq, DebitRs, GetInstanceRq, GetInstanceRs{}, GetStampedRq, GetStampedRs{}, 
+	SetInstanceRq{}, SetMMIRq, SetStampedRq{}, SubRq, 
+	PaymentMeansUnit, --type re-definition of PayUnitkept for descriptive reasons in the body of the standard
+	ReceiptData1, ReceiptData2, --type re-definitions of ReceiptData kept for descriptive reasons in the body of the standard
+	ContractVehicle, TrailerLicencePlateNumber --type re-definitions of Lpn kept for descriptive reasons in the body of the standard
+	FROM EfcDsrcApplication {iso(1) standard(0) 14906 application(0) version9(9) minorVersion1(1)} WITH SUCCESSORS;
+
+Octetstring ::= SEQUENCE {
+    no-of-octets INTEGER,
+    octet SEQUENCE (SIZE(127)) OF OCTET STRING
+}
+
+Container ::= CHOICE {
+    integer INTEGER,
+    octetstring Octetstring
+    -- other members will be added as we encounter them
+}
+
+Action-Request ::= SEQUENCE {
+    flow-control-priority INTEGER,
+    link-id INTEGER,
+    flow-control INTEGER,
+    access-credentials-bit-map BOOLEAN,
+    action-parameter-bit-map BOOLEAN,
+    mode BOOLEAN,
+    element-id INTEGER,
+    access-credentials Octetstring,
+    action-parameter Container
+}
+
+Action-Confirmation ::= SEQUENCE {
+    link-id INTEGER,
+    response-parameter-bit-map BOOLEAN,
+    return-status-bit-map BOOLEAN,
+    element-id INTEGER,
+    response-parameter Container,
+    return-status INTEGER,
+    instance INTEGER
+}
+
+Attribute ::= SEQUENCE {
+    attribute-id INTEGER,
+    attribute-choice INTEGER,
+    container Container
+}
+
+Attribute-List ::= SEQUENCE {
+    no-of-attributes INTEGER,
+    attribute SEQUENCE (SIZE(16)) OF Attribute
+}
+
+Set-Request ::= SEQUENCE {
+    flow-control-priority INTEGER,
+    link-id INTEGER,
+    flow-control INTEGER,
+    access-credentials-bit-map BOOLEAN,
+    mode BOOLEAN,
+    element-id INTEGER,
+    access-credentials Octetstring,
+    attribute-list Attribute-List
+}
+
+Set-Confirmation ::= SEQUENCE {
+    link-id INTEGER,
+    return-status-bit-map BOOLEAN,
+    element-id INTEGER,
+    return-status INTEGER,
+    instance INTEGER
+}
+
+Attribute-ID-List ::= SEQUENCE {
+    no-of-attribute-ids INTEGER,
+    attribute-id SEQUENCE (SIZE(16)) OF INTEGER
+}
+
+Get-Request ::= SEQUENCE {
+    flow-control-priority INTEGER,
+    link-id INTEGER,
+    flow-control INTEGER,
+    access-credentials-bit-map BOOLEAN,
+    element-id INTEGER,
+    access-credentials Octetstring,
+    attribute-id-list Attribute-ID-List
+}
+
+Get-Confirmation ::= SEQUENCE {
+    link-id INTEGER,
+    attribute-list-bit-map BOOLEAN,
+    return-status-bit-map BOOLEAN,
+    element-id INTEGER,
+    attribute-list Attribute-List,
+    return-status INTEGER,
+    instance INTEGER
+}
+
+Application ::= SEQUENCE {
+    element-id-bit-map BOOLEAN,
+    parameter-bit-map BOOLEAN,
+    application-id INTEGER,
+    element-id INTEGER,
+    parameter Octetstring
+}
+
+Application-List ::= SEQUENCE {
+    no-of-applications INTEGER,
+    application SEQUENCE (SIZE(4)) OF Application
+}
+
+OBE-Configuration ::= SEQUENCE {
+    equipment-class INTEGER,
+    manufacturer-id INTEGER,
+    obe-status INTEGER
+}
+
+Notify-Application-Beacon ::= SEQUENCE {
+    trx-no INTEGER,
+    link-id INTEGER,
+    application-list Application-List,
+    obe-configuration OBE-Configuration
+}
+
+Ready-Application ::= SEQUENCE {
+    flow-control-priority INTEGER,
+    application-id INTEGER,
+    link-id INTEGER
+}
+
+Notify-Application-Lost-Message ::= SEQUENCE {
+    link-id INTEGER,
+    value INTEGER
+}
+
+Forced-Release ::= SEQUENCE {
+    application-id INTEGER,
+    link-id INTEGER
+}
+
+Tis-Ready-Application ::= SEQUENCE {
+    flow-control-priority INTEGER,
+    application-id INTEGER,
+    link-id INTEGER,
+    eid INTEGER
+}
+
+TRX-Status ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-mode INTEGER
+}
+
+TRX-ID ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-id SEQUENCE (SIZE(8)) OF INTEGER,
+    hwid SEQUENCE (SIZE(2)) OF INTEGER,
+    swid SEQUENCE (SIZE(3)) OF INTEGER
+}
+
+TRX-Internal-Humidity ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER,
+    humid INTEGER
+}
+
+TRX-Internal-Temperature ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER,
+    temp INTEGER
+}
+
+TRX-My-Power-Mode ::= SEQUENCE {
+    instance INTEGER,
+    mode INTEGER
+}
+
+TRX-Carrier-Frequency ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Present only for ID 1415
+    cfq INTEGER
+}
+
+TRX-Uplink-Parameters ::= SEQUENCE {
+    instance INTEGER,
+    upl INTEGER
+}
+
+TRX-Output-Power ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Present only for ID 1416
+    spw INTEGER
+}
+
+TRX-Echo ::= SEQUENCE {
+    instance INTEGER,
+    data OCTET STRING (SIZE(122)),
+    length INTEGER -- LiC ETC specific
+}
+
+UI-Control-OPS1925 ::= SEQUENCE {
+    mode INTEGER,
+    green-led INTEGER,
+    orange-led INTEGER,
+    red-led INTEGER
+}
+
+UI-Control-OPS1955 ::= SEQUENCE {
+    red INTEGER,
+    green INTEGER,
+    blue INTEGER
+}
+
+TRX-Set-UI-Control ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    uitype INTEGER,
+    ops1925 UI-Control-OPS1925 OPTIONAL, -- Dnlink only, only for OPS1925
+    ops1955 UI-Control-OPS1955 OPTIONAL -- Dnlink only, only for OPS1955
+}
+
+TRX-Read-UI-Control ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    uitype INTEGER,
+    mode INTEGER OPTIONAL, -- Dnlink only, only for OPS1925
+    ops1925 UI-Control-OPS1925 OPTIONAL, -- Uplink only, only for OPS1925
+    ops1955 UI-Control-OPS1955 OPTIONAL -- Uplink only, only for OPS1955
+}
+
+TRX-UI-Status ::= SEQUENCE {
+    instance INTEGER,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    uitype INTEGER OPTIONAL, -- Uplink only
+    sensors INTEGER OPTIONAL -- Uplink only
+}
+
+TRX-General-Purpose ::= SEQUENCE {
+    instance INTEGER,
+    password OCTET STRING (SIZE(8)) OPTIONAL, -- Dnlink only
+    genid INTEGER OPTIONAL, -- Dnlink only
+    genda-genre OCTET STRING (SIZE(255)) OPTIONAL,
+    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    length INTEGER -- Length of GENDA_GENRE (LiC ETC specific)
+}
+
+TRX-Extended-Output-Power ::= SEQUENCE {
+    instance INTEGER,
+    password OCTET STRING (SIZE(8)),
+    spw INTEGER
+}
+
+TRX-Set-RF-Param ::= SEQUENCE {
+    instance INTEGER,
+    password OCTET STRING (SIZE(8)),
+    id INTEGER,
+    data INTEGER
+}
+
+TRX-Read-RF-Param ::= SEQUENCE {
+    instance INTEGER,
+    password OCTET STRING (SIZE(8)) OPTIONAL, -- Dnlink only
+    id1 INTEGER OPTIONAL, -- Dnlink only
+    id2 INTEGER OPTIONAL, -- Dnlink only
+    data OCTET STRING (SIZE(255)) OPTIONAL, -- Uplink only
+    length INTEGER OPTIONAL
+}
+
+Lic-Nalm-Behaviour ::= SEQUENCE {
+    message-status INTEGER,
+    behaviour INTEGER
+}
+
+Lic-PDU-No-Behaviour ::= SEQUENCE {
+    message-status INTEGER,
+    behaviour INTEGER
+}
+
+Lic-L7-Ack-Mode ::= SEQUENCE {
+    message-status INTEGER,
+    mode INTEGER
+}
+
+Lic-Private-Uplink-Window-Time ::= SEQUENCE {
+    message-status INTEGER,
+    uplink-window-time INTEGER
+}
+
+Lic-Slow-Data-Behaviour ::= SEQUENCE {
+    message-status INTEGER,
+    slow-data-behaviour INTEGER
+}
+
+Lic-Release-Retransmissions ::= SEQUENCE {
+    message-status INTEGER,
+    retransmissions INTEGER
+}
+
+Lic-LID-Cleanup-Mode ::= SEQUENCE {
+    message-status INTEGER,
+    lid-cleanup-mode INTEGER
+}
+
+DSRC-Link-Mode ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2451
+    mode INTEGER
+}
+
+DSRC-Configuration ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2456
+    trx-position INTEGER,
+    bst-mode INTEGER,
+    low-priority-bst-cycle-time INTEGER,
+    high-priority-bst-cycle-time INTEGER,
+    max-cycle-time-llc-retransmissions-level-1 INTEGER,
+    max-cycle-time-llc-retransmissions-level-2 INTEGER,
+    max-cycle-time-llc-retransmissions-level-3 INTEGER,
+    max-cycle-time-llc-retransmissions-level-4 INTEGER,
+    max-nr-llc-retransmissions-level-1 INTEGER,
+    max-nr-llc-retransmissions-level-2 INTEGER,
+    max-nr-llc-retransmissions-level-3 INTEGER,
+    max-nr-llc-retransmissions-level-4 INTEGER,
+    max-nr-mac-retransmissions INTEGER
+}
+
+Beacon-ID ::= SEQUENCE {
+    manufacturer-id INTEGER,
+    individual-id INTEGER
+}
+
+BST-Configuration ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2458
+    beacon Beacon-ID,
+    profile INTEGER,
+    mandatory-application-list Application-List
+}
+
+Time ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2460
+    unix-time INTEGER,
+    milliseconds INTEGER
+}
+
+General-Log-Level ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2464
+    log-level INTEGER
+}
+
+Log-Category-Mode ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2466 (to host)
+    log-category INTEGER,
+    mode INTEGER OPTIONAL -- Not used in 2466 (from host)
+}
+
+Transaction-Status ::= SEQUENCE {
+    message-status INTEGER,
+    transaction-status INTEGER
+}
+
+Echo ::= SEQUENCE {
+    length INTEGER, -- LiC ETC specific
+    data OCTET STRING (SIZE(500))
+}
+
+Communication-Log-Result ::= SEQUENCE {
+    link-identifier INTEGER,
+    trx-no INTEGER,
+    data-age INTEGER,
+    angle-a INTEGER,
+    angle-b INTEGER,
+    angular-quality INTEGER,
+    signal-level-uplink INTEGER,
+    frame-length INTEGER
+}
+
+LiC-Status ::= SEQUENCE {
+    message-status INTEGER,
+    lic-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-1-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-2-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-3-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-4-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-5-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-6-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-7-status SEQUENCE (SIZE(2)) OF INTEGER,
+    trx-8-status SEQUENCE (SIZE(2)) OF INTEGER
+}
+
+LiC-Statistics ::= SEQUENCE {
+    message-status INTEGER, -- To host only
+    module-id INTEGER,
+    number-of-parameters INTEGER, -- To host only
+    parameter SEQUENCE (SIZE(40)) OF INTEGER -- To host only
+}
+
+Status-Mode ::= SEQUENCE {
+    message-status INTEGER OPTIONAL, -- Present only for ID 2754
+    mode INTEGER,
+    interval INTEGER
+}
+
+LiC-Version ::= SEQUENCE {
+    lic-serial-number OCTET STRING (SIZE(8)),
+    lic-sw-version OCTET STRING (SIZE(4))
+}
+
+Ops1955-Message-Types ::= CHOICE{
+	action-request [0] Action-Request,
+	action-confirmation [1] Action-Confirmation,
+	set-request [4] Set-Request,
+	set-confirmation [5] Set-Confirmation,
+	get-request [6] Get-Request,
+	get-confirmation [7] Get-Confirmation,
+	notify-application-beacon [12] Notify-Application-Beacon,
+	ready-application [13] Ready-Application,
+	notify-application-lost-message [14] Notify-Application-Lost-Message,
+	forced-release [18] Forced-Release,
+	tis-ready-application1 [103] Tis-Ready-Application,
+	tis-ready-application2 [105] Tis-Ready-Application,
+	trx-status [1401] TRX-Status,
+	trx-id [1402] TRX-ID,
+	trx-internal-humidity [1403] TRX-Internal-Humidity,
+	trx-internal-temperature [1404] TRX-Internal-Temperature,
+	trx-my-power-mode [1405] TRX-My-Power-Mode,
+	trx-carrier-frequency1 [1406] TRX-Carrier-Frequency,
+	trx-carrier-frequency2 [1415] TRX-Carrier-Frequency,
+	trx-uplink-parameters [1407] TRX-Uplink-Parameters,
+	trx-output-power1 [1408] TRX-Output-Power,
+	trx-output-power2 [1416] TRX-Output-Power,
+	trx-echo [1414] TRX-Echo,
+	trx-set-ui-control [1420] TRX-Set-UI-Control,
+	trx-ui-status1 [1421] TRX-UI-Status,
+	trx-ui-status2 [1422] TRX-UI-Status,
+	trx-ui-status3 [1423] TRX-UI-Status,
+	trx-general-purpose [1500] TRX-General-Purpose,
+	trx-extended-output-power [1506] TRX-Extended-Output-Power,
+	trx-read-rf-param1 [1516] TRX-Read-RF-Param,
+	trx-read-rf-param2 [1517] TRX-Read-RF-Param,
+	lic-nalm-behaviour1 [2408] Lic-Nalm-Behaviour,
+	lic-nalm-behaviour2 [2409] Lic-Nalm-Behaviour,
+	lic-pdu-no-behaviour1 [2410] Lic-PDU-No-Behaviour,
+	lic-pdu-no-behaviour2 [2411] Lic-PDU-No-Behaviour,
+	lic-l7-ack-mode1 [2412] Lic-L7-Ack-Mode,
+	lic-l7-ack-mode2 [2413] Lic-L7-Ack-Mode,
+	lic-private-uplink-window-time1 [2414] Lic-Private-Uplink-Window-Time,
+	lic-private-uplink-window-time2 [2415] Lic-Private-Uplink-Window-Time,
+	lic-slow-data-behaviour1 [2416] Lic-Slow-Data-Behaviour,
+	lic-slow-data-behaviour2 [2417] Lic-Slow-Data-Behaviour,
+	lic-release-retransmissions1 [2418] Lic-Release-Retransmissions,
+	lic-release-retransmissions2 [2419] Lic-Release-Retransmissions,
+	lic-lid-cleanup-mode1 [2420] Lic-LID-Cleanup-Mode,
+	lic-lid-cleanup-mode2 [2421] Lic-LID-Cleanup-Mode,
+	dsrc-link-mode1 [2450] DSRC-Link-Mode,
+	dsrc-link-mode2 [2451] DSRC-Link-Mode,
+	dsrc-configuration [2455] DSRC-Configuration,
+	bst-configuration1 [2457] BST-Configuration,
+	bst-configuration2 [2458] BST-Configuration,
+	time1 [2459] Time,
+	time2 [2460] Time,
+	general-log-level1 [2463] General-Log-Level,
+	general-log-level2 [2464] General-Log-Level,
+	log-category-mode1 [2465] Log-Category-Mode,
+	log-category-mode2 [2466] Log-Category-Mode,
+	transaction-status1 [2482] Transaction-Status,
+	transaction-status2 [2483] Transaction-Status,
+	echo [2605] Echo,
+	communication-log-result [2650] Communication-Log-Result,
+	lic-status1 [2651] LiC-Status,
+	lic-status2 [2752] LiC-Status,
+	lic-statistics [2751] LiC-Statistics,
+	status-mode1 [2753] Status-Mode,
+	status-mode2 [2754] Status-Mode
+}
+
+
+END
+-- Below imported data from ISO 14816's ASN.1 module
+-- AVIAEINumberingAndDataStructures {iso(1) standard(0) 14816 }
+-- DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+-- EXPORTS ALL;
+-- CS5 ::= VisibleString
+-- CountryCode ::= BIT STRING(SIZE(10))
+-- Value assignment is done in accordance with ISO 3166-1 and by
+-- using the ITA.2 alphabet.
+-- IssuerIdentifier ::= INTEGER(0 .. 16383)
+-- See Annex A of ISO 14816 for registration
+-- END
