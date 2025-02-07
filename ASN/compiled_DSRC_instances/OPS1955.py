@@ -2930,6 +2930,7 @@ class KapschOps1955Message:
         'TRX-Extended-Output-Power',
         'TRX-Set-RF-Param',
         'TRX-Read-RF-Param',
+        'Lic-Return-Status',
         'Lic-Nalm-Behaviour',
         'Lic-PDU-No-Behaviour',
         'Lic-L7-Ack-Mode',
@@ -2983,6 +2984,7 @@ class KapschOps1955Message:
         'TRX-Extended-Output-Power',
         'TRX-Set-RF-Param',
         'TRX-Read-RF-Param',
+        'Lic-Return-Status',
         'Lic-Nalm-Behaviour',
         'Lic-PDU-No-Behaviour',
         'Lic-L7-Ack-Mode',
@@ -3518,10 +3520,13 @@ class KapschOps1955Message:
         ])
     TRX_Read_RF_Param._ext = None
     
+    #-----< Lic-Return-Status >-----#
+    Lic_Return_Status = INT(name='Lic-Return-Status', mode=MODE_TYPE)
+    Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
     #-----< Lic-Nalm-Behaviour >-----#
     Lic_Nalm_Behaviour = SEQ(name='Lic-Nalm-Behaviour', mode=MODE_TYPE)
-    _Lic_Nalm_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_Nalm_Behaviour_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_Nalm_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_Nalm_Behaviour_behaviour = INT(name='behaviour', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_Nalm_Behaviour_behaviour._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_Nalm_Behaviour._cont = ASN1Dict([
@@ -3532,8 +3537,7 @@ class KapschOps1955Message:
     
     #-----< Lic-PDU-No-Behaviour >-----#
     Lic_PDU_No_Behaviour = SEQ(name='Lic-PDU-No-Behaviour', mode=MODE_TYPE)
-    _Lic_PDU_No_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_PDU_No_Behaviour_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_PDU_No_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_PDU_No_Behaviour_behaviour = INT(name='behaviour', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_PDU_No_Behaviour_behaviour._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_PDU_No_Behaviour._cont = ASN1Dict([
@@ -3544,8 +3548,7 @@ class KapschOps1955Message:
     
     #-----< Lic-L7-Ack-Mode >-----#
     Lic_L7_Ack_Mode = SEQ(name='Lic-L7-Ack-Mode', mode=MODE_TYPE)
-    _Lic_L7_Ack_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_L7_Ack_Mode_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_L7_Ack_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_L7_Ack_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_L7_Ack_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_L7_Ack_Mode._cont = ASN1Dict([
@@ -3556,8 +3559,7 @@ class KapschOps1955Message:
     
     #-----< Lic-Private-Uplink-Window-Time >-----#
     Lic_Private_Uplink_Window_Time = SEQ(name='Lic-Private-Uplink-Window-Time', mode=MODE_TYPE)
-    _Lic_Private_Uplink_Window_Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_Private_Uplink_Window_Time_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_Private_Uplink_Window_Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_Private_Uplink_Window_Time_uplink_window_time = INT(name='uplink-window-time', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_Private_Uplink_Window_Time_uplink_window_time._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_Private_Uplink_Window_Time._cont = ASN1Dict([
@@ -3568,8 +3570,7 @@ class KapschOps1955Message:
     
     #-----< Lic-Slow-Data-Behaviour >-----#
     Lic_Slow_Data_Behaviour = SEQ(name='Lic-Slow-Data-Behaviour', mode=MODE_TYPE)
-    _Lic_Slow_Data_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_Slow_Data_Behaviour_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_Slow_Data_Behaviour_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_Slow_Data_Behaviour_slow_data_behaviour = INT(name='slow-data-behaviour', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_Slow_Data_Behaviour_slow_data_behaviour._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_Slow_Data_Behaviour._cont = ASN1Dict([
@@ -3580,8 +3581,7 @@ class KapschOps1955Message:
     
     #-----< Lic-Release-Retransmissions >-----#
     Lic_Release_Retransmissions = SEQ(name='Lic-Release-Retransmissions', mode=MODE_TYPE)
-    _Lic_Release_Retransmissions_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_Release_Retransmissions_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_Release_Retransmissions_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_Release_Retransmissions_retransmissions = INT(name='retransmissions', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_Release_Retransmissions_retransmissions._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_Release_Retransmissions._cont = ASN1Dict([
@@ -3592,8 +3592,7 @@ class KapschOps1955Message:
     
     #-----< Lic-LID-Cleanup-Mode >-----#
     Lic_LID_Cleanup_Mode = SEQ(name='Lic-LID-Cleanup-Mode', mode=MODE_TYPE)
-    _Lic_LID_Cleanup_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Lic_LID_Cleanup_Mode_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Lic_LID_Cleanup_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Lic_LID_Cleanup_Mode_lid_cleanup_mode = INT(name='lid-cleanup-mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Lic_LID_Cleanup_Mode_lid_cleanup_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Lic_LID_Cleanup_Mode._cont = ASN1Dict([
@@ -3604,7 +3603,7 @@ class KapschOps1955Message:
     
     #-----< DSRC-Link-Mode >-----#
     DSRC_Link_Mode = SEQ(name='DSRC-Link-Mode', mode=MODE_TYPE)
-    _DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _DSRC_Link_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _DSRC_Link_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     DSRC_Link_Mode._cont = ASN1Dict([
@@ -3615,7 +3614,7 @@ class KapschOps1955Message:
     
     #-----< DSRC-Configuration >-----#
     DSRC_Configuration = SEQ(name='DSRC-Configuration', mode=MODE_TYPE)
-    _DSRC_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _DSRC_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _DSRC_Configuration_trx_position = INT(name='trx-position', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _DSRC_Configuration_trx_position._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _DSRC_Configuration_bst_mode = INT(name='bst-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3674,7 +3673,7 @@ class KapschOps1955Message:
     
     #-----< BST-Configuration >-----#
     BST_Configuration = SEQ(name='BST-Configuration', mode=MODE_TYPE)
-    _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _BST_Configuration_beacon = SEQ(name='beacon', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Beacon-ID')))
     _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _BST_Configuration_profile._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3689,7 +3688,7 @@ class KapschOps1955Message:
     
     #-----< Time >-----#
     Time = SEQ(name='Time', mode=MODE_TYPE)
-    _Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _Time_unix_time = INT(name='unix-time', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Time_unix_time._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Time_milliseconds = INT(name='milliseconds', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3703,7 +3702,7 @@ class KapschOps1955Message:
     
     #-----< General-Log-Level >-----#
     General_Log_Level = SEQ(name='General-Log-Level', mode=MODE_TYPE)
-    _General_Log_Level_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _General_Log_Level_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _General_Log_Level_log_level = INT(name='log-level', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _General_Log_Level_log_level._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     General_Log_Level._cont = ASN1Dict([
@@ -3714,7 +3713,7 @@ class KapschOps1955Message:
     
     #-----< Log-Category-Mode >-----#
     Log_Category_Mode = SEQ(name='Log-Category-Mode', mode=MODE_TYPE)
-    _Log_Category_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _Log_Category_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _Log_Category_Mode_log_category = INT(name='log-category', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Log_Category_Mode_log_category._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Log_Category_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
@@ -3727,8 +3726,7 @@ class KapschOps1955Message:
     
     #-----< Transaction-Status >-----#
     Transaction_Status = SEQ(name='Transaction-Status', mode=MODE_TYPE)
-    _Transaction_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Transaction_Status_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Transaction_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Transaction_Status_transaction_status = INT(name='transaction-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Transaction_Status_transaction_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Transaction_Status._cont = ASN1Dict([
@@ -3781,8 +3779,7 @@ class KapschOps1955Message:
     
     #-----< LiC-Status >-----#
     LiC_Status = SEQ(name='LiC-Status', mode=MODE_TYPE)
-    _LiC_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _LiC_Status_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _LiC_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _LiC_Status_lic_status = SEQ_OF(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __LiC_Status_lic_status__item_ = INT(name='_item_', mode=MODE_TYPE)
     __LiC_Status_lic_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3844,8 +3841,7 @@ class KapschOps1955Message:
     
     #-----< LiC-Statistics >-----#
     LiC_Statistics = SEQ(name='LiC-Statistics', mode=MODE_TYPE)
-    _LiC_Statistics_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _LiC_Statistics_message_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _LiC_Statistics_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _LiC_Statistics_module_id = INT(name='module-id', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _LiC_Statistics_module_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _LiC_Statistics_number_of_parameters = INT(name='number-of-parameters', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3864,7 +3860,7 @@ class KapschOps1955Message:
     
     #-----< Status-Mode >-----#
     Status_Mode = SEQ(name='Status-Mode', mode=MODE_TYPE)
-    _Status_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _Status_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
     _Status_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Status_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Status_Mode_interval = INT(name='interval', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -4002,7 +3998,7 @@ class KapschOps1955Message:
     _KapschMessages_notify_application_beacon = SEQ(name='notify-application-beacon', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Beacon')))
     _KapschMessages_ready_application = SEQ(name='ready-application', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Ready-Application')))
     _KapschMessages_notify_application_lost_message = SEQ(name='notify-application-lost-message', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Lost-Message')))
-    _KapschMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')))
+    _KapschMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _KapschMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
     _KapschMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
     _KapschMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
@@ -4286,6 +4282,7 @@ class KapschOps1955Message:
         _TRX_Read_RF_Param_data,
         _TRX_Read_RF_Param_length,
         TRX_Read_RF_Param,
+        Lic_Return_Status,
         _Lic_Nalm_Behaviour_message_status,
         _Lic_Nalm_Behaviour_behaviour,
         Lic_Nalm_Behaviour,

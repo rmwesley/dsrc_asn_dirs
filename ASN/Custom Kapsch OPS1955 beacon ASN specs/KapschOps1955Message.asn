@@ -220,48 +220,50 @@ TRX-Read-RF-Param ::= SEQUENCE {
     length INTEGER OPTIONAL
 }
 
+Lic-Return-Status ::= INTEGER(0..255)
+
 Lic-Nalm-Behaviour ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     behaviour INTEGER(0..255)
 }
 
 Lic-PDU-No-Behaviour ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     behaviour INTEGER(0..255)
 }
 
 Lic-L7-Ack-Mode ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     mode INTEGER(0..255)
 }
 
 Lic-Private-Uplink-Window-Time ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     uplink-window-time INTEGER(0..255)
 }
 
 Lic-Slow-Data-Behaviour ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     slow-data-behaviour INTEGER(0..255)
 }
 
 Lic-Release-Retransmissions ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     retransmissions INTEGER(0..255)
 }
 
 Lic-LID-Cleanup-Mode ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     lid-cleanup-mode INTEGER(0..255)
 }
 
 DSRC-Link-Mode ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2451
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2451
     mode INTEGER(0..255)
 }
 
 DSRC-Configuration ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2456
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2456
     trx-position INTEGER(0..255),
     bst-mode INTEGER(0..255),
     low-priority-bst-cycle-time INTEGER(0..255),
@@ -283,31 +285,31 @@ Beacon-ID ::= SEQUENCE {
 }
 
 BST-Configuration ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2458
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2458
     beacon Beacon-ID,
     profile INTEGER(0..255),
     mandatory-application-list ApplicationList
 }
 
 Time ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2460
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2460
     unix-time INTEGER(0..255),
     milliseconds INTEGER(0..255)
 }
 
 General-Log-Level ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2464
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2464
     log-level INTEGER(0..255)
 }
 
 Log-Category-Mode ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2466 (to host)
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2466 (to host)
     log-category INTEGER(0..255),
     mode INTEGER OPTIONAL -- Not used in 2466 (from host)
 }
 
 Transaction-Status ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     transaction-status INTEGER(0..255)
 }
 
@@ -328,7 +330,7 @@ Communication-Log-Result ::= SEQUENCE {
 }
 
 LiC-Status ::= SEQUENCE {
-    message-status INTEGER(0..255),
+    message-status Lic-Return-Status,
     lic-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
     trx-1-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
     trx-2-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
@@ -341,14 +343,14 @@ LiC-Status ::= SEQUENCE {
 }
 
 LiC-Statistics ::= SEQUENCE {
-    message-status INTEGER(0..255), -- To host only
+    message-status Lic-Return-Status, -- To host only
     module-id INTEGER(0..255),
     number-of-parameters INTEGER(0..255), -- To host only
     parameter SEQUENCE (SIZE(40)) OF INTEGER -- To host only
 }
 
 Status-Mode ::= SEQUENCE {
-    message-status INTEGER OPTIONAL, -- Present only for ID 2754
+    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2754
     mode INTEGER(0..255),
     interval INTEGER(0..255)
 }
@@ -372,7 +374,7 @@ KapschMessages ::= CHOICE{
 	notify-application-beacon   [12] Notify-Application-Beacon,
 	ready-application           [13] Ready-Application,
 	notify-application-lost-message [14] Notify-Application-Lost-Message,
-	send-bst                  	[17] ReturnStatus,
+	send-bst                  	[17] Lic-Return-Status,
 	forced-release              [18] Forced-Release,
 	tis-ready-application1      [103] Tis-Ready-Application,
 	tis-ready-application2      [105] Tis-Ready-Application,
