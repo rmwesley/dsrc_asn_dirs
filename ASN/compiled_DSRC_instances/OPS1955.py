@@ -2913,6 +2913,7 @@ class KapschOps1955Message:
         'Forced-Release',
         'Tis-Ready-Application',
         'TRX-Status',
+        'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
         'TRX-Internal-Temperature',
@@ -2967,6 +2968,7 @@ class KapschOps1955Message:
         'Forced-Release',
         'Tis-Ready-Application',
         'TRX-Status',
+        'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
         'TRX-Internal-Temperature',
@@ -3189,42 +3191,37 @@ class KapschOps1955Message:
     Tis_Ready_Application._ext = None
     
     #-----< TRX-Status >-----#
-    TRX_Status = SEQ(name='TRX-Status', mode=MODE_TYPE)
-    _TRX_Status_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Status_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_Status_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __TRX_Status_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Status_status._cont = __TRX_Status_status__item_
-    _TRX_Status_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _TRX_Status_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_trx_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    TRX_Status._cont = ASN1Dict([
-        ('instance', _TRX_Status_instance),
-        ('status', _TRX_Status_status),
-        ('trx-mode', _TRX_Status_trx_mode),
+    TRX_Status = SEQ_OF(name='TRX-Status', mode=MODE_TYPE)
+    _TRX_Status__item_ = INT(name='_item_', mode=MODE_TYPE)
+    _TRX_Status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    TRX_Status._cont = _TRX_Status__item_
+    TRX_Status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    
+    #-----< TRX-Status-Message >-----#
+    TRX_Status_Message = SEQ(name='TRX-Status-Message', mode=MODE_TYPE)
+    _TRX_Status_Message_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_Message_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _TRX_Status_Message_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Status_Message_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_Message_trx_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    TRX_Status_Message._cont = ASN1Dict([
+        ('instance', _TRX_Status_Message_instance),
+        ('status', _TRX_Status_Message_status),
+        ('trx-mode', _TRX_Status_Message_trx_mode),
         ])
-    TRX_Status._ext = None
+    TRX_Status_Message._ext = None
     
     #-----< TRX-ID >-----#
     TRX_ID = SEQ(name='TRX-ID', mode=MODE_TYPE)
     _TRX_ID_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_ID_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_ID_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __TRX_ID_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_status._cont = __TRX_ID_status__item_
-    _TRX_ID_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_ID_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_trx_id = SEQ_OF(name='trx-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_trx_id__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_trx_id__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_ID_trx_id._cont = __TRX_ID_trx_id__item_
     _TRX_ID_trx_id._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_ID_hwid = SEQ_OF(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_ID_hwid__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __TRX_ID_hwid__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_hwid._cont = __TRX_ID_hwid__item_
-    _TRX_ID_hwid._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_ID_hwid = SEQ_OF(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_swid = SEQ_OF(name='swid', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_swid__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_swid__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3243,11 +3240,7 @@ class KapschOps1955Message:
     TRX_Internal_Humidity = SEQ(name='TRX-Internal-Humidity', mode=MODE_TYPE)
     _TRX_Internal_Humidity_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Humidity_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_Internal_Humidity_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __TRX_Internal_Humidity_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Humidity_status._cont = __TRX_Internal_Humidity_status__item_
-    _TRX_Internal_Humidity_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Internal_Humidity_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Humidity_humid = INT(name='humid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_humid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Humidity._cont = ASN1Dict([
@@ -3261,11 +3254,7 @@ class KapschOps1955Message:
     TRX_Internal_Temperature = SEQ(name='TRX-Internal-Temperature', mode=MODE_TYPE)
     _TRX_Internal_Temperature_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Temperature_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_Internal_Temperature_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __TRX_Internal_Temperature_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Temperature_status._cont = __TRX_Internal_Temperature_status__item_
-    _TRX_Internal_Temperature_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Internal_Temperature_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Temperature_temp = INT(name='temp', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_temp._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Temperature._cont = ASN1Dict([
@@ -4002,7 +3991,7 @@ class KapschOps1955Message:
     _KapschMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
     _KapschMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
     _KapschMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
-    _KapschMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _KapschMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
     _KapschMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
     _KapschMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
     _KapschMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
@@ -4183,28 +4172,25 @@ class KapschOps1955Message:
         _Tis_Ready_Application_link_id,
         _Tis_Ready_Application_eid,
         Tis_Ready_Application,
-        _TRX_Status_instance,
-        __TRX_Status_status__item_,
-        _TRX_Status_status,
-        _TRX_Status_trx_mode,
+        _TRX_Status__item_,
         TRX_Status,
+        _TRX_Status_Message_instance,
+        _TRX_Status_Message_status,
+        _TRX_Status_Message_trx_mode,
+        TRX_Status_Message,
         _TRX_ID_instance,
-        __TRX_ID_status__item_,
         _TRX_ID_status,
         __TRX_ID_trx_id__item_,
         _TRX_ID_trx_id,
-        __TRX_ID_hwid__item_,
         _TRX_ID_hwid,
         __TRX_ID_swid__item_,
         _TRX_ID_swid,
         TRX_ID,
         _TRX_Internal_Humidity_instance,
-        __TRX_Internal_Humidity_status__item_,
         _TRX_Internal_Humidity_status,
         _TRX_Internal_Humidity_humid,
         TRX_Internal_Humidity,
         _TRX_Internal_Temperature_instance,
-        __TRX_Internal_Temperature_status__item_,
         _TRX_Internal_Temperature_status,
         _TRX_Internal_Temperature_temp,
         TRX_Internal_Temperature,

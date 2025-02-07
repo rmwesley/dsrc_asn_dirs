@@ -98,29 +98,32 @@ Tis-Ready-Application ::= SEQUENCE {
     eid INTEGER(0..255)
 }
 
-TRX-Status ::= SEQUENCE {
+
+TRX-Status ::= SEQUENCE (SIZE(2)) OF INTEGER(0..255)
+
+TRX-Status-Message ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
+    status TRX-Status,
     trx-mode INTEGER(0..255)
 }
 
 TRX-ID ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
+    status TRX-Status,
     trx-id SEQUENCE (SIZE(8)) OF INTEGER(0..255),
-    hwid SEQUENCE (SIZE(2)) OF INTEGER(0..255),
+    hwid TRX-Status,
     swid SEQUENCE (SIZE(3)) OF INTEGER(0..255)
 }
 
 TRX-Internal-Humidity ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
+    status TRX-Status,
     humid INTEGER(0..255)
 }
 
 TRX-Internal-Temperature ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
+    status TRX-Status,
     temp INTEGER(0..255)
 }
 
@@ -378,7 +381,7 @@ KapschMessages ::= CHOICE{
 	forced-release              [18] Forced-Release,
 	tis-ready-application1      [103] Tis-Ready-Application,
 	tis-ready-application2      [105] Tis-Ready-Application,
-	trx-status                  [1401] TRX-Status,
+	trx-status                  [1401] TRX-Status-Message,
 	trx-id                      [1402] TRX-ID,
 	trx-internal-humidity       [1403] TRX-Internal-Humidity,
 	trx-internal-temperature    [1404] TRX-Internal-Temperature,
