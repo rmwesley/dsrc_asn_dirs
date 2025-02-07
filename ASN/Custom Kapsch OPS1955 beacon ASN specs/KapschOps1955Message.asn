@@ -357,7 +357,7 @@ LiC-Version ::= SEQUENCE {
     lic-sw-version OCTET STRING (SIZE(4))
 }
 
-Message-Types ::= CHOICE{
+KapschMessages ::= CHOICE{
 	action-request			    [0]	Action-Request{OPS1955Container},
 	action-response			    [1]	Action-Response{OPS1955Container},
 	event-report-request	    [2]	Event-Report-Request{OPS1955Container},
