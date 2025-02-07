@@ -4037,7 +4037,8 @@ class KapschOps1955Message:
     _KapschMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
     _KapschMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
     _KapschMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
-    _KapschMessages_dsrc_configuration = SEQ(name='dsrc-configuration', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschMessages_bst_configuration1 = SEQ(name='bst-configuration1', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
     _KapschMessages_bst_configuration2 = SEQ(name='bst-configuration2', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
     _KapschMessages_time1 = SEQ(name='time1', mode=MODE_TYPE, tag=(2459, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Time')))
@@ -4107,7 +4108,8 @@ class KapschOps1955Message:
         ('lic-lid-cleanup-mode2', _KapschMessages_lic_lid_cleanup_mode2),
         ('dsrc-link-mode1', _KapschMessages_dsrc_link_mode1),
         ('dsrc-link-mode2', _KapschMessages_dsrc_link_mode2),
-        ('dsrc-configuration', _KapschMessages_dsrc_configuration),
+        ('dsrc-configuration1', _KapschMessages_dsrc_configuration1),
+        ('dsrc-configuration2', _KapschMessages_dsrc_configuration2),
         ('bst-configuration1', _KapschMessages_bst_configuration1),
         ('bst-configuration2', _KapschMessages_bst_configuration2),
         ('time1', _KapschMessages_time1),
@@ -4469,7 +4471,8 @@ class KapschOps1955Message:
         _KapschMessages_lic_lid_cleanup_mode2,
         _KapschMessages_dsrc_link_mode1,
         _KapschMessages_dsrc_link_mode2,
-        _KapschMessages_dsrc_configuration,
+        _KapschMessages_dsrc_configuration1,
+        _KapschMessages_dsrc_configuration2,
         _KapschMessages_bst_configuration1,
         _KapschMessages_bst_configuration2,
         _KapschMessages_time1,
