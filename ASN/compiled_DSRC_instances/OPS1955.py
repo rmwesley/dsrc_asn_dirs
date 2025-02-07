@@ -3999,6 +3999,7 @@ class KapschOps1955Message:
     _KapschMessages_notify_application_beacon = SEQ(name='notify-application-beacon', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Beacon')))
     _KapschMessages_ready_application = SEQ(name='ready-application', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Ready-Application')))
     _KapschMessages_notify_application_lost_message = SEQ(name='notify-application-lost-message', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Lost-Message')))
+    _KapschMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')))
     _KapschMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
     _KapschMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
     _KapschMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
@@ -4070,6 +4071,7 @@ class KapschOps1955Message:
         ('notify-application-beacon', _KapschMessages_notify_application_beacon),
         ('ready-application', _KapschMessages_ready_application),
         ('notify-application-lost-message', _KapschMessages_notify_application_lost_message),
+        ('send-bst', _KapschMessages_send_bst),
         ('forced-release', _KapschMessages_forced_release),
         ('tis-ready-application1', _KapschMessages_tis_ready_application1),
         ('tis-ready-application2', _KapschMessages_tis_ready_application2),
@@ -4433,6 +4435,7 @@ class KapschOps1955Message:
         _KapschMessages_notify_application_beacon,
         _KapschMessages_ready_application,
         _KapschMessages_notify_application_lost_message,
+        _KapschMessages_send_bst,
         _KapschMessages_forced_release,
         _KapschMessages_tis_ready_application1,
         _KapschMessages_tis_ready_application2,
