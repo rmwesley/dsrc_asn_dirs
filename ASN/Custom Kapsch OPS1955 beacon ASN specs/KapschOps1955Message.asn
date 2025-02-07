@@ -223,7 +223,17 @@ TRX-Read-RF-Param ::= SEQUENCE {
     length INTEGER OPTIONAL
 }
 
-Lic-Return-Status ::= INTEGER(0..255)
+Lic-Return-Status ::= INTEGER{
+    ok (0),
+    wrong-version-number (1),
+    unknown-class (2),
+    unknown-instance (3),
+    unknown-message-number (4),
+    invalid-length-of-data-field (5),
+    invalid-data (6),
+    parameters-affecting-the-accessed-command-not-set-properly (7),
+    command-failed (8)
+}(0..255)
 
 Lic-Nalm-Behaviour ::= SEQUENCE {
     message-status Lic-Return-Status,
@@ -332,17 +342,19 @@ Communication-Log-Result ::= SEQUENCE {
     frame-length INTEGER(0..255)
 }
 
-LiC-Status ::= SEQUENCE {
+LiC-Status ::= SEQUENCE (SIZE(2)) OF INTEGER(0..255)
+
+LiC-Status-Message ::= SEQUENCE {
     message-status Lic-Return-Status,
-    lic-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-1-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-2-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-3-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-4-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-5-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-6-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-7-status SEQUENCE (SIZE(2)) OF INTEGER(0..255),
-    trx-8-status SEQUENCE (SIZE(2)) OF INTEGER(0..255)
+    lic-status LiC-Status,
+    trx-1-status TRX-Status,
+    trx-2-status TRX-Status,
+    trx-3-status TRX-Status,
+    trx-4-status TRX-Status,
+    trx-5-status TRX-Status,
+    trx-6-status TRX-Status,
+    trx-7-status TRX-Status,
+    trx-8-status TRX-Status
 }
 
 LiC-Statistics ::= SEQUENCE {
@@ -430,8 +442,8 @@ KapschMessages ::= CHOICE{
 	transaction-status2         [2483] Transaction-Status,
 	echo                        [2605] Echo,
 	communication-log-result    [2650] Communication-Log-Result,
-	lic-status1                 [2651] LiC-Status,
-	lic-status2                 [2752] LiC-Status,
+	lic-status1                 [2651] LiC-Status-Message,
+	lic-status2                 [2752] LiC-Status-Message,
 	lic-statistics              [2751] LiC-Statistics,
 	status-mode1                [2753] Status-Mode,
 	status-mode2                [2754] Status-Mode

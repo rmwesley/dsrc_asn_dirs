@@ -2950,6 +2950,7 @@ class KapschOps1955Message:
         'Echo',
         'Communication-Log-Result',
         'LiC-Status',
+        'LiC-Status-Message',
         'LiC-Statistics',
         'Status-Mode',
         'LiC-Version',
@@ -3005,6 +3006,7 @@ class KapschOps1955Message:
         'Echo',
         'Communication-Log-Result',
         'LiC-Status',
+        'LiC-Status-Message',
         'LiC-Statistics',
         'Status-Mode',
         'LiC-Version',
@@ -3511,6 +3513,7 @@ class KapschOps1955Message:
     
     #-----< Lic-Return-Status >-----#
     Lic_Return_Status = INT(name='Lic-Return-Status', mode=MODE_TYPE)
+    Lic_Return_Status._cont = ASN1Dict([('ok', 0), ('wrong-version-number', 1), ('unknown-class', 2), ('unknown-instance', 3), ('unknown-message-number', 4), ('invalid-length-of-data-field', 5), ('invalid-data', 6), ('parameters-affecting-the-accessed-command-not-set-properly', 7), ('command-failed', 8)])
     Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     
     #-----< Lic-Nalm-Behaviour >-----#
@@ -3767,66 +3770,37 @@ class KapschOps1955Message:
     Communication_Log_Result._ext = None
     
     #-----< LiC-Status >-----#
-    LiC_Status = SEQ(name='LiC-Status', mode=MODE_TYPE)
-    _LiC_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _LiC_Status_lic_status = SEQ_OF(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_lic_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_lic_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_lic_status._cont = __LiC_Status_lic_status__item_
-    _LiC_Status_lic_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_1_status = SEQ_OF(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_1_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_1_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_1_status._cont = __LiC_Status_trx_1_status__item_
-    _LiC_Status_trx_1_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_2_status = SEQ_OF(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_2_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_2_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_2_status._cont = __LiC_Status_trx_2_status__item_
-    _LiC_Status_trx_2_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_3_status = SEQ_OF(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_3_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_3_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_3_status._cont = __LiC_Status_trx_3_status__item_
-    _LiC_Status_trx_3_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_4_status = SEQ_OF(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_4_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_4_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_4_status._cont = __LiC_Status_trx_4_status__item_
-    _LiC_Status_trx_4_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_5_status = SEQ_OF(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_5_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_5_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_5_status._cont = __LiC_Status_trx_5_status__item_
-    _LiC_Status_trx_5_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_6_status = SEQ_OF(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_6_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_6_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_6_status._cont = __LiC_Status_trx_6_status__item_
-    _LiC_Status_trx_6_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_7_status = SEQ_OF(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_7_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_7_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_7_status._cont = __LiC_Status_trx_7_status__item_
-    _LiC_Status_trx_7_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _LiC_Status_trx_8_status = SEQ_OF(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __LiC_Status_trx_8_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    __LiC_Status_trx_8_status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _LiC_Status_trx_8_status._cont = __LiC_Status_trx_8_status__item_
-    _LiC_Status_trx_8_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    LiC_Status._cont = ASN1Dict([
-        ('message-status', _LiC_Status_message_status),
-        ('lic-status', _LiC_Status_lic_status),
-        ('trx-1-status', _LiC_Status_trx_1_status),
-        ('trx-2-status', _LiC_Status_trx_2_status),
-        ('trx-3-status', _LiC_Status_trx_3_status),
-        ('trx-4-status', _LiC_Status_trx_4_status),
-        ('trx-5-status', _LiC_Status_trx_5_status),
-        ('trx-6-status', _LiC_Status_trx_6_status),
-        ('trx-7-status', _LiC_Status_trx_7_status),
-        ('trx-8-status', _LiC_Status_trx_8_status),
+    LiC_Status = SEQ_OF(name='LiC-Status', mode=MODE_TYPE)
+    _LiC_Status__item_ = INT(name='_item_', mode=MODE_TYPE)
+    _LiC_Status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    LiC_Status._cont = _LiC_Status__item_
+    LiC_Status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    
+    #-----< LiC-Status-Message >-----#
+    LiC_Status_Message = SEQ(name='LiC-Status-Message', mode=MODE_TYPE)
+    _LiC_Status_Message_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _LiC_Status_Message_lic_status = SEQ_OF(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
+    _LiC_Status_Message_trx_1_status = SEQ_OF(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_2_status = SEQ_OF(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_3_status = SEQ_OF(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_4_status = SEQ_OF(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_5_status = SEQ_OF(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_6_status = SEQ_OF(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_7_status = SEQ_OF(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_8_status = SEQ_OF(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    LiC_Status_Message._cont = ASN1Dict([
+        ('message-status', _LiC_Status_Message_message_status),
+        ('lic-status', _LiC_Status_Message_lic_status),
+        ('trx-1-status', _LiC_Status_Message_trx_1_status),
+        ('trx-2-status', _LiC_Status_Message_trx_2_status),
+        ('trx-3-status', _LiC_Status_Message_trx_3_status),
+        ('trx-4-status', _LiC_Status_Message_trx_4_status),
+        ('trx-5-status', _LiC_Status_Message_trx_5_status),
+        ('trx-6-status', _LiC_Status_Message_trx_6_status),
+        ('trx-7-status', _LiC_Status_Message_trx_7_status),
+        ('trx-8-status', _LiC_Status_Message_trx_8_status),
         ])
-    LiC_Status._ext = None
+    LiC_Status_Message._ext = None
     
     #-----< LiC-Statistics >-----#
     LiC_Statistics = SEQ(name='LiC-Statistics', mode=MODE_TYPE)
@@ -4040,8 +4014,8 @@ class KapschOps1955Message:
     _KapschMessages_transaction_status2 = SEQ(name='transaction-status2', mode=MODE_TYPE, tag=(2483, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
     _KapschMessages_echo = SEQ(name='echo', mode=MODE_TYPE, tag=(2605, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Echo')))
     _KapschMessages_communication_log_result = SEQ(name='communication-log-result', mode=MODE_TYPE, tag=(2650, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Communication-Log-Result')))
-    _KapschMessages_lic_status1 = SEQ(name='lic-status1', mode=MODE_TYPE, tag=(2651, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
-    _KapschMessages_lic_status2 = SEQ(name='lic-status2', mode=MODE_TYPE, tag=(2752, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
+    _KapschMessages_lic_status1 = SEQ(name='lic-status1', mode=MODE_TYPE, tag=(2651, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
+    _KapschMessages_lic_status2 = SEQ(name='lic-status2', mode=MODE_TYPE, tag=(2752, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
     _KapschMessages_lic_statistics = SEQ(name='lic-statistics', mode=MODE_TYPE, tag=(2751, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Statistics')))
     _KapschMessages_status_mode1 = SEQ(name='status-mode1', mode=MODE_TYPE, tag=(2753, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
     _KapschMessages_status_mode2 = SEQ(name='status-mode2', mode=MODE_TYPE, tag=(2754, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
@@ -4342,26 +4316,19 @@ class KapschOps1955Message:
         _Communication_Log_Result_signal_level_uplink,
         _Communication_Log_Result_frame_length,
         Communication_Log_Result,
-        _LiC_Status_message_status,
-        __LiC_Status_lic_status__item_,
-        _LiC_Status_lic_status,
-        __LiC_Status_trx_1_status__item_,
-        _LiC_Status_trx_1_status,
-        __LiC_Status_trx_2_status__item_,
-        _LiC_Status_trx_2_status,
-        __LiC_Status_trx_3_status__item_,
-        _LiC_Status_trx_3_status,
-        __LiC_Status_trx_4_status__item_,
-        _LiC_Status_trx_4_status,
-        __LiC_Status_trx_5_status__item_,
-        _LiC_Status_trx_5_status,
-        __LiC_Status_trx_6_status__item_,
-        _LiC_Status_trx_6_status,
-        __LiC_Status_trx_7_status__item_,
-        _LiC_Status_trx_7_status,
-        __LiC_Status_trx_8_status__item_,
-        _LiC_Status_trx_8_status,
+        _LiC_Status__item_,
         LiC_Status,
+        _LiC_Status_Message_message_status,
+        _LiC_Status_Message_lic_status,
+        _LiC_Status_Message_trx_1_status,
+        _LiC_Status_Message_trx_2_status,
+        _LiC_Status_Message_trx_3_status,
+        _LiC_Status_Message_trx_4_status,
+        _LiC_Status_Message_trx_5_status,
+        _LiC_Status_Message_trx_6_status,
+        _LiC_Status_Message_trx_7_status,
+        _LiC_Status_Message_trx_8_status,
+        LiC_Status_Message,
         _LiC_Statistics_message_status,
         _LiC_Statistics_module_id,
         _LiC_Statistics_number_of_parameters,
