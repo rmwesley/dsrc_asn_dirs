@@ -2941,7 +2941,6 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
-        'Beacon-ID',
         'BST-Configuration',
         'Time',
         'General-Log-Level',
@@ -2997,7 +2996,6 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
-        'Beacon-ID',
         'BST-Configuration',
         'Time',
         'General-Log-Level',
@@ -3651,30 +3649,17 @@ class KapschOps1955Message:
         ])
     DSRC_Configuration._ext = None
     
-    #-----< Beacon-ID >-----#
-    Beacon_ID = SEQ(name='Beacon-ID', mode=MODE_TYPE)
-    _Beacon_ID_manufacturer_id = INT(name='manufacturer-id', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Beacon_ID_manufacturer_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _Beacon_ID_individual_id = INT(name='individual-id', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Beacon_ID_individual_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    Beacon_ID._cont = ASN1Dict([
-        ('manufacturer-id', _Beacon_ID_manufacturer_id),
-        ('individual-id', _Beacon_ID_individual_id),
-        ])
-    Beacon_ID._ext = None
-    
     #-----< BST-Configuration >-----#
     BST_Configuration = SEQ(name='BST-Configuration', mode=MODE_TYPE)
     _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
-    _BST_Configuration_beacon = SEQ(name='beacon', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Beacon-ID')))
-    _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _BST_Configuration_profile._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _BST_Configuration_mandatory_application_list = SEQ_OF(name='mandatory-application-list', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationList')))
+    _BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'BeaconID')))
+    _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Profile')))
+    _BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationList')))
     BST_Configuration._cont = ASN1Dict([
         ('message-status', _BST_Configuration_message_status),
-        ('beacon', _BST_Configuration_beacon),
+        ('rsu', _BST_Configuration_rsu),
         ('profile', _BST_Configuration_profile),
-        ('mandatory-application-list', _BST_Configuration_mandatory_application_list),
+        ('mandApplications', _BST_Configuration_mandApplications),
         ])
     BST_Configuration._ext = None
     
@@ -4002,8 +3987,8 @@ class KapschOps1955Message:
     _KapschMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
     _KapschMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
-    _KapschMessages_bst_configuration1 = SEQ(name='bst-configuration1', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
-    _KapschMessages_bst_configuration2 = SEQ(name='bst-configuration2', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
+    _KapschMessages_set_bst_configuration = SEQ(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
+    _KapschMessages_read_bst_configuration = SEQ(name='read-bst-configuration', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
     _KapschMessages_time1 = SEQ(name='time1', mode=MODE_TYPE, tag=(2459, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Time')))
     _KapschMessages_time2 = SEQ(name='time2', mode=MODE_TYPE, tag=(2460, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Time')))
     _KapschMessages_general_log_level1 = SEQ(name='general-log-level1', mode=MODE_TYPE, tag=(2463, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
@@ -4074,8 +4059,8 @@ class KapschOps1955Message:
         ('dsrc-link-mode2', _KapschMessages_dsrc_link_mode2),
         ('dsrc-configuration1', _KapschMessages_dsrc_configuration1),
         ('dsrc-configuration2', _KapschMessages_dsrc_configuration2),
-        ('bst-configuration1', _KapschMessages_bst_configuration1),
-        ('bst-configuration2', _KapschMessages_bst_configuration2),
+        ('set-bst-configuration', _KapschMessages_set_bst_configuration),
+        ('read-bst-configuration', _KapschMessages_read_bst_configuration),
         ('time1', _KapschMessages_time1),
         ('time2', _KapschMessages_time2),
         ('general-log-level1', _KapschMessages_general_log_level1),
@@ -4282,13 +4267,10 @@ class KapschOps1955Message:
         _DSRC_Configuration_max_nr_llc_retransmissions_level_4,
         _DSRC_Configuration_max_nr_mac_retransmissions,
         DSRC_Configuration,
-        _Beacon_ID_manufacturer_id,
-        _Beacon_ID_individual_id,
-        Beacon_ID,
         _BST_Configuration_message_status,
-        _BST_Configuration_beacon,
+        _BST_Configuration_rsu,
         _BST_Configuration_profile,
-        _BST_Configuration_mandatory_application_list,
+        _BST_Configuration_mandApplications,
         BST_Configuration,
         _Time_message_status,
         _Time_unix_time,
@@ -4430,8 +4412,8 @@ class KapschOps1955Message:
         _KapschMessages_dsrc_link_mode2,
         _KapschMessages_dsrc_configuration1,
         _KapschMessages_dsrc_configuration2,
-        _KapschMessages_bst_configuration1,
-        _KapschMessages_bst_configuration2,
+        _KapschMessages_set_bst_configuration,
+        _KapschMessages_read_bst_configuration,
         _KapschMessages_time1,
         _KapschMessages_time2,
         _KapschMessages_general_log_level1,

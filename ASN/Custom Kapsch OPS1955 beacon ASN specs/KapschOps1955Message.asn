@@ -292,16 +292,11 @@ DSRC-Configuration ::= SEQUENCE {
     max-nr-mac-retransmissions INTEGER(0..255)
 }
 
-Beacon-ID ::= SEQUENCE {
-    manufacturer-id INTEGER(0..255),
-    individual-id INTEGER(0..255)
-}
-
 BST-Configuration ::= SEQUENCE {
     message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2458
-    beacon Beacon-ID,
-    profile INTEGER(0..255),
-    mandatory-application-list ApplicationList
+    rsu BeaconID,
+    profile Profile,
+    mandApplications ApplicationList
 }
 
 Time ::= SEQUENCE {
@@ -430,8 +425,8 @@ KapschMessages ::= CHOICE{
 	dsrc-link-mode2             [2451] DSRC-Link-Mode,
 	dsrc-configuration1         [2455] DSRC-Configuration,
 	dsrc-configuration2         [2456] DSRC-Configuration,
-	bst-configuration1          [2457] BST-Configuration,
-	bst-configuration2          [2458] BST-Configuration,
+	set-bst-configuration       [2457] BST-Configuration,
+	read-bst-configuration      [2458] BST-Configuration,
 	time1                       [2459] Time,
 	time2                       [2460] Time,
 	general-log-level1          [2463] General-Log-Level,
