@@ -2902,6 +2902,7 @@ class KapschOps1955Message:
     
     _obj_ = [
         'OPS1955Container',
+        'DSRC-Return-Status',
         'Action-Confirmation',
         'Set-Confirmation',
         'Get-Confirmation',
@@ -2954,6 +2955,7 @@ class KapschOps1955Message:
         ]
     _type_ = [
         'OPS1955Container',
+        'DSRC-Return-Status',
         'Action-Confirmation',
         'Set-Confirmation',
         'Get-Confirmation',
@@ -3016,6 +3018,10 @@ class KapschOps1955Message:
     #-----< OPS1955Container >-----#
     OPS1955Container = CHOICE(name='OPS1955Container', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'EfcContainer')))
     
+    #-----< DSRC-Return-Status >-----#
+    DSRC_Return_Status = INT(name='DSRC-Return-Status', mode=MODE_TYPE)
+    DSRC_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
     #-----< Action-Confirmation >-----#
     Action_Confirmation = SEQ(name='Action-Confirmation', mode=MODE_TYPE)
     _Action_Confirmation_link_id = INT(name='link-id', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3025,8 +3031,7 @@ class KapschOps1955Message:
     _Action_Confirmation_element_id = INT(name='element-id', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Action_Confirmation_element_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Action_Confirmation_response_parameter = CHOICE(name='response-parameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
-    _Action_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Action_Confirmation_return_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Action_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Action_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Action_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Action_Confirmation._cont = ASN1Dict([
@@ -3047,8 +3052,7 @@ class KapschOps1955Message:
     _Set_Confirmation_return_status_bit_map = BOOL(name='return-status-bit-map', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_element_id = INT(name='element-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_element_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _Set_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Set_Confirmation_return_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Set_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Set_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Set_Confirmation._cont = ASN1Dict([
@@ -3080,8 +3084,7 @@ class KapschOps1955Message:
     __Get_Confirmation_attribute_list__item_._ext = None
     _Get_Confirmation_attribute_list._cont = __Get_Confirmation_attribute_list__item_
     _Get_Confirmation_attribute_list._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    _Get_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Get_Confirmation_return_status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Get_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Get_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Get_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Get_Confirmation._cont = ASN1Dict([
@@ -4134,6 +4137,7 @@ class KapschOps1955Message:
     
     _all_ = [
         OPS1955Container,
+        DSRC_Return_Status,
         _Action_Confirmation_link_id,
         _Action_Confirmation_response_parameter_bit_map,
         _Action_Confirmation_return_status_bit_map,

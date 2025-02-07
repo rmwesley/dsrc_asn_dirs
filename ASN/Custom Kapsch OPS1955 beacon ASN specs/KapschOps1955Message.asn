@@ -32,6 +32,7 @@ IMPORTS
 
 OPS1955Container ::= EfcContainer
 
+DSRC-Return-Status ::= INTEGER(0..255)
 
 Action-Confirmation ::= SEQUENCE {
     link-id INTEGER(0..255),
@@ -39,7 +40,7 @@ Action-Confirmation ::= SEQUENCE {
     return-status-bit-map BOOLEAN,
     element-id INTEGER(0..255),
     response-parameter OPS1955Container,
-    return-status INTEGER(0..255),
+    return-status DSRC-Return-Status,
     instance INTEGER(0..255)
 }
 
@@ -47,7 +48,7 @@ Set-Confirmation ::= SEQUENCE {
     link-id INTEGER(0..255),
     return-status-bit-map BOOLEAN,
     element-id INTEGER(0..255),
-    return-status INTEGER(0..255),
+    return-status DSRC-Return-Status,
     instance INTEGER(0..255)
 }
 
@@ -57,7 +58,7 @@ Get-Confirmation ::= SEQUENCE {
     return-status-bit-map BOOLEAN,
     element-id INTEGER(0..255),
     attribute-list AttributeList{OPS1955Container},
-    return-status INTEGER(0..255),
+    return-status DSRC-Return-Status,
     instance INTEGER(0..255)
 }
 
