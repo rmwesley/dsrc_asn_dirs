@@ -2941,6 +2941,11 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
+        'KapschDsrc-EID',
+        'KapschDSRCApplicationEntityID',
+        'KapschApplication',
+        'KapschApplicationList',
+        'KapschBeaconID',
         'BST-Configuration',
         'Time',
         'General-Log-Level',
@@ -2996,6 +3001,11 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
+        'KapschDsrc-EID',
+        'KapschDSRCApplicationEntityID',
+        'KapschApplication',
+        'KapschApplicationList',
+        'KapschBeaconID',
         'BST-Configuration',
         'Time',
         'General-Log-Level',
@@ -3649,12 +3659,51 @@ class KapschOps1955Message:
         ])
     DSRC_Configuration._ext = None
     
+    #-----< KapschDsrc-EID >-----#
+    KapschDsrc_EID = INT(name='KapschDsrc-EID', mode=MODE_TYPE)
+    KapschDsrc_EID._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
+    #-----< KapschDSRCApplicationEntityID >-----#
+    KapschDSRCApplicationEntityID = INT(name='KapschDSRCApplicationEntityID', mode=MODE_TYPE)
+    KapschDSRCApplicationEntityID._cont = ASN1Dict([('system', 0), ('electronic-fee-collection', 1), ('freight-fleet-management', 2), ('public-transport', 3), ('traffic-traveller-information', 4), ('traffic-control', 5), ('parking-management', 6), ('geographic-road-database', 7), ('medium-range-preinformation', 8), ('man-machine-interface', 9), ('intersystem-interface', 10), ('automatic-vehicle-identification', 11), ('emergency-warning', 12), ('private', 13), ('multi-purpose-payment', 14), ('dsrc-resource-manager', 15), ('after-theft-systems', 16), ('ccc', 20), ('lac', 21)])
+    KapschDSRCApplicationEntityID._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
+    #-----< KapschApplication >-----#
+    KapschApplication = SEQ(name='KapschApplication', mode=MODE_TYPE)
+    _KapschApplication_aid = INT(name='aid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschDSRCApplicationEntityID')))
+    _KapschApplication_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschDsrc-EID')), opt=True)
+    _KapschApplication_parameter = CHOICE(name='parameter', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationContextMark')), opt=True)
+    KapschApplication._cont = ASN1Dict([
+        ('aid', _KapschApplication_aid),
+        ('eid', _KapschApplication_eid),
+        ('parameter', _KapschApplication_parameter),
+        ])
+    KapschApplication._ext = None
+    
+    #-----< KapschApplicationList >-----#
+    KapschApplicationList = SEQ_OF(name='KapschApplicationList', mode=MODE_TYPE)
+    _KapschApplicationList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('KapschOps1955Message', 'KapschApplication')))
+    KapschApplicationList._cont = _KapschApplicationList__item_
+    KapschApplicationList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    
+    #-----< KapschBeaconID >-----#
+    KapschBeaconID = SEQ(name='KapschBeaconID', mode=MODE_TYPE)
+    _KapschBeaconID_manufacturerid = INT(name='manufacturerid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _KapschBeaconID_manufacturerid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=65535)], ev=None, er=[])
+    _KapschBeaconID_individualid = INT(name='individualid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _KapschBeaconID_individualid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=4294967295)], ev=None, er=[])
+    KapschBeaconID._cont = ASN1Dict([
+        ('manufacturerid', _KapschBeaconID_manufacturerid),
+        ('individualid', _KapschBeaconID_individualid),
+        ])
+    KapschBeaconID._ext = None
+    
     #-----< BST-Configuration >-----#
     BST_Configuration = SEQ(name='BST-Configuration', mode=MODE_TYPE)
     _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
-    _BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'BeaconID')))
+    _BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschBeaconID')))
     _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Profile')))
-    _BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationList')))
+    _BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschApplicationList')))
     BST_Configuration._cont = ASN1Dict([
         ('message-status', _BST_Configuration_message_status),
         ('rsu', _BST_Configuration_rsu),
@@ -4267,6 +4316,17 @@ class KapschOps1955Message:
         _DSRC_Configuration_max_nr_llc_retransmissions_level_4,
         _DSRC_Configuration_max_nr_mac_retransmissions,
         DSRC_Configuration,
+        KapschDsrc_EID,
+        KapschDSRCApplicationEntityID,
+        _KapschApplication_aid,
+        _KapschApplication_eid,
+        _KapschApplication_parameter,
+        KapschApplication,
+        _KapschApplicationList__item_,
+        KapschApplicationList,
+        _KapschBeaconID_manufacturerid,
+        _KapschBeaconID_individualid,
+        KapschBeaconID,
         _BST_Configuration_message_status,
         _BST_Configuration_rsu,
         _BST_Configuration_profile,

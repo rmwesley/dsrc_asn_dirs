@@ -292,11 +292,51 @@ DSRC-Configuration ::= SEQUENCE {
     max-nr-mac-retransmissions INTEGER(0..255)
 }
 
+KapschDsrc-EID ::= INTEGER(0..255)
+
+KapschDSRCApplicationEntityID ::= INTEGER {
+	system (0),
+	electronic-fee-collection (1),
+	freight-fleet-management (2),
+	public-transport (3),
+	traffic-traveller-information (4),
+	traffic-control (5),
+	parking-management (6),
+	geographic-road-database (7),
+	medium-range-preinformation (8),
+	man-machine-interface (9),
+	intersystem-interface (10),
+	automatic-vehicle-identification (11),
+	emergency-warning (12),
+	private (13),
+	multi-purpose-payment (14),
+	dsrc-resource-manager (15),
+	after-theft-systems (16),
+	ccc (20),
+	lac (21)
+	-- (17..28) are reserved for ISO/CEN DSRC applications
+	-- (29..30) are reserved for private use
+	-- 31 is reserved for ISO/CEN-DSRC-applications
+}(0..255)
+
+KapschApplication ::= SEQUENCE {
+	aid KapschDSRCApplicationEntityID,
+	eid KapschDsrc-EID OPTIONAL,
+	parameter ApplicationContextMark OPTIONAL
+}
+
+KapschApplicationList ::= SEQUENCE (SIZE (0..127,...)) OF KapschApplication
+
+KapschBeaconID ::= SEQUENCE{
+	manufacturerid INTEGER(0..65535),
+	individualid INTEGER(0..4294967295)
+} -- for registration of manufacturerid see www.nni.nl/cen278
+
 BST-Configuration ::= SEQUENCE {
     message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2458
-    rsu BeaconID,
+    rsu KapschBeaconID,
     profile Profile,
-    mandApplications ApplicationList
+    mandApplications KapschApplicationList
 }
 
 Time ::= SEQUENCE {
