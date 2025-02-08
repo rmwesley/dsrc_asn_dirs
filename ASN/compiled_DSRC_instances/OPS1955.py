@@ -3224,7 +3224,7 @@ class KapschOps1955Message:
     
     #-----< TRX-Status >-----#
     TRX_Status = BIT_STR(name='TRX-Status', mode=MODE_TYPE)
-    TRX_Status._cont = ASN1Dict([('control-data-processor-not-ready-ot-busy', 0), ('bit-busy-or-not-ready', 1), ('illegal-command', 2), ('password-error', 4), ('illegal-command-sequence', 5), ('trx-not-present', 6), ('trx-occupied', 7), ('warning', 8), ('major-error', 9), ('erroneous-value-b', 10), ('erroneous-value-a', 11), ('microwave-transmitter-power-failure', 12), ('voltage-error', 13), ('communciation-error', 14), ('beacon-not-configured', 15)])
+    TRX_Status._cont = ASN1Dict([('warning', 15), ('major-error', 14), ('erroneous-value-b', 13), ('erroneous-value-a', 12), ('microwave-transmitter-power-failure', 11), ('voltage-error', 10), ('communciation-error', 9), ('beacon-not-configured', 8), ('control-data-processor-not-ready-ot-busy', 7), ('bit-busy-or-not-ready', 6), ('illegal-command', 5), ('password-error', 3), ('illegal-command-sequence', 2), ('trx-not-present', 1), ('trx-occupied', 0)])
     TRX_Status._const_sz = ASN1Set(rv=[16], rr=[], ev=None, er=[])
     
     #-----< TRX-Mode >-----#
