@@ -18,7 +18,7 @@ IMPORTS
     Set-Request, Set-Response,
 	Get-Request, Get-Response{}, Initialisation-Request, Initialisation-Response, ObeConfiguration, Profile,
 	ReturnStatus, VST, ApplicationContextMark,
-    EfcContainer
+    EfcContainer, Time
 	FROM EfcDsrcGeneric {iso(1) standard(0) 14906 generic(1) version10(10) minorVersion1(1)} WITH SUCCESSORS;
 
 -- ********* ISO/FDIS 14906:2022 application *********
@@ -98,28 +98,14 @@ Tis-Ready-Application ::= SEQUENCE {
     eid INTEGER(0..255)
 }
 
-ActualStatus ::= INTEGER{
-    ok (0),
-    warning (1),
-    reserved (2),
-    error (3)
-}(0..3)
+TRX-Status ::= INTEGER(0..255)
 
-TRX-Status ::= SEQUENCE {
-    device-not-configured BOOLEAN,
-    communication-error BOOLEAN,
-    voltage-error BOOLEAN,
-    microwave-transmitter-failure BOOLEAN,
-    erroneous-value-a BOOLEAN,
-    erroneous-value-b BOOLEAN,
-    actual-status ActualStatus
-
-}
+TRX-Mode ::= INTEGER(0..31)
 
 TRX-Status-Message ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status,
-    trx-mode INTEGER(0..255)
+    trx-mode TRX-Mode
 }
 
 TRX-ID ::= SEQUENCE {
@@ -142,9 +128,14 @@ TRX-Internal-Temperature ::= SEQUENCE {
     temp INTEGER(0..255)
 }
 
+My-Power-Mode ::= INTEGER {
+    off (0),
+    on (2)
+}(0..255)
+
 TRX-My-Power-Mode ::= SEQUENCE {
     instance INTEGER(0..255),
-    mode INTEGER(0..255)
+    mode My-Power-Mode
 }
 
 TRX-Carrier-Frequency ::= SEQUENCE {
@@ -167,7 +158,7 @@ TRX-Output-Power ::= SEQUENCE {
 TRX-Echo ::= SEQUENCE {
     instance INTEGER(0..255),
     data OCTET STRING (SIZE(122)),
-    length INTEGER -- LiC ETC specific
+    length INTEGER(0..255) -- LiC ETC specific
 }
 
 UI-Control-OPS1925 ::= SEQUENCE {
@@ -186,32 +177,36 @@ UI-Control-OPS1955 ::= SEQUENCE {
 TRX-Set-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status, -- Uplink only
-    uitype INTEGER(0..255),
-    ops1925 UI-Control-OPS1925 OPTIONAL, -- Dnlink only, only for OPS1925
-    ops1955 UI-Control-OPS1955 OPTIONAL -- Dnlink only, only for OPS1955
+    uitype UI-Type,
+    ops1925 UI-Control-OPS1925, -- Dnlink only, only for OPS1925
+    ops1955 UI-Control-OPS1955 -- Dnlink only, only for OPS1955
 }
 
 TRX-Read-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status, -- Uplink only
-    uitype INTEGER(0..255),
-    mode INTEGER OPTIONAL, -- Dnlink only, only for OPS1925
-    ops1925 UI-Control-OPS1925 OPTIONAL, -- Uplink only, only for OPS1925
-    ops1955 UI-Control-OPS1955 OPTIONAL -- Uplink only, only for OPS1955
+    uitype UI-Type,
+    mode INTEGER(0..255), -- Dnlink only, only for OPS1925
+    ops1925 UI-Control-OPS1925, -- Uplink only, only for OPS1925
+    ops1955 UI-Control-OPS1955 -- Uplink only, only for OPS1955
 }
+
+UI-Type ::= INTEGER(0..255)
+
+Sensors ::= INTEGER(0..255)
 
 TRX-UI-Status ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER, -- Uplink only
-    uitype INTEGER, -- Uplink only
-    sensors INTEGER -- Uplink only
+    status TRX-Status, -- Uplink only
+    uitype UI-Type, -- Uplink only
+    sensors Sensors -- Uplink only
 }
 
 TRX-General-Purpose ::= SEQUENCE {
     instance INTEGER(0..255),
-    password OCTET STRING (SIZE(8)) OPTIONAL, -- Dnlink only
-    genid INTEGER OPTIONAL, -- Dnlink only
-    genda-genre OCTET STRING (SIZE(255)) OPTIONAL,
+    password OCTET STRING (SIZE(8)), -- Dnlink only
+    genid INTEGER(0..255), -- Dnlink only
+    genda-genre OCTET STRING (SIZE(255)),
     status TRX-Status, -- Uplink only
     length INTEGER -- Length of GENDA_GENRE (LiC ETC specific)
 }
@@ -231,11 +226,11 @@ TRX-Set-RF-Param ::= SEQUENCE {
 
 TRX-Read-RF-Param ::= SEQUENCE {
     instance INTEGER(0..255),
-    password OCTET STRING (SIZE(8)) OPTIONAL, -- Dnlink only
-    id1 INTEGER OPTIONAL, -- Dnlink only
-    id2 INTEGER OPTIONAL, -- Dnlink only
-    data OCTET STRING (SIZE(255)) OPTIONAL, -- Uplink only
-    length INTEGER OPTIONAL
+    password OCTET STRING (SIZE(8)), -- Dnlink only
+    id1 INTEGER, -- Dnlink only
+    id2 INTEGER, -- Dnlink only
+    data OCTET STRING (SIZE(255)), -- Uplink only
+    length INTEGER
 }
 
 Lic-Return-Status ::= INTEGER{
@@ -248,7 +243,7 @@ Lic-Return-Status ::= INTEGER{
     invalid-data (6),
     parameters-affecting-the-accessed-command-not-set-properly (7),
     command-failed (8)
-}(0..255)
+}(0..8)
 
 Lic-Nalm-Behaviour ::= SEQUENCE {
     message-status Lic-Return-Status,
@@ -307,57 +302,30 @@ DSRC-Configuration ::= SEQUENCE {
     max-nr-mac-retransmissions INTEGER(0..255)
 }
 
-KapschDsrc-EID ::= INTEGER(0..255)
+Set-BST-Configuration ::= SEQUENCE {
+    rsu BeaconID,
+    profile Profile,
+    mandApplications ApplicationList
+}
 
-KapschDSRCApplicationEntityID ::= INTEGER {
-	system (0),
-	electronic-fee-collection (1),
-	freight-fleet-management (2),
-	public-transport (3),
-	traffic-traveller-information (4),
-	traffic-control (5),
-	parking-management (6),
-	geographic-road-database (7),
-	medium-range-preinformation (8),
-	man-machine-interface (9),
-	intersystem-interface (10),
-	automatic-vehicle-identification (11),
-	emergency-warning (12),
-	private (13),
-	multi-purpose-payment (14),
-	dsrc-resource-manager (15),
-	after-theft-systems (16),
-	ccc (20),
-	lac (21)
-	-- (17..28) are reserved for ISO/CEN DSRC applications
-	-- (29..30) are reserved for private use
-	-- 31 is reserved for ISO/CEN-DSRC-applications
+KapschProfile::= INTEGER {
+	profile0 (0), -- DSRC Profile 0 as defined in EN 13372
+	profile1 (1) -- DSRC Profile 1 as defined in EN 13372
+	-- (2..118) are reserved for ISO/CEN use,
+	-- (119..127) are reserved for private use
 }(0..255)
 
-KapschApplication ::= SEQUENCE {
-	aid KapschDSRCApplicationEntityID,
-	eid KapschDsrc-EID OPTIONAL,
-	parameter ApplicationContextMark OPTIONAL
-}
-
-KapschApplicationList ::= SEQUENCE (SIZE (0..127,...)) OF KapschApplication
-
-KapschBeaconID ::= SEQUENCE{
-	manufacturerid INTEGER(0..65535),
-	individualid INTEGER(0..4294967295)
-} -- for registration of manufacturerid see www.nni.nl/cen278
-
-BST-Configuration ::= SEQUENCE {
+Read-BST-Configuration ::= SEQUENCE {
     message-status Lic-Return-Status, -- Present only for ID 2458
-    rsu KapschBeaconID,
-    profile Profile,
-    mandApplications KapschApplicationList
+    rsu BeaconID,
+    profile KapschProfile,
+    mandApplications ApplicationList
 }
 
-Time ::= SEQUENCE {
+KapschTime ::= SEQUENCE {
     message-status Lic-Return-Status, -- Present only for ID 2460
-    unix-time INTEGER(0..255),
-    milliseconds INTEGER(0..255)
+    unix-time Time,
+    milliseconds INTEGER(0..65535)
 }
 
 General-Log-Level ::= SEQUENCE {
@@ -368,7 +336,7 @@ General-Log-Level ::= SEQUENCE {
 Log-Category-Mode ::= SEQUENCE {
     message-status Lic-Return-Status, -- Present only for ID 2466 (to host)
     log-category INTEGER(0..255),
-    mode INTEGER OPTIONAL -- Not used in 2466 (from host)
+    mode INTEGER -- Not used in 2466 (from host)
 }
 
 Transaction-Status ::= SEQUENCE {
@@ -392,7 +360,7 @@ Communication-Log-Result ::= SEQUENCE {
     frame-length INTEGER(0..255)
 }
 
-LiC-Status ::= SEQUENCE (SIZE(2)) OF INTEGER(0..255)
+LiC-Status ::= INTEGER(0..65535)
 
 LiC-Status-Message ::= SEQUENCE {
     message-status Lic-Return-Status,
@@ -425,8 +393,81 @@ LiC-Version ::= SEQUENCE {
     lic-sw-version OCTET STRING (SIZE(4))
 }
 
-KapschMessages ::= CHOICE{
+KapschRequestMessages ::= CHOICE{
 	action-request			    [0]	Action-Request{OPS1955Container},
+	action-response			    [1]	Action-Response{OPS1955Container},
+	event-report-request	    [2]	Event-Report-Request{OPS1955Container},
+	event-report-response	    [3]	Event-Report-Response,
+	set-request				    [4]	Set-Request{OPS1955Container},
+	set-response			    [5]	Set-Response,
+	get-request				    [6]	Get-Request,
+	get-response			    [7]	Get-Response{OPS1955Container},
+	initialisation-request  	[8]	Initialisation-Request,
+	initialisation-response	    [9]	Initialisation-Response,
+	notify-application-beacon   [12] Notify-Application-Beacon,
+	ready-application           [13] Ready-Application,
+	notify-application-lost-message [14] Notify-Application-Lost-Message,
+	send-bst                  	[17] Lic-Return-Status,
+	forced-release              [18] Forced-Release,
+	tis-ready-application1      [103] Tis-Ready-Application,
+	tis-ready-application2      [105] Tis-Ready-Application,
+	trx-status                  [1401] TRX-Status-Message,
+	trx-id                      [1402] TRX-ID,
+	trx-internal-humidity       [1403] TRX-Internal-Humidity,
+	trx-internal-temperature    [1404] TRX-Internal-Temperature,
+	trx-my-power-mode           [1405] TRX-My-Power-Mode,
+	trx-carrier-frequency1      [1406] TRX-Carrier-Frequency,
+	trx-carrier-frequency2      [1415] TRX-Carrier-Frequency,
+	trx-uplink-parameters       [1407] TRX-Uplink-Parameters,
+	trx-output-power1           [1408] TRX-Output-Power,
+	trx-output-power2           [1416] TRX-Output-Power,
+	trx-echo                    [1414] TRX-Echo,
+	trx-set-ui-control          [1420] TRX-Set-UI-Control,
+	trx-ui-status1              [1421] TRX-UI-Status,
+	trx-ui-status2              [1422] TRX-UI-Status,
+	trx-general-purpose         [1500] TRX-General-Purpose,
+	trx-extended-output-power   [1506] TRX-Extended-Output-Power,
+	trx-read-rf-param1          [1516] TRX-Read-RF-Param,
+	trx-read-rf-param2          [1517] TRX-Read-RF-Param,
+	lic-nalm-behaviour1         [2408] Lic-Nalm-Behaviour,
+	lic-nalm-behaviour2         [2409] Lic-Nalm-Behaviour,
+	lic-pdu-no-behaviour1       [2410] Lic-PDU-No-Behaviour,
+	lic-pdu-no-behaviour2       [2411] Lic-PDU-No-Behaviour,
+	lic-l7-ack-mode1            [2412] Lic-L7-Ack-Mode,
+	lic-l7-ack-mode2            [2413] Lic-L7-Ack-Mode,
+	lic-private-uplink-window-time1 [2414] Lic-Private-Uplink-Window-Time,
+	lic-private-uplink-window-time2 [2415] Lic-Private-Uplink-Window-Time,
+	lic-slow-data-behaviour1    [2416] Lic-Slow-Data-Behaviour,
+	lic-slow-data-behaviour2    [2417] Lic-Slow-Data-Behaviour,
+	lic-release-retransmissions1 [2418] Lic-Release-Retransmissions,
+	lic-release-retransmissions2 [2419] Lic-Release-Retransmissions,
+	lic-lid-cleanup-mode1       [2420] Lic-LID-Cleanup-Mode,
+	lic-lid-cleanup-mode2       [2421] Lic-LID-Cleanup-Mode,
+	dsrc-link-mode1             [2450] DSRC-Link-Mode,
+	dsrc-link-mode2             [2451] DSRC-Link-Mode,
+	dsrc-configuration1         [2455] DSRC-Configuration,
+	dsrc-configuration2         [2456] DSRC-Configuration,
+	set-bst-configuration       [2457] Set-BST-Configuration,
+	read-bst-configuration      [2458] NULL,
+	time1                       [2459] KapschTime,
+	time2                       [2460] KapschTime,
+	general-log-level1          [2463] General-Log-Level,
+	general-log-level2          [2464] General-Log-Level,
+	log-category-mode1          [2465] Log-Category-Mode,
+	log-category-mode2          [2466] Log-Category-Mode,
+	transaction-status1         [2482] Transaction-Status,
+	transaction-status2         [2483] Transaction-Status,
+	echo                        [2605] Echo,
+	communication-log-result    [2650] Communication-Log-Result,
+	lic-status1                 [2651] LiC-Status-Message,
+	lic-status2                 [2752] LiC-Status-Message,
+	lic-statistics              [2751] LiC-Statistics,
+	status-mode1                [2753] Status-Mode,
+	status-mode2                [2754] Status-Mode
+} (WITH COMPONENTS { ... })
+
+KapschResponseMessages ::= CHOICE{
+	action-request			    [0]	DSRC-Return-Status,
 	action-response			    [1]	Action-Response{OPS1955Container},
 	event-report-request	    [2]	Event-Report-Request{OPS1955Container},
 	event-report-response	    [3]	Event-Report-Response,
@@ -480,10 +521,10 @@ KapschMessages ::= CHOICE{
 	dsrc-link-mode2             [2451] DSRC-Link-Mode,
 	dsrc-configuration1         [2455] DSRC-Configuration,
 	dsrc-configuration2         [2456] DSRC-Configuration,
-	set-bst-configuration       [2457] BST-Configuration,
-	read-bst-configuration      [2458] BST-Configuration,
-	time1                       [2459] Time,
-	time2                       [2460] Time,
+	set-bst-configuration       [2457] Lic-Return-Status,
+	read-bst-configuration      [2458] Read-BST-Configuration,
+	time1                       [2459] KapschTime,
+	time2                       [2460] KapschTime,
 	general-log-level1          [2463] General-Log-Level,
 	general-log-level2          [2464] General-Log-Level,
 	log-category-mode1          [2465] Log-Category-Mode,
@@ -498,7 +539,6 @@ KapschMessages ::= CHOICE{
 	status-mode1                [2753] Status-Mode,
 	status-mode2                [2754] Status-Mode
 } (WITH COMPONENTS { ... })
-
 
 END
 -- Below imported data from ISO 14816's ASN.1 module

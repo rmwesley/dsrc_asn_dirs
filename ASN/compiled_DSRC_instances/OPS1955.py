@@ -2912,12 +2912,13 @@ class KapschOps1955Message:
         'Notify-Application-Lost-Message',
         'Forced-Release',
         'Tis-Ready-Application',
-        'ActualStatus',
         'TRX-Status',
+        'TRX-Mode',
         'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
         'TRX-Internal-Temperature',
+        'My-Power-Mode',
         'TRX-My-Power-Mode',
         'TRX-Carrier-Frequency',
         'TRX-Uplink-Parameters',
@@ -2927,6 +2928,8 @@ class KapschOps1955Message:
         'UI-Control-OPS1955',
         'TRX-Set-UI-Control',
         'TRX-Read-UI-Control',
+        'UI-Type',
+        'Sensors',
         'TRX-UI-Status',
         'TRX-General-Purpose',
         'TRX-Extended-Output-Power',
@@ -2942,13 +2945,10 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
-        'KapschDsrc-EID',
-        'KapschDSRCApplicationEntityID',
-        'KapschApplication',
-        'KapschApplicationList',
-        'KapschBeaconID',
-        'BST-Configuration',
-        'Time',
+        'Set-BST-Configuration',
+        'KapschProfile',
+        'Read-BST-Configuration',
+        'KapschTime',
         'General-Log-Level',
         'Log-Category-Mode',
         'Transaction-Status',
@@ -2959,7 +2959,8 @@ class KapschOps1955Message:
         'LiC-Statistics',
         'Status-Mode',
         'LiC-Version',
-        'KapschMessages',
+        'KapschRequestMessages',
+        'KapschResponseMessages',
         ]
     _type_ = [
         'OPS1955Container',
@@ -2973,12 +2974,13 @@ class KapschOps1955Message:
         'Notify-Application-Lost-Message',
         'Forced-Release',
         'Tis-Ready-Application',
-        'ActualStatus',
         'TRX-Status',
+        'TRX-Mode',
         'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
         'TRX-Internal-Temperature',
+        'My-Power-Mode',
         'TRX-My-Power-Mode',
         'TRX-Carrier-Frequency',
         'TRX-Uplink-Parameters',
@@ -2988,6 +2990,8 @@ class KapschOps1955Message:
         'UI-Control-OPS1955',
         'TRX-Set-UI-Control',
         'TRX-Read-UI-Control',
+        'UI-Type',
+        'Sensors',
         'TRX-UI-Status',
         'TRX-General-Purpose',
         'TRX-Extended-Output-Power',
@@ -3003,13 +3007,10 @@ class KapschOps1955Message:
         'Lic-LID-Cleanup-Mode',
         'DSRC-Link-Mode',
         'DSRC-Configuration',
-        'KapschDsrc-EID',
-        'KapschDSRCApplicationEntityID',
-        'KapschApplication',
-        'KapschApplicationList',
-        'KapschBeaconID',
-        'BST-Configuration',
-        'Time',
+        'Set-BST-Configuration',
+        'KapschProfile',
+        'Read-BST-Configuration',
+        'KapschTime',
         'General-Log-Level',
         'Log-Category-Mode',
         'Transaction-Status',
@@ -3020,7 +3021,8 @@ class KapschOps1955Message:
         'LiC-Statistics',
         'Status-Mode',
         'LiC-Version',
-        'KapschMessages',
+        'KapschRequestMessages',
+        'KapschResponseMessages',
         ]
     _set_ = [
         ]
@@ -3202,38 +3204,20 @@ class KapschOps1955Message:
         ])
     Tis_Ready_Application._ext = None
     
-    #-----< ActualStatus >-----#
-    ActualStatus = INT(name='ActualStatus', mode=MODE_TYPE)
-    ActualStatus._cont = ASN1Dict([('ok', 0), ('warning', 1), ('reserved', 2), ('error', 3)])
-    ActualStatus._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=3)], ev=None, er=[])
-    
     #-----< TRX-Status >-----#
-    TRX_Status = SEQ(name='TRX-Status', mode=MODE_TYPE)
-    _TRX_Status_device_not_configured = BOOL(name='device-not-configured', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_communication_error = BOOL(name='communication-error', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_voltage_error = BOOL(name='voltage-error', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_microwave_transmitter_failure = BOOL(name='microwave-transmitter-failure', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_erroneous_value_a = BOOL(name='erroneous-value-a', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_erroneous_value_b = BOOL(name='erroneous-value-b', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_actual_status = INT(name='actual-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'ActualStatus')))
-    TRX_Status._cont = ASN1Dict([
-        ('device-not-configured', _TRX_Status_device_not_configured),
-        ('communication-error', _TRX_Status_communication_error),
-        ('voltage-error', _TRX_Status_voltage_error),
-        ('microwave-transmitter-failure', _TRX_Status_microwave_transmitter_failure),
-        ('erroneous-value-a', _TRX_Status_erroneous_value_a),
-        ('erroneous-value-b', _TRX_Status_erroneous_value_b),
-        ('actual-status', _TRX_Status_actual_status),
-        ])
-    TRX_Status._ext = None
+    TRX_Status = INT(name='TRX-Status', mode=MODE_TYPE)
+    TRX_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
+    #-----< TRX-Mode >-----#
+    TRX_Mode = INT(name='TRX-Mode', mode=MODE_TYPE)
+    TRX_Mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=31)], ev=None, er=[])
     
     #-----< TRX-Status-Message >-----#
     TRX_Status_Message = SEQ(name='TRX-Status-Message', mode=MODE_TYPE)
     _TRX_Status_Message_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Status_Message_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Status_Message_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Status_Message_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Status_Message_trx_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _TRX_Status_Message_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Status_Message_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Mode')))
     TRX_Status_Message._cont = ASN1Dict([
         ('instance', _TRX_Status_Message_instance),
         ('status', _TRX_Status_Message_status),
@@ -3245,13 +3229,13 @@ class KapschOps1955Message:
     TRX_ID = SEQ(name='TRX-ID', mode=MODE_TYPE)
     _TRX_ID_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_ID_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_trx_id = SEQ_OF(name='trx-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_trx_id__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_trx_id__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_ID_trx_id._cont = __TRX_ID_trx_id__item_
     _TRX_ID_trx_id._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_ID_hwid = SEQ(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_hwid = INT(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_swid = SEQ_OF(name='swid', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_swid__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_swid__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3270,7 +3254,7 @@ class KapschOps1955Message:
     TRX_Internal_Humidity = SEQ(name='TRX-Internal-Humidity', mode=MODE_TYPE)
     _TRX_Internal_Humidity_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Humidity_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Humidity_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Humidity_humid = INT(name='humid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_humid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Humidity._cont = ASN1Dict([
@@ -3284,7 +3268,7 @@ class KapschOps1955Message:
     TRX_Internal_Temperature = SEQ(name='TRX-Internal-Temperature', mode=MODE_TYPE)
     _TRX_Internal_Temperature_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Temperature_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Temperature_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Temperature_temp = INT(name='temp', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_temp._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Temperature._cont = ASN1Dict([
@@ -3294,12 +3278,16 @@ class KapschOps1955Message:
         ])
     TRX_Internal_Temperature._ext = None
     
+    #-----< My-Power-Mode >-----#
+    My_Power_Mode = INT(name='My-Power-Mode', mode=MODE_TYPE)
+    My_Power_Mode._cont = ASN1Dict([('off', 0), ('on', 2)])
+    My_Power_Mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
     #-----< TRX-My-Power-Mode >-----#
     TRX_My_Power_Mode = SEQ(name='TRX-My-Power-Mode', mode=MODE_TYPE)
     _TRX_My_Power_Mode_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_My_Power_Mode_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_My_Power_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_My_Power_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _TRX_My_Power_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'My-Power-Mode')))
     TRX_My_Power_Mode._cont = ASN1Dict([
         ('instance', _TRX_My_Power_Mode_instance),
         ('mode', _TRX_My_Power_Mode_mode),
@@ -3310,7 +3298,7 @@ class KapschOps1955Message:
     TRX_Carrier_Frequency = SEQ(name='TRX-Carrier-Frequency', mode=MODE_TYPE)
     _TRX_Carrier_Frequency_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Carrier_Frequency_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Carrier_Frequency_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Carrier_Frequency_cfq = INT(name='cfq', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_cfq._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Carrier_Frequency._cont = ASN1Dict([
@@ -3336,7 +3324,7 @@ class KapschOps1955Message:
     TRX_Output_Power = SEQ(name='TRX-Output-Power', mode=MODE_TYPE)
     _TRX_Output_Power_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Output_Power_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Output_Power_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Output_Power_spw = INT(name='spw', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_spw._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Output_Power._cont = ASN1Dict([
@@ -3353,6 +3341,7 @@ class KapschOps1955Message:
     _TRX_Echo_data = OCT_STR(name='data', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Echo_data._const_sz = ASN1Set(rv=[122], rr=[], ev=None, er=[])
     _TRX_Echo_length = INT(name='length', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Echo_length._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Echo._cont = ASN1Dict([
         ('instance', _TRX_Echo_instance),
         ('data', _TRX_Echo_data),
@@ -3397,11 +3386,10 @@ class KapschOps1955Message:
     TRX_Set_UI_Control = SEQ(name='TRX-Set-UI-Control', mode=MODE_TYPE)
     _TRX_Set_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Set_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Set_UI_Control_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Set_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Set_UI_Control_uitype._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Set_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')), opt=True)
-    _TRX_Set_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')), opt=True)
+    _TRX_Set_UI_Control_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Set_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _TRX_Set_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')))
+    _TRX_Set_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')))
     TRX_Set_UI_Control._cont = ASN1Dict([
         ('instance', _TRX_Set_UI_Control_instance),
         ('status', _TRX_Set_UI_Control_status),
@@ -3415,12 +3403,12 @@ class KapschOps1955Message:
     TRX_Read_UI_Control = SEQ(name='TRX-Read-UI-Control', mode=MODE_TYPE)
     _TRX_Read_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_UI_Control_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Read_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Read_UI_Control_uitype._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_UI_Control_mode = INT(name='mode', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    _TRX_Read_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')), opt=True)
-    _TRX_Read_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')), opt=True)
+    _TRX_Read_UI_Control_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Read_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _TRX_Read_UI_Control_mode = INT(name='mode', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Read_UI_Control_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _TRX_Read_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')))
+    _TRX_Read_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')))
     TRX_Read_UI_Control._cont = ASN1Dict([
         ('instance', _TRX_Read_UI_Control_instance),
         ('status', _TRX_Read_UI_Control_status),
@@ -3431,16 +3419,21 @@ class KapschOps1955Message:
         ])
     TRX_Read_UI_Control._ext = None
     
+    #-----< UI-Type >-----#
+    UI_Type = INT(name='UI-Type', mode=MODE_TYPE)
+    UI_Type._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
+    #-----< Sensors >-----#
+    Sensors = INT(name='Sensors', mode=MODE_TYPE)
+    Sensors._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    
     #-----< TRX-UI-Status >-----#
     TRX_UI_Status = SEQ(name='TRX-UI-Status', mode=MODE_TYPE)
     _TRX_UI_Status_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_UI_Status_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_UI_Status_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __TRX_UI_Status_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_UI_Status_status._cont = __TRX_UI_Status_status__item_
-    _TRX_UI_Status_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _TRX_UI_Status_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_UI_Status_sensors = INT(name='sensors', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_UI_Status_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_UI_Status_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _TRX_UI_Status_sensors = INT(name='sensors', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Sensors')))
     TRX_UI_Status._cont = ASN1Dict([
         ('instance', _TRX_UI_Status_instance),
         ('status', _TRX_UI_Status_status),
@@ -3453,12 +3446,13 @@ class KapschOps1955Message:
     TRX_General_Purpose = SEQ(name='TRX-General-Purpose', mode=MODE_TYPE)
     _TRX_General_Purpose_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_General_Purpose_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_General_Purpose_password = OCT_STR(name='password', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_General_Purpose_password = OCT_STR(name='password', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_General_Purpose_password._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_General_Purpose_genid = INT(name='genid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    _TRX_General_Purpose_genda_genre = OCT_STR(name='genda-genre', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_General_Purpose_genid = INT(name='genid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_General_Purpose_genid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _TRX_General_Purpose_genda_genre = OCT_STR(name='genda-genre', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_General_Purpose_genda_genre._const_sz = ASN1Set(rv=[255], rr=[], ev=None, er=[])
-    _TRX_General_Purpose_status = SEQ(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_General_Purpose_status = INT(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_General_Purpose_length = INT(name='length', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TRX_General_Purpose._cont = ASN1Dict([
         ('instance', _TRX_General_Purpose_instance),
@@ -3507,13 +3501,13 @@ class KapschOps1955Message:
     TRX_Read_RF_Param = SEQ(name='TRX-Read-RF-Param', mode=MODE_TYPE)
     _TRX_Read_RF_Param_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_RF_Param_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_RF_Param_password = OCT_STR(name='password', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_Read_RF_Param_password = OCT_STR(name='password', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_RF_Param_password._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_Read_RF_Param_id1 = INT(name='id1', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    _TRX_Read_RF_Param_id2 = INT(name='id2', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    _TRX_Read_RF_Param_data = OCT_STR(name='data', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_Read_RF_Param_id1 = INT(name='id1', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Read_RF_Param_id2 = INT(name='id2', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Read_RF_Param_data = OCT_STR(name='data', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_RF_Param_data._const_sz = ASN1Set(rv=[255], rr=[], ev=None, er=[])
-    _TRX_Read_RF_Param_length = INT(name='length', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_Read_RF_Param_length = INT(name='length', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TRX_Read_RF_Param._cont = ASN1Dict([
         ('instance', _TRX_Read_RF_Param_instance),
         ('password', _TRX_Read_RF_Param_password),
@@ -3527,7 +3521,7 @@ class KapschOps1955Message:
     #-----< Lic-Return-Status >-----#
     Lic_Return_Status = INT(name='Lic-Return-Status', mode=MODE_TYPE)
     Lic_Return_Status._cont = ASN1Dict([('ok', 0), ('wrong-version-number', 1), ('unknown-class', 2), ('unknown-instance', 3), ('unknown-message-number', 4), ('invalid-length-of-data-field', 5), ('invalid-data', 6), ('parameters-affecting-the-accessed-command-not-set-properly', 7), ('command-failed', 8)])
-    Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=8)], ev=None, er=[])
     
     #-----< Lic-Nalm-Behaviour >-----#
     Lic_Nalm_Behaviour = SEQ(name='Lic-Nalm-Behaviour', mode=MODE_TYPE)
@@ -3664,72 +3658,49 @@ class KapschOps1955Message:
         ])
     DSRC_Configuration._ext = None
     
-    #-----< KapschDsrc-EID >-----#
-    KapschDsrc_EID = INT(name='KapschDsrc-EID', mode=MODE_TYPE)
-    KapschDsrc_EID._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    
-    #-----< KapschDSRCApplicationEntityID >-----#
-    KapschDSRCApplicationEntityID = INT(name='KapschDSRCApplicationEntityID', mode=MODE_TYPE)
-    KapschDSRCApplicationEntityID._cont = ASN1Dict([('system', 0), ('electronic-fee-collection', 1), ('freight-fleet-management', 2), ('public-transport', 3), ('traffic-traveller-information', 4), ('traffic-control', 5), ('parking-management', 6), ('geographic-road-database', 7), ('medium-range-preinformation', 8), ('man-machine-interface', 9), ('intersystem-interface', 10), ('automatic-vehicle-identification', 11), ('emergency-warning', 12), ('private', 13), ('multi-purpose-payment', 14), ('dsrc-resource-manager', 15), ('after-theft-systems', 16), ('ccc', 20), ('lac', 21)])
-    KapschDSRCApplicationEntityID._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    
-    #-----< KapschApplication >-----#
-    KapschApplication = SEQ(name='KapschApplication', mode=MODE_TYPE)
-    _KapschApplication_aid = INT(name='aid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschDSRCApplicationEntityID')))
-    _KapschApplication_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschDsrc-EID')), opt=True)
-    _KapschApplication_parameter = CHOICE(name='parameter', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationContextMark')), opt=True)
-    KapschApplication._cont = ASN1Dict([
-        ('aid', _KapschApplication_aid),
-        ('eid', _KapschApplication_eid),
-        ('parameter', _KapschApplication_parameter),
+    #-----< Set-BST-Configuration >-----#
+    Set_BST_Configuration = SEQ(name='Set-BST-Configuration', mode=MODE_TYPE)
+    _Set_BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'BeaconID')))
+    _Set_BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Profile')))
+    _Set_BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationList')))
+    Set_BST_Configuration._cont = ASN1Dict([
+        ('rsu', _Set_BST_Configuration_rsu),
+        ('profile', _Set_BST_Configuration_profile),
+        ('mandApplications', _Set_BST_Configuration_mandApplications),
         ])
-    KapschApplication._ext = None
+    Set_BST_Configuration._ext = None
     
-    #-----< KapschApplicationList >-----#
-    KapschApplicationList = SEQ_OF(name='KapschApplicationList', mode=MODE_TYPE)
-    _KapschApplicationList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('KapschOps1955Message', 'KapschApplication')))
-    KapschApplicationList._cont = _KapschApplicationList__item_
-    KapschApplicationList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    #-----< KapschProfile >-----#
+    KapschProfile = INT(name='KapschProfile', mode=MODE_TYPE)
+    KapschProfile._cont = ASN1Dict([('profile0', 0), ('profile1', 1)])
+    KapschProfile._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     
-    #-----< KapschBeaconID >-----#
-    KapschBeaconID = SEQ(name='KapschBeaconID', mode=MODE_TYPE)
-    _KapschBeaconID_manufacturerid = INT(name='manufacturerid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _KapschBeaconID_manufacturerid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=65535)], ev=None, er=[])
-    _KapschBeaconID_individualid = INT(name='individualid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _KapschBeaconID_individualid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=4294967295)], ev=None, er=[])
-    KapschBeaconID._cont = ASN1Dict([
-        ('manufacturerid', _KapschBeaconID_manufacturerid),
-        ('individualid', _KapschBeaconID_individualid),
+    #-----< Read-BST-Configuration >-----#
+    Read_BST_Configuration = SEQ(name='Read-BST-Configuration', mode=MODE_TYPE)
+    _Read_BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _Read_BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'BeaconID')))
+    _Read_BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschProfile')))
+    _Read_BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ApplicationList')))
+    Read_BST_Configuration._cont = ASN1Dict([
+        ('message-status', _Read_BST_Configuration_message_status),
+        ('rsu', _Read_BST_Configuration_rsu),
+        ('profile', _Read_BST_Configuration_profile),
+        ('mandApplications', _Read_BST_Configuration_mandApplications),
         ])
-    KapschBeaconID._ext = None
+    Read_BST_Configuration._ext = None
     
-    #-----< BST-Configuration >-----#
-    BST_Configuration = SEQ(name='BST-Configuration', mode=MODE_TYPE)
-    _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschBeaconID')))
-    _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Profile')))
-    _BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschApplicationList')))
-    BST_Configuration._cont = ASN1Dict([
-        ('message-status', _BST_Configuration_message_status),
-        ('rsu', _BST_Configuration_rsu),
-        ('profile', _BST_Configuration_profile),
-        ('mandApplications', _BST_Configuration_mandApplications),
+    #-----< KapschTime >-----#
+    KapschTime = SEQ(name='KapschTime', mode=MODE_TYPE)
+    _KapschTime_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _KapschTime_unix_time = INT(name='unix-time', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Time')))
+    _KapschTime_milliseconds = INT(name='milliseconds', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _KapschTime_milliseconds._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=65535)], ev=None, er=[])
+    KapschTime._cont = ASN1Dict([
+        ('message-status', _KapschTime_message_status),
+        ('unix-time', _KapschTime_unix_time),
+        ('milliseconds', _KapschTime_milliseconds),
         ])
-    BST_Configuration._ext = None
-    
-    #-----< Time >-----#
-    Time = SEQ(name='Time', mode=MODE_TYPE)
-    _Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _Time_unix_time = INT(name='unix-time', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Time_unix_time._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _Time_milliseconds = INT(name='milliseconds', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _Time_milliseconds._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    Time._cont = ASN1Dict([
-        ('message-status', _Time_message_status),
-        ('unix-time', _Time_unix_time),
-        ('milliseconds', _Time_milliseconds),
-        ])
-    Time._ext = None
+    KapschTime._ext = None
     
     #-----< General-Log-Level >-----#
     General_Log_Level = SEQ(name='General-Log-Level', mode=MODE_TYPE)
@@ -3747,7 +3718,7 @@ class KapschOps1955Message:
     _Log_Category_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Log_Category_Mode_log_category = INT(name='log-category', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Log_Category_Mode_log_category._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _Log_Category_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _Log_Category_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     Log_Category_Mode._cont = ASN1Dict([
         ('message-status', _Log_Category_Mode_message_status),
         ('log-category', _Log_Category_Mode_log_category),
@@ -3809,24 +3780,21 @@ class KapschOps1955Message:
     Communication_Log_Result._ext = None
     
     #-----< LiC-Status >-----#
-    LiC_Status = SEQ_OF(name='LiC-Status', mode=MODE_TYPE)
-    _LiC_Status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _LiC_Status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    LiC_Status._cont = _LiC_Status__item_
-    LiC_Status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    LiC_Status = INT(name='LiC-Status', mode=MODE_TYPE)
+    LiC_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=65535)], ev=None, er=[])
     
     #-----< LiC-Status-Message >-----#
     LiC_Status_Message = SEQ(name='LiC-Status-Message', mode=MODE_TYPE)
     _LiC_Status_Message_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _LiC_Status_Message_lic_status = SEQ_OF(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
-    _LiC_Status_Message_trx_1_status = SEQ(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_2_status = SEQ(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_3_status = SEQ(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_4_status = SEQ(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_5_status = SEQ(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_6_status = SEQ(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_7_status = SEQ(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_8_status = SEQ(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_lic_status = INT(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
+    _LiC_Status_Message_trx_1_status = INT(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_2_status = INT(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_3_status = INT(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_4_status = INT(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_5_status = INT(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_6_status = INT(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_7_status = INT(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_8_status = INT(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     LiC_Status_Message._cont = ASN1Dict([
         ('message-status', _LiC_Status_Message_message_status),
         ('lic-status', _LiC_Status_Message_lic_status),
@@ -3886,252 +3854,481 @@ class KapschOps1955Message:
         ])
     LiC_Version._ext = None
     
-    #-----< KapschMessages >-----#
-    KapschMessages = CHOICE(name='KapschMessages', mode=MODE_TYPE)
-    _KapschMessages_action_request = SEQ(name='action-request', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Request')))
-    __KapschMessages_action_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_action_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
-    __KapschMessages_action_request_actionType = INT(name='actionType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ActionType')))
-    __KapschMessages_action_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __KapschMessages_action_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __KapschMessages_action_request_actionParameter = CHOICE(name='actionParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
-    __KapschMessages_action_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    _KapschMessages_action_request._cont = ASN1Dict([
-        ('mode', __KapschMessages_action_request_mode),
-        ('eid', __KapschMessages_action_request_eid),
-        ('actionType', __KapschMessages_action_request_actionType),
-        ('accessCredentials', __KapschMessages_action_request_accessCredentials),
-        ('actionParameter', __KapschMessages_action_request_actionParameter),
-        ('iid', __KapschMessages_action_request_iid),
+    #-----< KapschRequestMessages >-----#
+    KapschRequestMessages = CHOICE(name='KapschRequestMessages', mode=MODE_TYPE)
+    _KapschRequestMessages_action_request = SEQ(name='action-request', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Request')))
+    __KapschRequestMessages_action_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_action_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschRequestMessages_action_request_actionType = INT(name='actionType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ActionType')))
+    __KapschRequestMessages_action_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __KapschRequestMessages_action_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschRequestMessages_action_request_actionParameter = CHOICE(name='actionParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
+    __KapschRequestMessages_action_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _KapschRequestMessages_action_request._cont = ASN1Dict([
+        ('mode', __KapschRequestMessages_action_request_mode),
+        ('eid', __KapschRequestMessages_action_request_eid),
+        ('actionType', __KapschRequestMessages_action_request_actionType),
+        ('accessCredentials', __KapschRequestMessages_action_request_accessCredentials),
+        ('actionParameter', __KapschRequestMessages_action_request_actionParameter),
+        ('iid', __KapschRequestMessages_action_request_iid),
         ])
-    _KapschMessages_action_request._ext = None
-    _KapschMessages_action_response = SEQ(name='action-response', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Response')))
-    __KapschMessages_action_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_action_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
-    __KapschMessages_action_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
-    __KapschMessages_action_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    __KapschMessages_action_response_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
-    __KapschMessages_action_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
-    _KapschMessages_action_response._cont = ASN1Dict([
-        ('fill', __KapschMessages_action_response_fill),
-        ('eid', __KapschMessages_action_response_eid),
-        ('iid', __KapschMessages_action_response_iid),
-        ('responseParameter', __KapschMessages_action_response_responseParameter),
-        ('ret', __KapschMessages_action_response_ret),
+    _KapschRequestMessages_action_request._ext = None
+    _KapschRequestMessages_action_response = SEQ(name='action-response', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Response')))
+    __KapschRequestMessages_action_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_action_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschRequestMessages_action_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschRequestMessages_action_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    __KapschRequestMessages_action_response_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
+    __KapschRequestMessages_action_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
+    _KapschRequestMessages_action_response._cont = ASN1Dict([
+        ('fill', __KapschRequestMessages_action_response_fill),
+        ('eid', __KapschRequestMessages_action_response_eid),
+        ('iid', __KapschRequestMessages_action_response_iid),
+        ('responseParameter', __KapschRequestMessages_action_response_responseParameter),
+        ('ret', __KapschRequestMessages_action_response_ret),
         ])
-    _KapschMessages_action_response._ext = None
-    _KapschMessages_event_report_request = SEQ(name='event-report-request', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Request')))
-    __KapschMessages_event_report_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_event_report_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
-    __KapschMessages_event_report_request_eventType = INT(name='eventType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'EventType')))
-    __KapschMessages_event_report_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __KapschMessages_event_report_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __KapschMessages_event_report_request_eventParameter = CHOICE(name='eventParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
-    __KapschMessages_event_report_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    _KapschMessages_event_report_request._cont = ASN1Dict([
-        ('mode', __KapschMessages_event_report_request_mode),
-        ('eid', __KapschMessages_event_report_request_eid),
-        ('eventType', __KapschMessages_event_report_request_eventType),
-        ('accessCredentials', __KapschMessages_event_report_request_accessCredentials),
-        ('eventParameter', __KapschMessages_event_report_request_eventParameter),
-        ('iid', __KapschMessages_event_report_request_iid),
+    _KapschRequestMessages_action_response._ext = None
+    _KapschRequestMessages_event_report_request = SEQ(name='event-report-request', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Request')))
+    __KapschRequestMessages_event_report_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_event_report_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschRequestMessages_event_report_request_eventType = INT(name='eventType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'EventType')))
+    __KapschRequestMessages_event_report_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __KapschRequestMessages_event_report_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschRequestMessages_event_report_request_eventParameter = CHOICE(name='eventParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
+    __KapschRequestMessages_event_report_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _KapschRequestMessages_event_report_request._cont = ASN1Dict([
+        ('mode', __KapschRequestMessages_event_report_request_mode),
+        ('eid', __KapschRequestMessages_event_report_request_eid),
+        ('eventType', __KapschRequestMessages_event_report_request_eventType),
+        ('accessCredentials', __KapschRequestMessages_event_report_request_accessCredentials),
+        ('eventParameter', __KapschRequestMessages_event_report_request_eventParameter),
+        ('iid', __KapschRequestMessages_event_report_request_iid),
         ])
-    _KapschMessages_event_report_request._ext = None
-    _KapschMessages_event_report_response = SEQ(name='event-report-response', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Response')))
-    _KapschMessages_set_request = SEQ(name='set-request', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Request')))
-    __KapschMessages_set_request_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_set_request_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
-    __KapschMessages_set_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_set_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
-    __KapschMessages_set_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __KapschMessages_set_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __KapschMessages_set_request_attrList = SEQ_OF(name='attrList', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
-    ___KapschMessages_set_request_attrList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
-    ____KapschMessages_set_request_attrList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    ____KapschMessages_set_request_attrList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    ____KapschMessages_set_request_attrList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
-    ___KapschMessages_set_request_attrList__item_._cont = ASN1Dict([
-        ('attributeId', ____KapschMessages_set_request_attrList__item__attributeId),
-        ('attributeValue', ____KapschMessages_set_request_attrList__item__attributeValue),
+    _KapschRequestMessages_event_report_request._ext = None
+    _KapschRequestMessages_event_report_response = SEQ(name='event-report-response', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Response')))
+    _KapschRequestMessages_set_request = SEQ(name='set-request', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Request')))
+    __KapschRequestMessages_set_request_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_set_request_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschRequestMessages_set_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_set_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschRequestMessages_set_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __KapschRequestMessages_set_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschRequestMessages_set_request_attrList = SEQ_OF(name='attrList', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
+    ___KapschRequestMessages_set_request_attrList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ____KapschRequestMessages_set_request_attrList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ____KapschRequestMessages_set_request_attrList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ____KapschRequestMessages_set_request_attrList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
+    ___KapschRequestMessages_set_request_attrList__item_._cont = ASN1Dict([
+        ('attributeId', ____KapschRequestMessages_set_request_attrList__item__attributeId),
+        ('attributeValue', ____KapschRequestMessages_set_request_attrList__item__attributeValue),
         ])
-    ___KapschMessages_set_request_attrList__item_._ext = None
-    __KapschMessages_set_request_attrList._cont = ___KapschMessages_set_request_attrList__item_
-    __KapschMessages_set_request_attrList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __KapschMessages_set_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    _KapschMessages_set_request._cont = ASN1Dict([
-        ('fill', __KapschMessages_set_request_fill),
-        ('mode', __KapschMessages_set_request_mode),
-        ('eid', __KapschMessages_set_request_eid),
-        ('accessCredentials', __KapschMessages_set_request_accessCredentials),
-        ('attrList', __KapschMessages_set_request_attrList),
-        ('iid', __KapschMessages_set_request_iid),
+    ___KapschRequestMessages_set_request_attrList__item_._ext = None
+    __KapschRequestMessages_set_request_attrList._cont = ___KapschRequestMessages_set_request_attrList__item_
+    __KapschRequestMessages_set_request_attrList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschRequestMessages_set_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _KapschRequestMessages_set_request._cont = ASN1Dict([
+        ('fill', __KapschRequestMessages_set_request_fill),
+        ('mode', __KapschRequestMessages_set_request_mode),
+        ('eid', __KapschRequestMessages_set_request_eid),
+        ('accessCredentials', __KapschRequestMessages_set_request_accessCredentials),
+        ('attrList', __KapschRequestMessages_set_request_attrList),
+        ('iid', __KapschRequestMessages_set_request_iid),
         ])
-    _KapschMessages_set_request._ext = None
-    _KapschMessages_set_response = SEQ(name='set-response', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Response')))
-    _KapschMessages_get_request = SEQ(name='get-request', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Request')))
-    _KapschMessages_get_response = SEQ(name='get-response', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Response')))
-    __KapschMessages_get_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    __KapschMessages_get_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
-    __KapschMessages_get_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
-    __KapschMessages_get_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
-    __KapschMessages_get_response_attributelist = SEQ_OF(name='attributelist', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')), opt=True)
-    ___KapschMessages_get_response_attributelist__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
-    ____KapschMessages_get_response_attributelist__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    ____KapschMessages_get_response_attributelist__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    ____KapschMessages_get_response_attributelist__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
-    ___KapschMessages_get_response_attributelist__item_._cont = ASN1Dict([
-        ('attributeId', ____KapschMessages_get_response_attributelist__item__attributeId),
-        ('attributeValue', ____KapschMessages_get_response_attributelist__item__attributeValue),
+    _KapschRequestMessages_set_request._ext = None
+    _KapschRequestMessages_set_response = SEQ(name='set-response', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Response')))
+    _KapschRequestMessages_get_request = SEQ(name='get-request', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Request')))
+    _KapschRequestMessages_get_response = SEQ(name='get-response', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Response')))
+    __KapschRequestMessages_get_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschRequestMessages_get_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschRequestMessages_get_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschRequestMessages_get_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    __KapschRequestMessages_get_response_attributelist = SEQ_OF(name='attributelist', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')), opt=True)
+    ___KapschRequestMessages_get_response_attributelist__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ____KapschRequestMessages_get_response_attributelist__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ____KapschRequestMessages_get_response_attributelist__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ____KapschRequestMessages_get_response_attributelist__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
+    ___KapschRequestMessages_get_response_attributelist__item_._cont = ASN1Dict([
+        ('attributeId', ____KapschRequestMessages_get_response_attributelist__item__attributeId),
+        ('attributeValue', ____KapschRequestMessages_get_response_attributelist__item__attributeValue),
         ])
-    ___KapschMessages_get_response_attributelist__item_._ext = None
-    __KapschMessages_get_response_attributelist._cont = ___KapschMessages_get_response_attributelist__item_
-    __KapschMessages_get_response_attributelist._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    __KapschMessages_get_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
-    _KapschMessages_get_response._cont = ASN1Dict([
-        ('fill', __KapschMessages_get_response_fill),
-        ('eid', __KapschMessages_get_response_eid),
-        ('iid', __KapschMessages_get_response_iid),
-        ('attributelist', __KapschMessages_get_response_attributelist),
-        ('ret', __KapschMessages_get_response_ret),
+    ___KapschRequestMessages_get_response_attributelist__item_._ext = None
+    __KapschRequestMessages_get_response_attributelist._cont = ___KapschRequestMessages_get_response_attributelist__item_
+    __KapschRequestMessages_get_response_attributelist._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschRequestMessages_get_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
+    _KapschRequestMessages_get_response._cont = ASN1Dict([
+        ('fill', __KapschRequestMessages_get_response_fill),
+        ('eid', __KapschRequestMessages_get_response_eid),
+        ('iid', __KapschRequestMessages_get_response_iid),
+        ('attributelist', __KapschRequestMessages_get_response_attributelist),
+        ('ret', __KapschRequestMessages_get_response_ret),
         ])
-    _KapschMessages_get_response._ext = None
-    _KapschMessages_initialisation_request = SEQ(name='initialisation-request', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Request')))
-    _KapschMessages_initialisation_response = SEQ(name='initialisation-response', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Response')))
-    _KapschMessages_notify_application_beacon = SEQ(name='notify-application-beacon', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Beacon')))
-    _KapschMessages_ready_application = SEQ(name='ready-application', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Ready-Application')))
-    _KapschMessages_notify_application_lost_message = SEQ(name='notify-application-lost-message', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Lost-Message')))
-    _KapschMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _KapschMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
-    _KapschMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
-    _KapschMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
-    _KapschMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
-    _KapschMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
-    _KapschMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
-    _KapschMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
-    _KapschMessages_trx_my_power_mode = SEQ(name='trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
-    _KapschMessages_trx_carrier_frequency1 = SEQ(name='trx-carrier-frequency1', mode=MODE_TYPE, tag=(1406, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
-    _KapschMessages_trx_carrier_frequency2 = SEQ(name='trx-carrier-frequency2', mode=MODE_TYPE, tag=(1415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
-    _KapschMessages_trx_uplink_parameters = SEQ(name='trx-uplink-parameters', mode=MODE_TYPE, tag=(1407, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Uplink-Parameters')))
-    _KapschMessages_trx_output_power1 = SEQ(name='trx-output-power1', mode=MODE_TYPE, tag=(1408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
-    _KapschMessages_trx_output_power2 = SEQ(name='trx-output-power2', mode=MODE_TYPE, tag=(1416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
-    _KapschMessages_trx_echo = SEQ(name='trx-echo', mode=MODE_TYPE, tag=(1414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Echo')))
-    _KapschMessages_trx_set_ui_control = SEQ(name='trx-set-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
-    _KapschMessages_trx_ui_status1 = SEQ(name='trx-ui-status1', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschMessages_trx_ui_status2 = SEQ(name='trx-ui-status2', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschMessages_trx_ui_status3 = SEQ(name='trx-ui-status3', mode=MODE_TYPE, tag=(1423, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschMessages_trx_general_purpose = SEQ(name='trx-general-purpose', mode=MODE_TYPE, tag=(1500, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-General-Purpose')))
-    _KapschMessages_trx_extended_output_power = SEQ(name='trx-extended-output-power', mode=MODE_TYPE, tag=(1506, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Extended-Output-Power')))
-    _KapschMessages_trx_read_rf_param1 = SEQ(name='trx-read-rf-param1', mode=MODE_TYPE, tag=(1516, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
-    _KapschMessages_trx_read_rf_param2 = SEQ(name='trx-read-rf-param2', mode=MODE_TYPE, tag=(1517, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
-    _KapschMessages_lic_nalm_behaviour1 = SEQ(name='lic-nalm-behaviour1', mode=MODE_TYPE, tag=(2408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
-    _KapschMessages_lic_nalm_behaviour2 = SEQ(name='lic-nalm-behaviour2', mode=MODE_TYPE, tag=(2409, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
-    _KapschMessages_lic_pdu_no_behaviour1 = SEQ(name='lic-pdu-no-behaviour1', mode=MODE_TYPE, tag=(2410, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
-    _KapschMessages_lic_pdu_no_behaviour2 = SEQ(name='lic-pdu-no-behaviour2', mode=MODE_TYPE, tag=(2411, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
-    _KapschMessages_lic_l7_ack_mode1 = SEQ(name='lic-l7-ack-mode1', mode=MODE_TYPE, tag=(2412, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
-    _KapschMessages_lic_l7_ack_mode2 = SEQ(name='lic-l7-ack-mode2', mode=MODE_TYPE, tag=(2413, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
-    _KapschMessages_lic_private_uplink_window_time1 = SEQ(name='lic-private-uplink-window-time1', mode=MODE_TYPE, tag=(2414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
-    _KapschMessages_lic_private_uplink_window_time2 = SEQ(name='lic-private-uplink-window-time2', mode=MODE_TYPE, tag=(2415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
-    _KapschMessages_lic_slow_data_behaviour1 = SEQ(name='lic-slow-data-behaviour1', mode=MODE_TYPE, tag=(2416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
-    _KapschMessages_lic_slow_data_behaviour2 = SEQ(name='lic-slow-data-behaviour2', mode=MODE_TYPE, tag=(2417, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
-    _KapschMessages_lic_release_retransmissions1 = SEQ(name='lic-release-retransmissions1', mode=MODE_TYPE, tag=(2418, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
-    _KapschMessages_lic_release_retransmissions2 = SEQ(name='lic-release-retransmissions2', mode=MODE_TYPE, tag=(2419, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
-    _KapschMessages_lic_lid_cleanup_mode1 = SEQ(name='lic-lid-cleanup-mode1', mode=MODE_TYPE, tag=(2420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
-    _KapschMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
-    _KapschMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
-    _KapschMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
-    _KapschMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
-    _KapschMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
-    _KapschMessages_set_bst_configuration = SEQ(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
-    _KapschMessages_read_bst_configuration = SEQ(name='read-bst-configuration', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'BST-Configuration')))
-    _KapschMessages_time1 = SEQ(name='time1', mode=MODE_TYPE, tag=(2459, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Time')))
-    _KapschMessages_time2 = SEQ(name='time2', mode=MODE_TYPE, tag=(2460, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Time')))
-    _KapschMessages_general_log_level1 = SEQ(name='general-log-level1', mode=MODE_TYPE, tag=(2463, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
-    _KapschMessages_general_log_level2 = SEQ(name='general-log-level2', mode=MODE_TYPE, tag=(2464, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
-    _KapschMessages_log_category_mode1 = SEQ(name='log-category-mode1', mode=MODE_TYPE, tag=(2465, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
-    _KapschMessages_log_category_mode2 = SEQ(name='log-category-mode2', mode=MODE_TYPE, tag=(2466, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
-    _KapschMessages_transaction_status1 = SEQ(name='transaction-status1', mode=MODE_TYPE, tag=(2482, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
-    _KapschMessages_transaction_status2 = SEQ(name='transaction-status2', mode=MODE_TYPE, tag=(2483, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
-    _KapschMessages_echo = SEQ(name='echo', mode=MODE_TYPE, tag=(2605, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Echo')))
-    _KapschMessages_communication_log_result = SEQ(name='communication-log-result', mode=MODE_TYPE, tag=(2650, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Communication-Log-Result')))
-    _KapschMessages_lic_status1 = SEQ(name='lic-status1', mode=MODE_TYPE, tag=(2651, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
-    _KapschMessages_lic_status2 = SEQ(name='lic-status2', mode=MODE_TYPE, tag=(2752, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
-    _KapschMessages_lic_statistics = SEQ(name='lic-statistics', mode=MODE_TYPE, tag=(2751, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Statistics')))
-    _KapschMessages_status_mode1 = SEQ(name='status-mode1', mode=MODE_TYPE, tag=(2753, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
-    _KapschMessages_status_mode2 = SEQ(name='status-mode2', mode=MODE_TYPE, tag=(2754, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
-    KapschMessages._cont = ASN1Dict([
-        ('action-request', _KapschMessages_action_request),
-        ('action-response', _KapschMessages_action_response),
-        ('event-report-request', _KapschMessages_event_report_request),
-        ('event-report-response', _KapschMessages_event_report_response),
-        ('set-request', _KapschMessages_set_request),
-        ('set-response', _KapschMessages_set_response),
-        ('get-request', _KapschMessages_get_request),
-        ('get-response', _KapschMessages_get_response),
-        ('initialisation-request', _KapschMessages_initialisation_request),
-        ('initialisation-response', _KapschMessages_initialisation_response),
-        ('notify-application-beacon', _KapschMessages_notify_application_beacon),
-        ('ready-application', _KapschMessages_ready_application),
-        ('notify-application-lost-message', _KapschMessages_notify_application_lost_message),
-        ('send-bst', _KapschMessages_send_bst),
-        ('forced-release', _KapschMessages_forced_release),
-        ('tis-ready-application1', _KapschMessages_tis_ready_application1),
-        ('tis-ready-application2', _KapschMessages_tis_ready_application2),
-        ('trx-status', _KapschMessages_trx_status),
-        ('trx-id', _KapschMessages_trx_id),
-        ('trx-internal-humidity', _KapschMessages_trx_internal_humidity),
-        ('trx-internal-temperature', _KapschMessages_trx_internal_temperature),
-        ('trx-my-power-mode', _KapschMessages_trx_my_power_mode),
-        ('trx-carrier-frequency1', _KapschMessages_trx_carrier_frequency1),
-        ('trx-carrier-frequency2', _KapschMessages_trx_carrier_frequency2),
-        ('trx-uplink-parameters', _KapschMessages_trx_uplink_parameters),
-        ('trx-output-power1', _KapschMessages_trx_output_power1),
-        ('trx-output-power2', _KapschMessages_trx_output_power2),
-        ('trx-echo', _KapschMessages_trx_echo),
-        ('trx-set-ui-control', _KapschMessages_trx_set_ui_control),
-        ('trx-ui-status1', _KapschMessages_trx_ui_status1),
-        ('trx-ui-status2', _KapschMessages_trx_ui_status2),
-        ('trx-ui-status3', _KapschMessages_trx_ui_status3),
-        ('trx-general-purpose', _KapschMessages_trx_general_purpose),
-        ('trx-extended-output-power', _KapschMessages_trx_extended_output_power),
-        ('trx-read-rf-param1', _KapschMessages_trx_read_rf_param1),
-        ('trx-read-rf-param2', _KapschMessages_trx_read_rf_param2),
-        ('lic-nalm-behaviour1', _KapschMessages_lic_nalm_behaviour1),
-        ('lic-nalm-behaviour2', _KapschMessages_lic_nalm_behaviour2),
-        ('lic-pdu-no-behaviour1', _KapschMessages_lic_pdu_no_behaviour1),
-        ('lic-pdu-no-behaviour2', _KapschMessages_lic_pdu_no_behaviour2),
-        ('lic-l7-ack-mode1', _KapschMessages_lic_l7_ack_mode1),
-        ('lic-l7-ack-mode2', _KapschMessages_lic_l7_ack_mode2),
-        ('lic-private-uplink-window-time1', _KapschMessages_lic_private_uplink_window_time1),
-        ('lic-private-uplink-window-time2', _KapschMessages_lic_private_uplink_window_time2),
-        ('lic-slow-data-behaviour1', _KapschMessages_lic_slow_data_behaviour1),
-        ('lic-slow-data-behaviour2', _KapschMessages_lic_slow_data_behaviour2),
-        ('lic-release-retransmissions1', _KapschMessages_lic_release_retransmissions1),
-        ('lic-release-retransmissions2', _KapschMessages_lic_release_retransmissions2),
-        ('lic-lid-cleanup-mode1', _KapschMessages_lic_lid_cleanup_mode1),
-        ('lic-lid-cleanup-mode2', _KapschMessages_lic_lid_cleanup_mode2),
-        ('dsrc-link-mode1', _KapschMessages_dsrc_link_mode1),
-        ('dsrc-link-mode2', _KapschMessages_dsrc_link_mode2),
-        ('dsrc-configuration1', _KapschMessages_dsrc_configuration1),
-        ('dsrc-configuration2', _KapschMessages_dsrc_configuration2),
-        ('set-bst-configuration', _KapschMessages_set_bst_configuration),
-        ('read-bst-configuration', _KapschMessages_read_bst_configuration),
-        ('time1', _KapschMessages_time1),
-        ('time2', _KapschMessages_time2),
-        ('general-log-level1', _KapschMessages_general_log_level1),
-        ('general-log-level2', _KapschMessages_general_log_level2),
-        ('log-category-mode1', _KapschMessages_log_category_mode1),
-        ('log-category-mode2', _KapschMessages_log_category_mode2),
-        ('transaction-status1', _KapschMessages_transaction_status1),
-        ('transaction-status2', _KapschMessages_transaction_status2),
-        ('echo', _KapschMessages_echo),
-        ('communication-log-result', _KapschMessages_communication_log_result),
-        ('lic-status1', _KapschMessages_lic_status1),
-        ('lic-status2', _KapschMessages_lic_status2),
-        ('lic-statistics', _KapschMessages_lic_statistics),
-        ('status-mode1', _KapschMessages_status_mode1),
-        ('status-mode2', _KapschMessages_status_mode2),
+    _KapschRequestMessages_get_response._ext = None
+    _KapschRequestMessages_initialisation_request = SEQ(name='initialisation-request', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Request')))
+    _KapschRequestMessages_initialisation_response = SEQ(name='initialisation-response', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Response')))
+    _KapschRequestMessages_notify_application_beacon = SEQ(name='notify-application-beacon', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Beacon')))
+    _KapschRequestMessages_ready_application = SEQ(name='ready-application', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Ready-Application')))
+    _KapschRequestMessages_notify_application_lost_message = SEQ(name='notify-application-lost-message', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Lost-Message')))
+    _KapschRequestMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _KapschRequestMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
+    _KapschRequestMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
+    _KapschRequestMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
+    _KapschRequestMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
+    _KapschRequestMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
+    _KapschRequestMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
+    _KapschRequestMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
+    _KapschRequestMessages_trx_my_power_mode = SEQ(name='trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
+    _KapschRequestMessages_trx_carrier_frequency1 = SEQ(name='trx-carrier-frequency1', mode=MODE_TYPE, tag=(1406, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
+    _KapschRequestMessages_trx_carrier_frequency2 = SEQ(name='trx-carrier-frequency2', mode=MODE_TYPE, tag=(1415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
+    _KapschRequestMessages_trx_uplink_parameters = SEQ(name='trx-uplink-parameters', mode=MODE_TYPE, tag=(1407, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Uplink-Parameters')))
+    _KapschRequestMessages_trx_output_power1 = SEQ(name='trx-output-power1', mode=MODE_TYPE, tag=(1408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
+    _KapschRequestMessages_trx_output_power2 = SEQ(name='trx-output-power2', mode=MODE_TYPE, tag=(1416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
+    _KapschRequestMessages_trx_echo = SEQ(name='trx-echo', mode=MODE_TYPE, tag=(1414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Echo')))
+    _KapschRequestMessages_trx_set_ui_control = SEQ(name='trx-set-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
+    _KapschRequestMessages_trx_ui_status1 = SEQ(name='trx-ui-status1', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschRequestMessages_trx_ui_status2 = SEQ(name='trx-ui-status2', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschRequestMessages_trx_general_purpose = SEQ(name='trx-general-purpose', mode=MODE_TYPE, tag=(1500, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-General-Purpose')))
+    _KapschRequestMessages_trx_extended_output_power = SEQ(name='trx-extended-output-power', mode=MODE_TYPE, tag=(1506, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Extended-Output-Power')))
+    _KapschRequestMessages_trx_read_rf_param1 = SEQ(name='trx-read-rf-param1', mode=MODE_TYPE, tag=(1516, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
+    _KapschRequestMessages_trx_read_rf_param2 = SEQ(name='trx-read-rf-param2', mode=MODE_TYPE, tag=(1517, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
+    _KapschRequestMessages_lic_nalm_behaviour1 = SEQ(name='lic-nalm-behaviour1', mode=MODE_TYPE, tag=(2408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
+    _KapschRequestMessages_lic_nalm_behaviour2 = SEQ(name='lic-nalm-behaviour2', mode=MODE_TYPE, tag=(2409, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
+    _KapschRequestMessages_lic_pdu_no_behaviour1 = SEQ(name='lic-pdu-no-behaviour1', mode=MODE_TYPE, tag=(2410, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
+    _KapschRequestMessages_lic_pdu_no_behaviour2 = SEQ(name='lic-pdu-no-behaviour2', mode=MODE_TYPE, tag=(2411, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
+    _KapschRequestMessages_lic_l7_ack_mode1 = SEQ(name='lic-l7-ack-mode1', mode=MODE_TYPE, tag=(2412, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
+    _KapschRequestMessages_lic_l7_ack_mode2 = SEQ(name='lic-l7-ack-mode2', mode=MODE_TYPE, tag=(2413, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
+    _KapschRequestMessages_lic_private_uplink_window_time1 = SEQ(name='lic-private-uplink-window-time1', mode=MODE_TYPE, tag=(2414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
+    _KapschRequestMessages_lic_private_uplink_window_time2 = SEQ(name='lic-private-uplink-window-time2', mode=MODE_TYPE, tag=(2415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
+    _KapschRequestMessages_lic_slow_data_behaviour1 = SEQ(name='lic-slow-data-behaviour1', mode=MODE_TYPE, tag=(2416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
+    _KapschRequestMessages_lic_slow_data_behaviour2 = SEQ(name='lic-slow-data-behaviour2', mode=MODE_TYPE, tag=(2417, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
+    _KapschRequestMessages_lic_release_retransmissions1 = SEQ(name='lic-release-retransmissions1', mode=MODE_TYPE, tag=(2418, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
+    _KapschRequestMessages_lic_release_retransmissions2 = SEQ(name='lic-release-retransmissions2', mode=MODE_TYPE, tag=(2419, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
+    _KapschRequestMessages_lic_lid_cleanup_mode1 = SEQ(name='lic-lid-cleanup-mode1', mode=MODE_TYPE, tag=(2420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
+    _KapschRequestMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
+    _KapschRequestMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschRequestMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschRequestMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschRequestMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschRequestMessages_set_bst_configuration = SEQ(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Set-BST-Configuration')))
+    _KapschRequestMessages_read_bst_configuration = NULL(name='read-bst-configuration', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _KapschRequestMessages_time1 = SEQ(name='time1', mode=MODE_TYPE, tag=(2459, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschTime')))
+    _KapschRequestMessages_time2 = SEQ(name='time2', mode=MODE_TYPE, tag=(2460, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschTime')))
+    _KapschRequestMessages_general_log_level1 = SEQ(name='general-log-level1', mode=MODE_TYPE, tag=(2463, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
+    _KapschRequestMessages_general_log_level2 = SEQ(name='general-log-level2', mode=MODE_TYPE, tag=(2464, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
+    _KapschRequestMessages_log_category_mode1 = SEQ(name='log-category-mode1', mode=MODE_TYPE, tag=(2465, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
+    _KapschRequestMessages_log_category_mode2 = SEQ(name='log-category-mode2', mode=MODE_TYPE, tag=(2466, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
+    _KapschRequestMessages_transaction_status1 = SEQ(name='transaction-status1', mode=MODE_TYPE, tag=(2482, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
+    _KapschRequestMessages_transaction_status2 = SEQ(name='transaction-status2', mode=MODE_TYPE, tag=(2483, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
+    _KapschRequestMessages_echo = SEQ(name='echo', mode=MODE_TYPE, tag=(2605, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Echo')))
+    _KapschRequestMessages_communication_log_result = SEQ(name='communication-log-result', mode=MODE_TYPE, tag=(2650, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Communication-Log-Result')))
+    _KapschRequestMessages_lic_status1 = SEQ(name='lic-status1', mode=MODE_TYPE, tag=(2651, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
+    _KapschRequestMessages_lic_status2 = SEQ(name='lic-status2', mode=MODE_TYPE, tag=(2752, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
+    _KapschRequestMessages_lic_statistics = SEQ(name='lic-statistics', mode=MODE_TYPE, tag=(2751, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Statistics')))
+    _KapschRequestMessages_status_mode1 = SEQ(name='status-mode1', mode=MODE_TYPE, tag=(2753, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
+    _KapschRequestMessages_status_mode2 = SEQ(name='status-mode2', mode=MODE_TYPE, tag=(2754, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
+    KapschRequestMessages._cont = ASN1Dict([
+        ('action-request', _KapschRequestMessages_action_request),
+        ('action-response', _KapschRequestMessages_action_response),
+        ('event-report-request', _KapschRequestMessages_event_report_request),
+        ('event-report-response', _KapschRequestMessages_event_report_response),
+        ('set-request', _KapschRequestMessages_set_request),
+        ('set-response', _KapschRequestMessages_set_response),
+        ('get-request', _KapschRequestMessages_get_request),
+        ('get-response', _KapschRequestMessages_get_response),
+        ('initialisation-request', _KapschRequestMessages_initialisation_request),
+        ('initialisation-response', _KapschRequestMessages_initialisation_response),
+        ('notify-application-beacon', _KapschRequestMessages_notify_application_beacon),
+        ('ready-application', _KapschRequestMessages_ready_application),
+        ('notify-application-lost-message', _KapschRequestMessages_notify_application_lost_message),
+        ('send-bst', _KapschRequestMessages_send_bst),
+        ('forced-release', _KapschRequestMessages_forced_release),
+        ('tis-ready-application1', _KapschRequestMessages_tis_ready_application1),
+        ('tis-ready-application2', _KapschRequestMessages_tis_ready_application2),
+        ('trx-status', _KapschRequestMessages_trx_status),
+        ('trx-id', _KapschRequestMessages_trx_id),
+        ('trx-internal-humidity', _KapschRequestMessages_trx_internal_humidity),
+        ('trx-internal-temperature', _KapschRequestMessages_trx_internal_temperature),
+        ('trx-my-power-mode', _KapschRequestMessages_trx_my_power_mode),
+        ('trx-carrier-frequency1', _KapschRequestMessages_trx_carrier_frequency1),
+        ('trx-carrier-frequency2', _KapschRequestMessages_trx_carrier_frequency2),
+        ('trx-uplink-parameters', _KapschRequestMessages_trx_uplink_parameters),
+        ('trx-output-power1', _KapschRequestMessages_trx_output_power1),
+        ('trx-output-power2', _KapschRequestMessages_trx_output_power2),
+        ('trx-echo', _KapschRequestMessages_trx_echo),
+        ('trx-set-ui-control', _KapschRequestMessages_trx_set_ui_control),
+        ('trx-ui-status1', _KapschRequestMessages_trx_ui_status1),
+        ('trx-ui-status2', _KapschRequestMessages_trx_ui_status2),
+        ('trx-general-purpose', _KapschRequestMessages_trx_general_purpose),
+        ('trx-extended-output-power', _KapschRequestMessages_trx_extended_output_power),
+        ('trx-read-rf-param1', _KapschRequestMessages_trx_read_rf_param1),
+        ('trx-read-rf-param2', _KapschRequestMessages_trx_read_rf_param2),
+        ('lic-nalm-behaviour1', _KapschRequestMessages_lic_nalm_behaviour1),
+        ('lic-nalm-behaviour2', _KapschRequestMessages_lic_nalm_behaviour2),
+        ('lic-pdu-no-behaviour1', _KapschRequestMessages_lic_pdu_no_behaviour1),
+        ('lic-pdu-no-behaviour2', _KapschRequestMessages_lic_pdu_no_behaviour2),
+        ('lic-l7-ack-mode1', _KapschRequestMessages_lic_l7_ack_mode1),
+        ('lic-l7-ack-mode2', _KapschRequestMessages_lic_l7_ack_mode2),
+        ('lic-private-uplink-window-time1', _KapschRequestMessages_lic_private_uplink_window_time1),
+        ('lic-private-uplink-window-time2', _KapschRequestMessages_lic_private_uplink_window_time2),
+        ('lic-slow-data-behaviour1', _KapschRequestMessages_lic_slow_data_behaviour1),
+        ('lic-slow-data-behaviour2', _KapschRequestMessages_lic_slow_data_behaviour2),
+        ('lic-release-retransmissions1', _KapschRequestMessages_lic_release_retransmissions1),
+        ('lic-release-retransmissions2', _KapschRequestMessages_lic_release_retransmissions2),
+        ('lic-lid-cleanup-mode1', _KapschRequestMessages_lic_lid_cleanup_mode1),
+        ('lic-lid-cleanup-mode2', _KapschRequestMessages_lic_lid_cleanup_mode2),
+        ('dsrc-link-mode1', _KapschRequestMessages_dsrc_link_mode1),
+        ('dsrc-link-mode2', _KapschRequestMessages_dsrc_link_mode2),
+        ('dsrc-configuration1', _KapschRequestMessages_dsrc_configuration1),
+        ('dsrc-configuration2', _KapschRequestMessages_dsrc_configuration2),
+        ('set-bst-configuration', _KapschRequestMessages_set_bst_configuration),
+        ('read-bst-configuration', _KapschRequestMessages_read_bst_configuration),
+        ('time1', _KapschRequestMessages_time1),
+        ('time2', _KapschRequestMessages_time2),
+        ('general-log-level1', _KapschRequestMessages_general_log_level1),
+        ('general-log-level2', _KapschRequestMessages_general_log_level2),
+        ('log-category-mode1', _KapschRequestMessages_log_category_mode1),
+        ('log-category-mode2', _KapschRequestMessages_log_category_mode2),
+        ('transaction-status1', _KapschRequestMessages_transaction_status1),
+        ('transaction-status2', _KapschRequestMessages_transaction_status2),
+        ('echo', _KapschRequestMessages_echo),
+        ('communication-log-result', _KapschRequestMessages_communication_log_result),
+        ('lic-status1', _KapschRequestMessages_lic_status1),
+        ('lic-status2', _KapschRequestMessages_lic_status2),
+        ('lic-statistics', _KapschRequestMessages_lic_statistics),
+        ('status-mode1', _KapschRequestMessages_status_mode1),
+        ('status-mode2', _KapschRequestMessages_status_mode2),
         ])
-    KapschMessages._ext = None
+    KapschRequestMessages._ext = None
+    
+    #-----< KapschResponseMessages >-----#
+    KapschResponseMessages = CHOICE(name='KapschResponseMessages', mode=MODE_TYPE)
+    _KapschResponseMessages_action_request = INT(name='action-request', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _KapschResponseMessages_action_response = SEQ(name='action-response', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Response')))
+    __KapschResponseMessages_action_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschResponseMessages_action_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschResponseMessages_action_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschResponseMessages_action_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    __KapschResponseMessages_action_response_responseParameter = CHOICE(name='responseParameter', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
+    __KapschResponseMessages_action_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
+    _KapschResponseMessages_action_response._cont = ASN1Dict([
+        ('fill', __KapschResponseMessages_action_response_fill),
+        ('eid', __KapschResponseMessages_action_response_eid),
+        ('iid', __KapschResponseMessages_action_response_iid),
+        ('responseParameter', __KapschResponseMessages_action_response_responseParameter),
+        ('ret', __KapschResponseMessages_action_response_ret),
+        ])
+    _KapschResponseMessages_action_response._ext = None
+    _KapschResponseMessages_event_report_request = SEQ(name='event-report-request', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Request')))
+    __KapschResponseMessages_event_report_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschResponseMessages_event_report_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschResponseMessages_event_report_request_eventType = INT(name='eventType', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'EventType')))
+    __KapschResponseMessages_event_report_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __KapschResponseMessages_event_report_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschResponseMessages_event_report_request_eventParameter = CHOICE(name='eventParameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')), opt=True)
+    __KapschResponseMessages_event_report_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _KapschResponseMessages_event_report_request._cont = ASN1Dict([
+        ('mode', __KapschResponseMessages_event_report_request_mode),
+        ('eid', __KapschResponseMessages_event_report_request_eid),
+        ('eventType', __KapschResponseMessages_event_report_request_eventType),
+        ('accessCredentials', __KapschResponseMessages_event_report_request_accessCredentials),
+        ('eventParameter', __KapschResponseMessages_event_report_request_eventParameter),
+        ('iid', __KapschResponseMessages_event_report_request_iid),
+        ])
+    _KapschResponseMessages_event_report_request._ext = None
+    _KapschResponseMessages_event_report_response = SEQ(name='event-report-response', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Event-Report-Response')))
+    _KapschResponseMessages_set_request = SEQ(name='set-request', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Request')))
+    __KapschResponseMessages_set_request_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschResponseMessages_set_request_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschResponseMessages_set_request_mode = BOOL(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschResponseMessages_set_request_eid = INT(name='eid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschResponseMessages_set_request_accessCredentials = OCT_STR(name='accessCredentials', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    __KapschResponseMessages_set_request_accessCredentials._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschResponseMessages_set_request_attrList = SEQ_OF(name='attrList', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')))
+    ___KapschResponseMessages_set_request_attrList__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ____KapschResponseMessages_set_request_attrList__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ____KapschResponseMessages_set_request_attrList__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ____KapschResponseMessages_set_request_attrList__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
+    ___KapschResponseMessages_set_request_attrList__item_._cont = ASN1Dict([
+        ('attributeId', ____KapschResponseMessages_set_request_attrList__item__attributeId),
+        ('attributeValue', ____KapschResponseMessages_set_request_attrList__item__attributeValue),
+        ])
+    ___KapschResponseMessages_set_request_attrList__item_._ext = None
+    __KapschResponseMessages_set_request_attrList._cont = ___KapschResponseMessages_set_request_attrList__item_
+    __KapschResponseMessages_set_request_attrList._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschResponseMessages_set_request_iid = INT(name='iid', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    _KapschResponseMessages_set_request._cont = ASN1Dict([
+        ('fill', __KapschResponseMessages_set_request_fill),
+        ('mode', __KapschResponseMessages_set_request_mode),
+        ('eid', __KapschResponseMessages_set_request_eid),
+        ('accessCredentials', __KapschResponseMessages_set_request_accessCredentials),
+        ('attrList', __KapschResponseMessages_set_request_attrList),
+        ('iid', __KapschResponseMessages_set_request_iid),
+        ])
+    _KapschResponseMessages_set_request._ext = None
+    _KapschResponseMessages_set_response = SEQ(name='set-response', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Set-Response')))
+    _KapschResponseMessages_get_request = SEQ(name='get-request', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Request')))
+    _KapschResponseMessages_get_response = SEQ(name='get-response', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Get-Response')))
+    __KapschResponseMessages_get_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    __KapschResponseMessages_get_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
+    __KapschResponseMessages_get_response_eid = INT(name='eid', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')))
+    __KapschResponseMessages_get_response_iid = INT(name='iid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Dsrc-EID')), opt=True)
+    __KapschResponseMessages_get_response_attributelist = SEQ_OF(name='attributelist', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'AttributeList')), opt=True)
+    ___KapschResponseMessages_get_response_attributelist__item_ = SEQ(name='_item_', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'Attributes')))
+    ____KapschResponseMessages_get_response_attributelist__item__attributeId = INT(name='attributeId', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    ____KapschResponseMessages_get_response_attributelist__item__attributeId._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    ____KapschResponseMessages_get_response_attributelist__item__attributeValue = CHOICE(name='attributeValue', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
+    ___KapschResponseMessages_get_response_attributelist__item_._cont = ASN1Dict([
+        ('attributeId', ____KapschResponseMessages_get_response_attributelist__item__attributeId),
+        ('attributeValue', ____KapschResponseMessages_get_response_attributelist__item__attributeValue),
+        ])
+    ___KapschResponseMessages_get_response_attributelist__item_._ext = None
+    __KapschResponseMessages_get_response_attributelist._cont = ___KapschResponseMessages_get_response_attributelist__item_
+    __KapschResponseMessages_get_response_attributelist._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
+    __KapschResponseMessages_get_response_ret = INT(name='ret', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'ReturnStatus')), opt=True)
+    _KapschResponseMessages_get_response._cont = ASN1Dict([
+        ('fill', __KapschResponseMessages_get_response_fill),
+        ('eid', __KapschResponseMessages_get_response_eid),
+        ('iid', __KapschResponseMessages_get_response_iid),
+        ('attributelist', __KapschResponseMessages_get_response_attributelist),
+        ('ret', __KapschResponseMessages_get_response_ret),
+        ])
+    _KapschResponseMessages_get_response._ext = None
+    _KapschResponseMessages_initialisation_request = SEQ(name='initialisation-request', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Request')))
+    _KapschResponseMessages_initialisation_response = SEQ(name='initialisation-response', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Initialisation-Response')))
+    _KapschResponseMessages_notify_application_beacon = SEQ(name='notify-application-beacon', mode=MODE_TYPE, tag=(12, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Beacon')))
+    _KapschResponseMessages_ready_application = SEQ(name='ready-application', mode=MODE_TYPE, tag=(13, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Ready-Application')))
+    _KapschResponseMessages_notify_application_lost_message = SEQ(name='notify-application-lost-message', mode=MODE_TYPE, tag=(14, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Notify-Application-Lost-Message')))
+    _KapschResponseMessages_send_bst = INT(name='send-bst', mode=MODE_TYPE, tag=(17, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _KapschResponseMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
+    _KapschResponseMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
+    _KapschResponseMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
+    _KapschResponseMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
+    _KapschResponseMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
+    _KapschResponseMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
+    _KapschResponseMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
+    _KapschResponseMessages_trx_my_power_mode = SEQ(name='trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
+    _KapschResponseMessages_trx_carrier_frequency1 = SEQ(name='trx-carrier-frequency1', mode=MODE_TYPE, tag=(1406, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
+    _KapschResponseMessages_trx_carrier_frequency2 = SEQ(name='trx-carrier-frequency2', mode=MODE_TYPE, tag=(1415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
+    _KapschResponseMessages_trx_uplink_parameters = SEQ(name='trx-uplink-parameters', mode=MODE_TYPE, tag=(1407, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Uplink-Parameters')))
+    _KapschResponseMessages_trx_output_power1 = SEQ(name='trx-output-power1', mode=MODE_TYPE, tag=(1408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
+    _KapschResponseMessages_trx_output_power2 = SEQ(name='trx-output-power2', mode=MODE_TYPE, tag=(1416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
+    _KapschResponseMessages_trx_echo = SEQ(name='trx-echo', mode=MODE_TYPE, tag=(1414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Echo')))
+    _KapschResponseMessages_trx_set_ui_control = SEQ(name='trx-set-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
+    _KapschResponseMessages_trx_ui_status1 = SEQ(name='trx-ui-status1', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschResponseMessages_trx_ui_status2 = SEQ(name='trx-ui-status2', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschResponseMessages_trx_ui_status3 = SEQ(name='trx-ui-status3', mode=MODE_TYPE, tag=(1423, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschResponseMessages_trx_general_purpose = SEQ(name='trx-general-purpose', mode=MODE_TYPE, tag=(1500, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-General-Purpose')))
+    _KapschResponseMessages_trx_extended_output_power = SEQ(name='trx-extended-output-power', mode=MODE_TYPE, tag=(1506, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Extended-Output-Power')))
+    _KapschResponseMessages_trx_read_rf_param1 = SEQ(name='trx-read-rf-param1', mode=MODE_TYPE, tag=(1516, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
+    _KapschResponseMessages_trx_read_rf_param2 = SEQ(name='trx-read-rf-param2', mode=MODE_TYPE, tag=(1517, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
+    _KapschResponseMessages_lic_nalm_behaviour1 = SEQ(name='lic-nalm-behaviour1', mode=MODE_TYPE, tag=(2408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
+    _KapschResponseMessages_lic_nalm_behaviour2 = SEQ(name='lic-nalm-behaviour2', mode=MODE_TYPE, tag=(2409, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Nalm-Behaviour')))
+    _KapschResponseMessages_lic_pdu_no_behaviour1 = SEQ(name='lic-pdu-no-behaviour1', mode=MODE_TYPE, tag=(2410, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
+    _KapschResponseMessages_lic_pdu_no_behaviour2 = SEQ(name='lic-pdu-no-behaviour2', mode=MODE_TYPE, tag=(2411, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-PDU-No-Behaviour')))
+    _KapschResponseMessages_lic_l7_ack_mode1 = SEQ(name='lic-l7-ack-mode1', mode=MODE_TYPE, tag=(2412, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
+    _KapschResponseMessages_lic_l7_ack_mode2 = SEQ(name='lic-l7-ack-mode2', mode=MODE_TYPE, tag=(2413, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-L7-Ack-Mode')))
+    _KapschResponseMessages_lic_private_uplink_window_time1 = SEQ(name='lic-private-uplink-window-time1', mode=MODE_TYPE, tag=(2414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
+    _KapschResponseMessages_lic_private_uplink_window_time2 = SEQ(name='lic-private-uplink-window-time2', mode=MODE_TYPE, tag=(2415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Private-Uplink-Window-Time')))
+    _KapschResponseMessages_lic_slow_data_behaviour1 = SEQ(name='lic-slow-data-behaviour1', mode=MODE_TYPE, tag=(2416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
+    _KapschResponseMessages_lic_slow_data_behaviour2 = SEQ(name='lic-slow-data-behaviour2', mode=MODE_TYPE, tag=(2417, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Slow-Data-Behaviour')))
+    _KapschResponseMessages_lic_release_retransmissions1 = SEQ(name='lic-release-retransmissions1', mode=MODE_TYPE, tag=(2418, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
+    _KapschResponseMessages_lic_release_retransmissions2 = SEQ(name='lic-release-retransmissions2', mode=MODE_TYPE, tag=(2419, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
+    _KapschResponseMessages_lic_lid_cleanup_mode1 = SEQ(name='lic-lid-cleanup-mode1', mode=MODE_TYPE, tag=(2420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
+    _KapschResponseMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
+    _KapschResponseMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschResponseMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschResponseMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschResponseMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
+    _KapschResponseMessages_set_bst_configuration = INT(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _KapschResponseMessages_read_bst_configuration = SEQ(name='read-bst-configuration', mode=MODE_TYPE, tag=(2458, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Read-BST-Configuration')))
+    _KapschResponseMessages_time1 = SEQ(name='time1', mode=MODE_TYPE, tag=(2459, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschTime')))
+    _KapschResponseMessages_time2 = SEQ(name='time2', mode=MODE_TYPE, tag=(2460, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschTime')))
+    _KapschResponseMessages_general_log_level1 = SEQ(name='general-log-level1', mode=MODE_TYPE, tag=(2463, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
+    _KapschResponseMessages_general_log_level2 = SEQ(name='general-log-level2', mode=MODE_TYPE, tag=(2464, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'General-Log-Level')))
+    _KapschResponseMessages_log_category_mode1 = SEQ(name='log-category-mode1', mode=MODE_TYPE, tag=(2465, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
+    _KapschResponseMessages_log_category_mode2 = SEQ(name='log-category-mode2', mode=MODE_TYPE, tag=(2466, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Log-Category-Mode')))
+    _KapschResponseMessages_transaction_status1 = SEQ(name='transaction-status1', mode=MODE_TYPE, tag=(2482, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
+    _KapschResponseMessages_transaction_status2 = SEQ(name='transaction-status2', mode=MODE_TYPE, tag=(2483, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Transaction-Status')))
+    _KapschResponseMessages_echo = SEQ(name='echo', mode=MODE_TYPE, tag=(2605, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Echo')))
+    _KapschResponseMessages_communication_log_result = SEQ(name='communication-log-result', mode=MODE_TYPE, tag=(2650, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Communication-Log-Result')))
+    _KapschResponseMessages_lic_status1 = SEQ(name='lic-status1', mode=MODE_TYPE, tag=(2651, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
+    _KapschResponseMessages_lic_status2 = SEQ(name='lic-status2', mode=MODE_TYPE, tag=(2752, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status-Message')))
+    _KapschResponseMessages_lic_statistics = SEQ(name='lic-statistics', mode=MODE_TYPE, tag=(2751, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Statistics')))
+    _KapschResponseMessages_status_mode1 = SEQ(name='status-mode1', mode=MODE_TYPE, tag=(2753, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
+    _KapschResponseMessages_status_mode2 = SEQ(name='status-mode2', mode=MODE_TYPE, tag=(2754, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Status-Mode')))
+    KapschResponseMessages._cont = ASN1Dict([
+        ('action-request', _KapschResponseMessages_action_request),
+        ('action-response', _KapschResponseMessages_action_response),
+        ('event-report-request', _KapschResponseMessages_event_report_request),
+        ('event-report-response', _KapschResponseMessages_event_report_response),
+        ('set-request', _KapschResponseMessages_set_request),
+        ('set-response', _KapschResponseMessages_set_response),
+        ('get-request', _KapschResponseMessages_get_request),
+        ('get-response', _KapschResponseMessages_get_response),
+        ('initialisation-request', _KapschResponseMessages_initialisation_request),
+        ('initialisation-response', _KapschResponseMessages_initialisation_response),
+        ('notify-application-beacon', _KapschResponseMessages_notify_application_beacon),
+        ('ready-application', _KapschResponseMessages_ready_application),
+        ('notify-application-lost-message', _KapschResponseMessages_notify_application_lost_message),
+        ('send-bst', _KapschResponseMessages_send_bst),
+        ('forced-release', _KapschResponseMessages_forced_release),
+        ('tis-ready-application1', _KapschResponseMessages_tis_ready_application1),
+        ('tis-ready-application2', _KapschResponseMessages_tis_ready_application2),
+        ('trx-status', _KapschResponseMessages_trx_status),
+        ('trx-id', _KapschResponseMessages_trx_id),
+        ('trx-internal-humidity', _KapschResponseMessages_trx_internal_humidity),
+        ('trx-internal-temperature', _KapschResponseMessages_trx_internal_temperature),
+        ('trx-my-power-mode', _KapschResponseMessages_trx_my_power_mode),
+        ('trx-carrier-frequency1', _KapschResponseMessages_trx_carrier_frequency1),
+        ('trx-carrier-frequency2', _KapschResponseMessages_trx_carrier_frequency2),
+        ('trx-uplink-parameters', _KapschResponseMessages_trx_uplink_parameters),
+        ('trx-output-power1', _KapschResponseMessages_trx_output_power1),
+        ('trx-output-power2', _KapschResponseMessages_trx_output_power2),
+        ('trx-echo', _KapschResponseMessages_trx_echo),
+        ('trx-set-ui-control', _KapschResponseMessages_trx_set_ui_control),
+        ('trx-ui-status1', _KapschResponseMessages_trx_ui_status1),
+        ('trx-ui-status2', _KapschResponseMessages_trx_ui_status2),
+        ('trx-ui-status3', _KapschResponseMessages_trx_ui_status3),
+        ('trx-general-purpose', _KapschResponseMessages_trx_general_purpose),
+        ('trx-extended-output-power', _KapschResponseMessages_trx_extended_output_power),
+        ('trx-read-rf-param1', _KapschResponseMessages_trx_read_rf_param1),
+        ('trx-read-rf-param2', _KapschResponseMessages_trx_read_rf_param2),
+        ('lic-nalm-behaviour1', _KapschResponseMessages_lic_nalm_behaviour1),
+        ('lic-nalm-behaviour2', _KapschResponseMessages_lic_nalm_behaviour2),
+        ('lic-pdu-no-behaviour1', _KapschResponseMessages_lic_pdu_no_behaviour1),
+        ('lic-pdu-no-behaviour2', _KapschResponseMessages_lic_pdu_no_behaviour2),
+        ('lic-l7-ack-mode1', _KapschResponseMessages_lic_l7_ack_mode1),
+        ('lic-l7-ack-mode2', _KapschResponseMessages_lic_l7_ack_mode2),
+        ('lic-private-uplink-window-time1', _KapschResponseMessages_lic_private_uplink_window_time1),
+        ('lic-private-uplink-window-time2', _KapschResponseMessages_lic_private_uplink_window_time2),
+        ('lic-slow-data-behaviour1', _KapschResponseMessages_lic_slow_data_behaviour1),
+        ('lic-slow-data-behaviour2', _KapschResponseMessages_lic_slow_data_behaviour2),
+        ('lic-release-retransmissions1', _KapschResponseMessages_lic_release_retransmissions1),
+        ('lic-release-retransmissions2', _KapschResponseMessages_lic_release_retransmissions2),
+        ('lic-lid-cleanup-mode1', _KapschResponseMessages_lic_lid_cleanup_mode1),
+        ('lic-lid-cleanup-mode2', _KapschResponseMessages_lic_lid_cleanup_mode2),
+        ('dsrc-link-mode1', _KapschResponseMessages_dsrc_link_mode1),
+        ('dsrc-link-mode2', _KapschResponseMessages_dsrc_link_mode2),
+        ('dsrc-configuration1', _KapschResponseMessages_dsrc_configuration1),
+        ('dsrc-configuration2', _KapschResponseMessages_dsrc_configuration2),
+        ('set-bst-configuration', _KapschResponseMessages_set_bst_configuration),
+        ('read-bst-configuration', _KapschResponseMessages_read_bst_configuration),
+        ('time1', _KapschResponseMessages_time1),
+        ('time2', _KapschResponseMessages_time2),
+        ('general-log-level1', _KapschResponseMessages_general_log_level1),
+        ('general-log-level2', _KapschResponseMessages_general_log_level2),
+        ('log-category-mode1', _KapschResponseMessages_log_category_mode1),
+        ('log-category-mode2', _KapschResponseMessages_log_category_mode2),
+        ('transaction-status1', _KapschResponseMessages_transaction_status1),
+        ('transaction-status2', _KapschResponseMessages_transaction_status2),
+        ('echo', _KapschResponseMessages_echo),
+        ('communication-log-result', _KapschResponseMessages_communication_log_result),
+        ('lic-status1', _KapschResponseMessages_lic_status1),
+        ('lic-status2', _KapschResponseMessages_lic_status2),
+        ('lic-statistics', _KapschResponseMessages_lic_statistics),
+        ('status-mode1', _KapschResponseMessages_status_mode1),
+        ('status-mode2', _KapschResponseMessages_status_mode2),
+        ])
+    KapschResponseMessages._ext = None
     
     _all_ = [
         OPS1955Container,
@@ -4185,15 +4382,8 @@ class KapschOps1955Message:
         _Tis_Ready_Application_link_id,
         _Tis_Ready_Application_eid,
         Tis_Ready_Application,
-        ActualStatus,
-        _TRX_Status_device_not_configured,
-        _TRX_Status_communication_error,
-        _TRX_Status_voltage_error,
-        _TRX_Status_microwave_transmitter_failure,
-        _TRX_Status_erroneous_value_a,
-        _TRX_Status_erroneous_value_b,
-        _TRX_Status_actual_status,
         TRX_Status,
+        TRX_Mode,
         _TRX_Status_Message_instance,
         _TRX_Status_Message_status,
         _TRX_Status_Message_trx_mode,
@@ -4214,6 +4404,7 @@ class KapschOps1955Message:
         _TRX_Internal_Temperature_status,
         _TRX_Internal_Temperature_temp,
         TRX_Internal_Temperature,
+        My_Power_Mode,
         _TRX_My_Power_Mode_instance,
         _TRX_My_Power_Mode_mode,
         TRX_My_Power_Mode,
@@ -4254,8 +4445,9 @@ class KapschOps1955Message:
         _TRX_Read_UI_Control_ops1925,
         _TRX_Read_UI_Control_ops1955,
         TRX_Read_UI_Control,
+        UI_Type,
+        Sensors,
         _TRX_UI_Status_instance,
-        __TRX_UI_Status_status__item_,
         _TRX_UI_Status_status,
         _TRX_UI_Status_uitype,
         _TRX_UI_Status_sensors,
@@ -4323,26 +4515,20 @@ class KapschOps1955Message:
         _DSRC_Configuration_max_nr_llc_retransmissions_level_4,
         _DSRC_Configuration_max_nr_mac_retransmissions,
         DSRC_Configuration,
-        KapschDsrc_EID,
-        KapschDSRCApplicationEntityID,
-        _KapschApplication_aid,
-        _KapschApplication_eid,
-        _KapschApplication_parameter,
-        KapschApplication,
-        _KapschApplicationList__item_,
-        KapschApplicationList,
-        _KapschBeaconID_manufacturerid,
-        _KapschBeaconID_individualid,
-        KapschBeaconID,
-        _BST_Configuration_message_status,
-        _BST_Configuration_rsu,
-        _BST_Configuration_profile,
-        _BST_Configuration_mandApplications,
-        BST_Configuration,
-        _Time_message_status,
-        _Time_unix_time,
-        _Time_milliseconds,
-        Time,
+        _Set_BST_Configuration_rsu,
+        _Set_BST_Configuration_profile,
+        _Set_BST_Configuration_mandApplications,
+        Set_BST_Configuration,
+        KapschProfile,
+        _Read_BST_Configuration_message_status,
+        _Read_BST_Configuration_rsu,
+        _Read_BST_Configuration_profile,
+        _Read_BST_Configuration_mandApplications,
+        Read_BST_Configuration,
+        _KapschTime_message_status,
+        _KapschTime_unix_time,
+        _KapschTime_milliseconds,
+        KapschTime,
         _General_Log_Level_message_status,
         _General_Log_Level_log_level,
         General_Log_Level,
@@ -4365,7 +4551,6 @@ class KapschOps1955Message:
         _Communication_Log_Result_signal_level_uplink,
         _Communication_Log_Result_frame_length,
         Communication_Log_Result,
-        _LiC_Status__item_,
         LiC_Status,
         _LiC_Status_Message_message_status,
         _LiC_Status_Message_lic_status,
@@ -4391,112 +4576,211 @@ class KapschOps1955Message:
         _LiC_Version_lic_serial_number,
         _LiC_Version_lic_sw_version,
         LiC_Version,
-        __KapschMessages_action_request_mode,
-        __KapschMessages_action_request_eid,
-        __KapschMessages_action_request_actionType,
-        __KapschMessages_action_request_accessCredentials,
-        __KapschMessages_action_request_actionParameter,
-        __KapschMessages_action_request_iid,
-        _KapschMessages_action_request,
-        __KapschMessages_action_response_fill,
-        __KapschMessages_action_response_eid,
-        __KapschMessages_action_response_iid,
-        __KapschMessages_action_response_responseParameter,
-        __KapschMessages_action_response_ret,
-        _KapschMessages_action_response,
-        __KapschMessages_event_report_request_mode,
-        __KapschMessages_event_report_request_eid,
-        __KapschMessages_event_report_request_eventType,
-        __KapschMessages_event_report_request_accessCredentials,
-        __KapschMessages_event_report_request_eventParameter,
-        __KapschMessages_event_report_request_iid,
-        _KapschMessages_event_report_request,
-        _KapschMessages_event_report_response,
-        __KapschMessages_set_request_fill,
-        __KapschMessages_set_request_mode,
-        __KapschMessages_set_request_eid,
-        __KapschMessages_set_request_accessCredentials,
-        ____KapschMessages_set_request_attrList__item__attributeId,
-        ____KapschMessages_set_request_attrList__item__attributeValue,
-        ___KapschMessages_set_request_attrList__item_,
-        __KapschMessages_set_request_attrList,
-        __KapschMessages_set_request_iid,
-        _KapschMessages_set_request,
-        _KapschMessages_set_response,
-        _KapschMessages_get_request,
-        __KapschMessages_get_response_fill,
-        __KapschMessages_get_response_eid,
-        __KapschMessages_get_response_iid,
-        ____KapschMessages_get_response_attributelist__item__attributeId,
-        ____KapschMessages_get_response_attributelist__item__attributeValue,
-        ___KapschMessages_get_response_attributelist__item_,
-        __KapschMessages_get_response_attributelist,
-        __KapschMessages_get_response_ret,
-        _KapschMessages_get_response,
-        _KapschMessages_initialisation_request,
-        _KapschMessages_initialisation_response,
-        _KapschMessages_notify_application_beacon,
-        _KapschMessages_ready_application,
-        _KapschMessages_notify_application_lost_message,
-        _KapschMessages_send_bst,
-        _KapschMessages_forced_release,
-        _KapschMessages_tis_ready_application1,
-        _KapschMessages_tis_ready_application2,
-        _KapschMessages_trx_status,
-        _KapschMessages_trx_id,
-        _KapschMessages_trx_internal_humidity,
-        _KapschMessages_trx_internal_temperature,
-        _KapschMessages_trx_my_power_mode,
-        _KapschMessages_trx_carrier_frequency1,
-        _KapschMessages_trx_carrier_frequency2,
-        _KapschMessages_trx_uplink_parameters,
-        _KapschMessages_trx_output_power1,
-        _KapschMessages_trx_output_power2,
-        _KapschMessages_trx_echo,
-        _KapschMessages_trx_set_ui_control,
-        _KapschMessages_trx_ui_status1,
-        _KapschMessages_trx_ui_status2,
-        _KapschMessages_trx_ui_status3,
-        _KapschMessages_trx_general_purpose,
-        _KapschMessages_trx_extended_output_power,
-        _KapschMessages_trx_read_rf_param1,
-        _KapschMessages_trx_read_rf_param2,
-        _KapschMessages_lic_nalm_behaviour1,
-        _KapschMessages_lic_nalm_behaviour2,
-        _KapschMessages_lic_pdu_no_behaviour1,
-        _KapschMessages_lic_pdu_no_behaviour2,
-        _KapschMessages_lic_l7_ack_mode1,
-        _KapschMessages_lic_l7_ack_mode2,
-        _KapschMessages_lic_private_uplink_window_time1,
-        _KapschMessages_lic_private_uplink_window_time2,
-        _KapschMessages_lic_slow_data_behaviour1,
-        _KapschMessages_lic_slow_data_behaviour2,
-        _KapschMessages_lic_release_retransmissions1,
-        _KapschMessages_lic_release_retransmissions2,
-        _KapschMessages_lic_lid_cleanup_mode1,
-        _KapschMessages_lic_lid_cleanup_mode2,
-        _KapschMessages_dsrc_link_mode1,
-        _KapschMessages_dsrc_link_mode2,
-        _KapschMessages_dsrc_configuration1,
-        _KapschMessages_dsrc_configuration2,
-        _KapschMessages_set_bst_configuration,
-        _KapschMessages_read_bst_configuration,
-        _KapschMessages_time1,
-        _KapschMessages_time2,
-        _KapschMessages_general_log_level1,
-        _KapschMessages_general_log_level2,
-        _KapschMessages_log_category_mode1,
-        _KapschMessages_log_category_mode2,
-        _KapschMessages_transaction_status1,
-        _KapschMessages_transaction_status2,
-        _KapschMessages_echo,
-        _KapschMessages_communication_log_result,
-        _KapschMessages_lic_status1,
-        _KapschMessages_lic_status2,
-        _KapschMessages_lic_statistics,
-        _KapschMessages_status_mode1,
-        _KapschMessages_status_mode2,
-        KapschMessages,
+        __KapschRequestMessages_action_request_mode,
+        __KapschRequestMessages_action_request_eid,
+        __KapschRequestMessages_action_request_actionType,
+        __KapschRequestMessages_action_request_accessCredentials,
+        __KapschRequestMessages_action_request_actionParameter,
+        __KapschRequestMessages_action_request_iid,
+        _KapschRequestMessages_action_request,
+        __KapschRequestMessages_action_response_fill,
+        __KapschRequestMessages_action_response_eid,
+        __KapschRequestMessages_action_response_iid,
+        __KapschRequestMessages_action_response_responseParameter,
+        __KapschRequestMessages_action_response_ret,
+        _KapschRequestMessages_action_response,
+        __KapschRequestMessages_event_report_request_mode,
+        __KapschRequestMessages_event_report_request_eid,
+        __KapschRequestMessages_event_report_request_eventType,
+        __KapschRequestMessages_event_report_request_accessCredentials,
+        __KapschRequestMessages_event_report_request_eventParameter,
+        __KapschRequestMessages_event_report_request_iid,
+        _KapschRequestMessages_event_report_request,
+        _KapschRequestMessages_event_report_response,
+        __KapschRequestMessages_set_request_fill,
+        __KapschRequestMessages_set_request_mode,
+        __KapschRequestMessages_set_request_eid,
+        __KapschRequestMessages_set_request_accessCredentials,
+        ____KapschRequestMessages_set_request_attrList__item__attributeId,
+        ____KapschRequestMessages_set_request_attrList__item__attributeValue,
+        ___KapschRequestMessages_set_request_attrList__item_,
+        __KapschRequestMessages_set_request_attrList,
+        __KapschRequestMessages_set_request_iid,
+        _KapschRequestMessages_set_request,
+        _KapschRequestMessages_set_response,
+        _KapschRequestMessages_get_request,
+        __KapschRequestMessages_get_response_fill,
+        __KapschRequestMessages_get_response_eid,
+        __KapschRequestMessages_get_response_iid,
+        ____KapschRequestMessages_get_response_attributelist__item__attributeId,
+        ____KapschRequestMessages_get_response_attributelist__item__attributeValue,
+        ___KapschRequestMessages_get_response_attributelist__item_,
+        __KapschRequestMessages_get_response_attributelist,
+        __KapschRequestMessages_get_response_ret,
+        _KapschRequestMessages_get_response,
+        _KapschRequestMessages_initialisation_request,
+        _KapschRequestMessages_initialisation_response,
+        _KapschRequestMessages_notify_application_beacon,
+        _KapschRequestMessages_ready_application,
+        _KapschRequestMessages_notify_application_lost_message,
+        _KapschRequestMessages_send_bst,
+        _KapschRequestMessages_forced_release,
+        _KapschRequestMessages_tis_ready_application1,
+        _KapschRequestMessages_tis_ready_application2,
+        _KapschRequestMessages_trx_status,
+        _KapschRequestMessages_trx_id,
+        _KapschRequestMessages_trx_internal_humidity,
+        _KapschRequestMessages_trx_internal_temperature,
+        _KapschRequestMessages_trx_my_power_mode,
+        _KapschRequestMessages_trx_carrier_frequency1,
+        _KapschRequestMessages_trx_carrier_frequency2,
+        _KapschRequestMessages_trx_uplink_parameters,
+        _KapschRequestMessages_trx_output_power1,
+        _KapschRequestMessages_trx_output_power2,
+        _KapschRequestMessages_trx_echo,
+        _KapschRequestMessages_trx_set_ui_control,
+        _KapschRequestMessages_trx_ui_status1,
+        _KapschRequestMessages_trx_ui_status2,
+        _KapschRequestMessages_trx_general_purpose,
+        _KapschRequestMessages_trx_extended_output_power,
+        _KapschRequestMessages_trx_read_rf_param1,
+        _KapschRequestMessages_trx_read_rf_param2,
+        _KapschRequestMessages_lic_nalm_behaviour1,
+        _KapschRequestMessages_lic_nalm_behaviour2,
+        _KapschRequestMessages_lic_pdu_no_behaviour1,
+        _KapschRequestMessages_lic_pdu_no_behaviour2,
+        _KapschRequestMessages_lic_l7_ack_mode1,
+        _KapschRequestMessages_lic_l7_ack_mode2,
+        _KapschRequestMessages_lic_private_uplink_window_time1,
+        _KapschRequestMessages_lic_private_uplink_window_time2,
+        _KapschRequestMessages_lic_slow_data_behaviour1,
+        _KapschRequestMessages_lic_slow_data_behaviour2,
+        _KapschRequestMessages_lic_release_retransmissions1,
+        _KapschRequestMessages_lic_release_retransmissions2,
+        _KapschRequestMessages_lic_lid_cleanup_mode1,
+        _KapschRequestMessages_lic_lid_cleanup_mode2,
+        _KapschRequestMessages_dsrc_link_mode1,
+        _KapschRequestMessages_dsrc_link_mode2,
+        _KapschRequestMessages_dsrc_configuration1,
+        _KapschRequestMessages_dsrc_configuration2,
+        _KapschRequestMessages_set_bst_configuration,
+        _KapschRequestMessages_read_bst_configuration,
+        _KapschRequestMessages_time1,
+        _KapschRequestMessages_time2,
+        _KapschRequestMessages_general_log_level1,
+        _KapschRequestMessages_general_log_level2,
+        _KapschRequestMessages_log_category_mode1,
+        _KapschRequestMessages_log_category_mode2,
+        _KapschRequestMessages_transaction_status1,
+        _KapschRequestMessages_transaction_status2,
+        _KapschRequestMessages_echo,
+        _KapschRequestMessages_communication_log_result,
+        _KapschRequestMessages_lic_status1,
+        _KapschRequestMessages_lic_status2,
+        _KapschRequestMessages_lic_statistics,
+        _KapschRequestMessages_status_mode1,
+        _KapschRequestMessages_status_mode2,
+        KapschRequestMessages,
+        _KapschResponseMessages_action_request,
+        __KapschResponseMessages_action_response_fill,
+        __KapschResponseMessages_action_response_eid,
+        __KapschResponseMessages_action_response_iid,
+        __KapschResponseMessages_action_response_responseParameter,
+        __KapschResponseMessages_action_response_ret,
+        _KapschResponseMessages_action_response,
+        __KapschResponseMessages_event_report_request_mode,
+        __KapschResponseMessages_event_report_request_eid,
+        __KapschResponseMessages_event_report_request_eventType,
+        __KapschResponseMessages_event_report_request_accessCredentials,
+        __KapschResponseMessages_event_report_request_eventParameter,
+        __KapschResponseMessages_event_report_request_iid,
+        _KapschResponseMessages_event_report_request,
+        _KapschResponseMessages_event_report_response,
+        __KapschResponseMessages_set_request_fill,
+        __KapschResponseMessages_set_request_mode,
+        __KapschResponseMessages_set_request_eid,
+        __KapschResponseMessages_set_request_accessCredentials,
+        ____KapschResponseMessages_set_request_attrList__item__attributeId,
+        ____KapschResponseMessages_set_request_attrList__item__attributeValue,
+        ___KapschResponseMessages_set_request_attrList__item_,
+        __KapschResponseMessages_set_request_attrList,
+        __KapschResponseMessages_set_request_iid,
+        _KapschResponseMessages_set_request,
+        _KapschResponseMessages_set_response,
+        _KapschResponseMessages_get_request,
+        __KapschResponseMessages_get_response_fill,
+        __KapschResponseMessages_get_response_eid,
+        __KapschResponseMessages_get_response_iid,
+        ____KapschResponseMessages_get_response_attributelist__item__attributeId,
+        ____KapschResponseMessages_get_response_attributelist__item__attributeValue,
+        ___KapschResponseMessages_get_response_attributelist__item_,
+        __KapschResponseMessages_get_response_attributelist,
+        __KapschResponseMessages_get_response_ret,
+        _KapschResponseMessages_get_response,
+        _KapschResponseMessages_initialisation_request,
+        _KapschResponseMessages_initialisation_response,
+        _KapschResponseMessages_notify_application_beacon,
+        _KapschResponseMessages_ready_application,
+        _KapschResponseMessages_notify_application_lost_message,
+        _KapschResponseMessages_send_bst,
+        _KapschResponseMessages_forced_release,
+        _KapschResponseMessages_tis_ready_application1,
+        _KapschResponseMessages_tis_ready_application2,
+        _KapschResponseMessages_trx_status,
+        _KapschResponseMessages_trx_id,
+        _KapschResponseMessages_trx_internal_humidity,
+        _KapschResponseMessages_trx_internal_temperature,
+        _KapschResponseMessages_trx_my_power_mode,
+        _KapschResponseMessages_trx_carrier_frequency1,
+        _KapschResponseMessages_trx_carrier_frequency2,
+        _KapschResponseMessages_trx_uplink_parameters,
+        _KapschResponseMessages_trx_output_power1,
+        _KapschResponseMessages_trx_output_power2,
+        _KapschResponseMessages_trx_echo,
+        _KapschResponseMessages_trx_set_ui_control,
+        _KapschResponseMessages_trx_ui_status1,
+        _KapschResponseMessages_trx_ui_status2,
+        _KapschResponseMessages_trx_ui_status3,
+        _KapschResponseMessages_trx_general_purpose,
+        _KapschResponseMessages_trx_extended_output_power,
+        _KapschResponseMessages_trx_read_rf_param1,
+        _KapschResponseMessages_trx_read_rf_param2,
+        _KapschResponseMessages_lic_nalm_behaviour1,
+        _KapschResponseMessages_lic_nalm_behaviour2,
+        _KapschResponseMessages_lic_pdu_no_behaviour1,
+        _KapschResponseMessages_lic_pdu_no_behaviour2,
+        _KapschResponseMessages_lic_l7_ack_mode1,
+        _KapschResponseMessages_lic_l7_ack_mode2,
+        _KapschResponseMessages_lic_private_uplink_window_time1,
+        _KapschResponseMessages_lic_private_uplink_window_time2,
+        _KapschResponseMessages_lic_slow_data_behaviour1,
+        _KapschResponseMessages_lic_slow_data_behaviour2,
+        _KapschResponseMessages_lic_release_retransmissions1,
+        _KapschResponseMessages_lic_release_retransmissions2,
+        _KapschResponseMessages_lic_lid_cleanup_mode1,
+        _KapschResponseMessages_lic_lid_cleanup_mode2,
+        _KapschResponseMessages_dsrc_link_mode1,
+        _KapschResponseMessages_dsrc_link_mode2,
+        _KapschResponseMessages_dsrc_configuration1,
+        _KapschResponseMessages_dsrc_configuration2,
+        _KapschResponseMessages_set_bst_configuration,
+        _KapschResponseMessages_read_bst_configuration,
+        _KapschResponseMessages_time1,
+        _KapschResponseMessages_time2,
+        _KapschResponseMessages_general_log_level1,
+        _KapschResponseMessages_general_log_level2,
+        _KapschResponseMessages_log_category_mode1,
+        _KapschResponseMessages_log_category_mode2,
+        _KapschResponseMessages_transaction_status1,
+        _KapschResponseMessages_transaction_status2,
+        _KapschResponseMessages_echo,
+        _KapschResponseMessages_communication_log_result,
+        _KapschResponseMessages_lic_status1,
+        _KapschResponseMessages_lic_status2,
+        _KapschResponseMessages_lic_statistics,
+        _KapschResponseMessages_status_mode1,
+        _KapschResponseMessages_status_mode2,
+        KapschResponseMessages,
     ]
 
 init_modules(EfcDataDictionary, EfcDsrcApplication, EfcDsrcGeneric, KapschOps1955Message)
