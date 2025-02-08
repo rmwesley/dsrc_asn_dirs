@@ -2902,6 +2902,7 @@ class KapschOps1955Message:
     
     _obj_ = [
         'OPS1955Container',
+        'Lic-Return-Status',
         'DSRC-Return-Status',
         'Action-Confirmation',
         'Set-Confirmation',
@@ -2914,6 +2915,7 @@ class KapschOps1955Message:
         'Tis-Ready-Application',
         'TRX-Status',
         'TRX-Mode',
+        'TRX-Status-Req-Message',
         'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
@@ -2927,15 +2929,14 @@ class KapschOps1955Message:
         'UI-Control-OPS1925',
         'UI-Control-OPS1955',
         'TRX-Set-UI-Control',
-        'TRX-Read-UI-Control',
+        'Read-UI-Control',
         'UI-Type',
-        'Sensors',
+        'UI-Sensors-Status',
         'TRX-UI-Status',
         'TRX-General-Purpose',
         'TRX-Extended-Output-Power',
         'TRX-Set-RF-Param',
         'TRX-Read-RF-Param',
-        'Lic-Return-Status',
         'Lic-Nalm-Behaviour',
         'Lic-PDU-No-Behaviour',
         'Lic-L7-Ack-Mode',
@@ -2943,7 +2944,9 @@ class KapschOps1955Message:
         'Lic-Slow-Data-Behaviour',
         'Lic-Release-Retransmissions',
         'Lic-LID-Cleanup-Mode',
-        'DSRC-Link-Mode',
+        'Mode',
+        'Set-DSRC-Link-Mode',
+        'Read-DSRC-Link-Mode',
         'DSRC-Configuration',
         'Set-BST-Configuration',
         'KapschProfile',
@@ -2964,6 +2967,7 @@ class KapschOps1955Message:
         ]
     _type_ = [
         'OPS1955Container',
+        'Lic-Return-Status',
         'DSRC-Return-Status',
         'Action-Confirmation',
         'Set-Confirmation',
@@ -2976,6 +2980,7 @@ class KapschOps1955Message:
         'Tis-Ready-Application',
         'TRX-Status',
         'TRX-Mode',
+        'TRX-Status-Req-Message',
         'TRX-Status-Message',
         'TRX-ID',
         'TRX-Internal-Humidity',
@@ -2989,15 +2994,14 @@ class KapschOps1955Message:
         'UI-Control-OPS1925',
         'UI-Control-OPS1955',
         'TRX-Set-UI-Control',
-        'TRX-Read-UI-Control',
+        'Read-UI-Control',
         'UI-Type',
-        'Sensors',
+        'UI-Sensors-Status',
         'TRX-UI-Status',
         'TRX-General-Purpose',
         'TRX-Extended-Output-Power',
         'TRX-Set-RF-Param',
         'TRX-Read-RF-Param',
-        'Lic-Return-Status',
         'Lic-Nalm-Behaviour',
         'Lic-PDU-No-Behaviour',
         'Lic-L7-Ack-Mode',
@@ -3005,7 +3009,9 @@ class KapschOps1955Message:
         'Lic-Slow-Data-Behaviour',
         'Lic-Release-Retransmissions',
         'Lic-LID-Cleanup-Mode',
-        'DSRC-Link-Mode',
+        'Mode',
+        'Set-DSRC-Link-Mode',
+        'Read-DSRC-Link-Mode',
         'DSRC-Configuration',
         'Set-BST-Configuration',
         'KapschProfile',
@@ -3036,9 +3042,21 @@ class KapschOps1955Message:
     #-----< OPS1955Container >-----#
     OPS1955Container = CHOICE(name='OPS1955Container', mode=MODE_TYPE, typeref=ASN1RefType(('EfcDsrcGeneric', 'EfcContainer')))
     
+    #-----< Lic-Return-Status >-----#
+    Lic_Return_Status = INT(name='Lic-Return-Status', mode=MODE_TYPE)
+    Lic_Return_Status._cont = ASN1Dict([('ok', 0), ('wrong-version-number', 1), ('unknown-class', 2), ('unknown-instance', 3), ('unknown-message-number', 4), ('invalid-length-of-data-field', 5), ('invalid-data', 6), ('parameters-affecting-the-accessed-command-not-set-properly', 7), ('command-failed', 8)])
+    Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=8)], ev=None, er=[])
+    
     #-----< DSRC-Return-Status >-----#
-    DSRC_Return_Status = INT(name='DSRC-Return-Status', mode=MODE_TYPE)
-    DSRC_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    DSRC_Return_Status = SEQ(name='DSRC-Return-Status', mode=MODE_TYPE)
+    _DSRC_Return_Status_link_id = OCT_STR(name='link-id', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _DSRC_Return_Status_link_id._const_sz = ASN1Set(rv=[4], rr=[], ev=None, er=[])
+    _DSRC_Return_Status_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    DSRC_Return_Status._cont = ASN1Dict([
+        ('link-id', _DSRC_Return_Status_link_id),
+        ('message-status', _DSRC_Return_Status_message_status),
+        ])
+    DSRC_Return_Status._ext = None
     
     #-----< Action-Confirmation >-----#
     Action_Confirmation = SEQ(name='Action-Confirmation', mode=MODE_TYPE)
@@ -3049,7 +3067,7 @@ class KapschOps1955Message:
     _Action_Confirmation_element_id = INT(name='element-id', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Action_Confirmation_element_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Action_Confirmation_response_parameter = CHOICE(name='response-parameter', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_EXPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'OPS1955Container')))
-    _Action_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _Action_Confirmation_return_status = SEQ(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Action_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Action_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Action_Confirmation._cont = ASN1Dict([
@@ -3070,7 +3088,7 @@ class KapschOps1955Message:
     _Set_Confirmation_return_status_bit_map = BOOL(name='return-status-bit-map', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_element_id = INT(name='element-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_element_id._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _Set_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _Set_Confirmation_return_status = SEQ(name='return-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Set_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Set_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Set_Confirmation._cont = ASN1Dict([
@@ -3102,7 +3120,7 @@ class KapschOps1955Message:
     __Get_Confirmation_attribute_list__item_._ext = None
     _Get_Confirmation_attribute_list._cont = __Get_Confirmation_attribute_list__item_
     _Get_Confirmation_attribute_list._const_sz = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=127)], ev=[], er=[])
-    _Get_Confirmation_return_status = INT(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _Get_Confirmation_return_status = SEQ(name='return-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _Get_Confirmation_instance = INT(name='instance', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Get_Confirmation_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     Get_Confirmation._cont = ASN1Dict([
@@ -3205,19 +3223,30 @@ class KapschOps1955Message:
     Tis_Ready_Application._ext = None
     
     #-----< TRX-Status >-----#
-    TRX_Status = INT(name='TRX-Status', mode=MODE_TYPE)
-    TRX_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    TRX_Status = BIT_STR(name='TRX-Status', mode=MODE_TYPE)
+    TRX_Status._cont = ASN1Dict([('control-data-processor-not-ready-ot-busy', 0), ('bit-busy-or-not-ready', 1), ('illegal-command', 2), ('password-error', 4), ('illegal-command-sequence', 5), ('trx-not-present', 6), ('trx-occupied', 7), ('warning', 8), ('major-error', 9), ('erroneous-value-b', 10), ('erroneous-value-a', 11), ('microwave-transmitter-power-failure', 12), ('voltage-error', 13), ('communciation-error', 14), ('beacon-not-configured', 15)])
+    TRX_Status._const_sz = ASN1Set(rv=[16], rr=[], ev=None, er=[])
     
     #-----< TRX-Mode >-----#
-    TRX_Mode = INT(name='TRX-Mode', mode=MODE_TYPE)
-    TRX_Mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=31)], ev=None, er=[])
+    TRX_Mode = BIT_STR(name='TRX-Mode', mode=MODE_TYPE)
+    TRX_Mode._cont = ASN1Dict([('my-power-off', 0), ('my-power-on', 1), ('frequency-2-not-1point5', 2), ('localization-mode', 3), ('bst-time-slots-3-not-2', 4), ('spare6', 6), ('spare7', 7)])
+    TRX_Mode._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
+    
+    #-----< TRX-Status-Req-Message >-----#
+    TRX_Status_Req_Message = SEQ(name='TRX-Status-Req-Message', mode=MODE_TYPE)
+    _TRX_Status_Req_Message_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_Req_Message_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    TRX_Status_Req_Message._cont = ASN1Dict([
+        ('instance', _TRX_Status_Req_Message_instance),
+        ])
+    TRX_Status_Req_Message._ext = None
     
     #-----< TRX-Status-Message >-----#
     TRX_Status_Message = SEQ(name='TRX-Status-Message', mode=MODE_TYPE)
     _TRX_Status_Message_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Status_Message_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Status_Message_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Status_Message_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Mode')))
+    _TRX_Status_Message_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Status_Message_trx_mode = BIT_STR(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Mode')))
     TRX_Status_Message._cont = ASN1Dict([
         ('instance', _TRX_Status_Message_instance),
         ('status', _TRX_Status_Message_status),
@@ -3229,13 +3258,13 @@ class KapschOps1955Message:
     TRX_ID = SEQ(name='TRX-ID', mode=MODE_TYPE)
     _TRX_ID_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_ID_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_trx_id = SEQ_OF(name='trx-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_trx_id__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_trx_id__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_ID_trx_id._cont = __TRX_ID_trx_id__item_
     _TRX_ID_trx_id._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_ID_hwid = INT(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_hwid = BIT_STR(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_swid = SEQ_OF(name='swid', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_swid__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_swid__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3254,7 +3283,7 @@ class KapschOps1955Message:
     TRX_Internal_Humidity = SEQ(name='TRX-Internal-Humidity', mode=MODE_TYPE)
     _TRX_Internal_Humidity_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Humidity_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Humidity_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Humidity_humid = INT(name='humid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_humid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Humidity._cont = ASN1Dict([
@@ -3268,7 +3297,7 @@ class KapschOps1955Message:
     TRX_Internal_Temperature = SEQ(name='TRX-Internal-Temperature', mode=MODE_TYPE)
     _TRX_Internal_Temperature_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Temperature_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Temperature_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Temperature_temp = INT(name='temp', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_temp._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Temperature._cont = ASN1Dict([
@@ -3298,7 +3327,7 @@ class KapschOps1955Message:
     TRX_Carrier_Frequency = SEQ(name='TRX-Carrier-Frequency', mode=MODE_TYPE)
     _TRX_Carrier_Frequency_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Carrier_Frequency_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Carrier_Frequency_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Carrier_Frequency_cfq = INT(name='cfq', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_cfq._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Carrier_Frequency._cont = ASN1Dict([
@@ -3324,7 +3353,7 @@ class KapschOps1955Message:
     TRX_Output_Power = SEQ(name='TRX-Output-Power', mode=MODE_TYPE)
     _TRX_Output_Power_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Output_Power_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Output_Power_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Output_Power_spw = INT(name='spw', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_spw._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Output_Power._cont = ASN1Dict([
@@ -3386,59 +3415,61 @@ class KapschOps1955Message:
     TRX_Set_UI_Control = SEQ(name='TRX-Set-UI-Control', mode=MODE_TYPE)
     _TRX_Set_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Set_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Set_UI_Control_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Set_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _TRX_Set_UI_Control_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Set_UI_Control_ui_type = INT(name='ui-type', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
     _TRX_Set_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')))
     _TRX_Set_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')))
     TRX_Set_UI_Control._cont = ASN1Dict([
         ('instance', _TRX_Set_UI_Control_instance),
         ('status', _TRX_Set_UI_Control_status),
-        ('uitype', _TRX_Set_UI_Control_uitype),
+        ('ui-type', _TRX_Set_UI_Control_ui_type),
         ('ops1925', _TRX_Set_UI_Control_ops1925),
         ('ops1955', _TRX_Set_UI_Control_ops1955),
         ])
     TRX_Set_UI_Control._ext = None
     
-    #-----< TRX-Read-UI-Control >-----#
-    TRX_Read_UI_Control = SEQ(name='TRX-Read-UI-Control', mode=MODE_TYPE)
-    _TRX_Read_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Read_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_UI_Control_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_Read_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
-    _TRX_Read_UI_Control_mode = INT(name='mode', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TRX_Read_UI_Control_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')))
-    _TRX_Read_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')))
-    TRX_Read_UI_Control._cont = ASN1Dict([
-        ('instance', _TRX_Read_UI_Control_instance),
-        ('status', _TRX_Read_UI_Control_status),
-        ('uitype', _TRX_Read_UI_Control_uitype),
-        ('mode', _TRX_Read_UI_Control_mode),
-        ('ops1925', _TRX_Read_UI_Control_ops1925),
-        ('ops1955', _TRX_Read_UI_Control_ops1955),
+    #-----< Read-UI-Control >-----#
+    Read_UI_Control = SEQ(name='Read-UI-Control', mode=MODE_TYPE)
+    _Read_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _Read_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Read_UI_Control_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _Read_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _Read_UI_Control_mode = INT(name='mode', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _Read_UI_Control_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    _Read_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')))
+    _Read_UI_Control_ops1955 = SEQ(name='ops1955', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1955')))
+    Read_UI_Control._cont = ASN1Dict([
+        ('instance', _Read_UI_Control_instance),
+        ('status', _Read_UI_Control_status),
+        ('uitype', _Read_UI_Control_uitype),
+        ('mode', _Read_UI_Control_mode),
+        ('ops1925', _Read_UI_Control_ops1925),
+        ('ops1955', _Read_UI_Control_ops1955),
         ])
-    TRX_Read_UI_Control._ext = None
+    Read_UI_Control._ext = None
     
     #-----< UI-Type >-----#
     UI_Type = INT(name='UI-Type', mode=MODE_TYPE)
+    UI_Type._cont = ASN1Dict([('ops1925-switch', 0), ('ops1955-infrared-sensor', 1)])
     UI_Type._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     
-    #-----< Sensors >-----#
-    Sensors = INT(name='Sensors', mode=MODE_TYPE)
-    Sensors._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    #-----< UI-Sensors-Status >-----#
+    UI_Sensors_Status = BIT_STR(name='UI-Sensors-Status', mode=MODE_TYPE)
+    UI_Sensors_Status._cont = ASN1Dict([('door-open', 0), ('no-object-detected', 1)])
+    UI_Sensors_Status._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
     
     #-----< TRX-UI-Status >-----#
     TRX_UI_Status = SEQ(name='TRX-UI-Status', mode=MODE_TYPE)
     _TRX_UI_Status_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_UI_Status_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_UI_Status_status = INT(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _TRX_UI_Status_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
-    _TRX_UI_Status_sensors = INT(name='sensors', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Sensors')))
+    _TRX_UI_Status_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_UI_Status_ui_type = INT(name='ui-type', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Type')))
+    _TRX_UI_Status_ui_sensors_status = BIT_STR(name='ui-sensors-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Sensors-Status')))
     TRX_UI_Status._cont = ASN1Dict([
         ('instance', _TRX_UI_Status_instance),
         ('status', _TRX_UI_Status_status),
-        ('uitype', _TRX_UI_Status_uitype),
-        ('sensors', _TRX_UI_Status_sensors),
+        ('ui-type', _TRX_UI_Status_ui_type),
+        ('ui-sensors-status', _TRX_UI_Status_ui_sensors_status),
         ])
     TRX_UI_Status._ext = None
     
@@ -3452,7 +3483,7 @@ class KapschOps1955Message:
     _TRX_General_Purpose_genid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_General_Purpose_genda_genre = OCT_STR(name='genda-genre', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_General_Purpose_genda_genre._const_sz = ASN1Set(rv=[255], rr=[], ev=None, er=[])
-    _TRX_General_Purpose_status = INT(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_General_Purpose_status = BIT_STR(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_General_Purpose_length = INT(name='length', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TRX_General_Purpose._cont = ASN1Dict([
         ('instance', _TRX_General_Purpose_instance),
@@ -3517,11 +3548,6 @@ class KapschOps1955Message:
         ('length', _TRX_Read_RF_Param_length),
         ])
     TRX_Read_RF_Param._ext = None
-    
-    #-----< Lic-Return-Status >-----#
-    Lic_Return_Status = INT(name='Lic-Return-Status', mode=MODE_TYPE)
-    Lic_Return_Status._cont = ASN1Dict([('ok', 0), ('wrong-version-number', 1), ('unknown-class', 2), ('unknown-instance', 3), ('unknown-message-number', 4), ('invalid-length-of-data-field', 5), ('invalid-data', 6), ('parameters-affecting-the-accessed-command-not-set-properly', 7), ('command-failed', 8)])
-    Lic_Return_Status._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=8)], ev=None, er=[])
     
     #-----< Lic-Nalm-Behaviour >-----#
     Lic_Nalm_Behaviour = SEQ(name='Lic-Nalm-Behaviour', mode=MODE_TYPE)
@@ -3600,16 +3626,29 @@ class KapschOps1955Message:
         ])
     Lic_LID_Cleanup_Mode._ext = None
     
-    #-----< DSRC-Link-Mode >-----#
-    DSRC_Link_Mode = SEQ(name='DSRC-Link-Mode', mode=MODE_TYPE)
-    _DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
-    _DSRC_Link_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _DSRC_Link_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    DSRC_Link_Mode._cont = ASN1Dict([
-        ('message-status', _DSRC_Link_Mode_message_status),
-        ('mode', _DSRC_Link_Mode_mode),
+    #-----< Mode >-----#
+    Mode = INT(name='Mode', mode=MODE_TYPE)
+    Mode._cont = ASN1Dict([('off', 0), ('on', 1), ('paused', 2), ('single-shot', 3), ('single-shot-with-obu-detection', 4)])
+    Mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=4)], ev=None, er=[])
+    
+    #-----< Set-DSRC-Link-Mode >-----#
+    Set_DSRC_Link_Mode = SEQ(name='Set-DSRC-Link-Mode', mode=MODE_TYPE)
+    _Set_DSRC_Link_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Mode')))
+    Set_DSRC_Link_Mode._cont = ASN1Dict([
+        ('mode', _Set_DSRC_Link_Mode_mode),
         ])
-    DSRC_Link_Mode._ext = None
+    Set_DSRC_Link_Mode._ext = None
+    
+    #-----< Read-DSRC-Link-Mode >-----#
+    Read_DSRC_Link_Mode = SEQ(name='Read-DSRC-Link-Mode', mode=MODE_TYPE)
+    _Read_DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
+    _Read_DSRC_Link_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _Read_DSRC_Link_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
+    Read_DSRC_Link_Mode._cont = ASN1Dict([
+        ('message-status', _Read_DSRC_Link_Mode_message_status),
+        ('mode', _Read_DSRC_Link_Mode_mode),
+        ])
+    Read_DSRC_Link_Mode._ext = None
     
     #-----< DSRC-Configuration >-----#
     DSRC_Configuration = SEQ(name='DSRC-Configuration', mode=MODE_TYPE)
@@ -3787,14 +3826,14 @@ class KapschOps1955Message:
     LiC_Status_Message = SEQ(name='LiC-Status-Message', mode=MODE_TYPE)
     _LiC_Status_Message_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _LiC_Status_Message_lic_status = INT(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
-    _LiC_Status_Message_trx_1_status = INT(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_2_status = INT(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_3_status = INT(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_4_status = INT(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_5_status = INT(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_6_status = INT(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_7_status = INT(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_8_status = INT(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_1_status = BIT_STR(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_2_status = BIT_STR(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_3_status = BIT_STR(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_4_status = BIT_STR(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_5_status = BIT_STR(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_6_status = BIT_STR(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_7_status = BIT_STR(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_8_status = BIT_STR(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     LiC_Status_Message._cont = ASN1Dict([
         ('message-status', _LiC_Status_Message_message_status),
         ('lic-status', _LiC_Status_Message_lic_status),
@@ -3972,11 +4011,11 @@ class KapschOps1955Message:
     _KapschRequestMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
     _KapschRequestMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
     _KapschRequestMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
-    _KapschRequestMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
+    _KapschRequestMessages_read_trx_status = SEQ(name='read-trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Req-Message')))
     _KapschRequestMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
     _KapschRequestMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
     _KapschRequestMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
-    _KapschRequestMessages_trx_my_power_mode = SEQ(name='trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
+    _KapschRequestMessages_set_trx_my_power_mode = SEQ(name='set-trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
     _KapschRequestMessages_trx_carrier_frequency1 = SEQ(name='trx-carrier-frequency1', mode=MODE_TYPE, tag=(1406, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
     _KapschRequestMessages_trx_carrier_frequency2 = SEQ(name='trx-carrier-frequency2', mode=MODE_TYPE, tag=(1415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
     _KapschRequestMessages_trx_uplink_parameters = SEQ(name='trx-uplink-parameters', mode=MODE_TYPE, tag=(1407, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Uplink-Parameters')))
@@ -3984,8 +4023,8 @@ class KapschOps1955Message:
     _KapschRequestMessages_trx_output_power2 = SEQ(name='trx-output-power2', mode=MODE_TYPE, tag=(1416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
     _KapschRequestMessages_trx_echo = SEQ(name='trx-echo', mode=MODE_TYPE, tag=(1414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Echo')))
     _KapschRequestMessages_trx_set_ui_control = SEQ(name='trx-set-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
-    _KapschRequestMessages_trx_ui_status1 = SEQ(name='trx-ui-status1', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschRequestMessages_trx_ui_status2 = SEQ(name='trx-ui-status2', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschRequestMessages_read_ui_control = SEQ(name='read-ui-control', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Read-UI-Control')))
+    _KapschRequestMessages_read_ui_status = NULL(name='read-ui-status', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _KapschRequestMessages_trx_general_purpose = SEQ(name='trx-general-purpose', mode=MODE_TYPE, tag=(1500, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-General-Purpose')))
     _KapschRequestMessages_trx_extended_output_power = SEQ(name='trx-extended-output-power', mode=MODE_TYPE, tag=(1506, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Extended-Output-Power')))
     _KapschRequestMessages_trx_read_rf_param1 = SEQ(name='trx-read-rf-param1', mode=MODE_TYPE, tag=(1516, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
@@ -4004,8 +4043,8 @@ class KapschOps1955Message:
     _KapschRequestMessages_lic_release_retransmissions2 = SEQ(name='lic-release-retransmissions2', mode=MODE_TYPE, tag=(2419, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
     _KapschRequestMessages_lic_lid_cleanup_mode1 = SEQ(name='lic-lid-cleanup-mode1', mode=MODE_TYPE, tag=(2420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
     _KapschRequestMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
-    _KapschRequestMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
-    _KapschRequestMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschRequestMessages_set_dsrc_link_mode = SEQ(name='set-dsrc-link-mode', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Set-DSRC-Link-Mode')))
+    _KapschRequestMessages_read_dsrc_link_mode = NULL(name='read-dsrc-link-mode', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _KapschRequestMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschRequestMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschRequestMessages_set_bst_configuration = SEQ(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Set-BST-Configuration')))
@@ -4043,11 +4082,11 @@ class KapschOps1955Message:
         ('forced-release', _KapschRequestMessages_forced_release),
         ('tis-ready-application1', _KapschRequestMessages_tis_ready_application1),
         ('tis-ready-application2', _KapschRequestMessages_tis_ready_application2),
-        ('trx-status', _KapschRequestMessages_trx_status),
+        ('read-trx-status', _KapschRequestMessages_read_trx_status),
         ('trx-id', _KapschRequestMessages_trx_id),
         ('trx-internal-humidity', _KapschRequestMessages_trx_internal_humidity),
         ('trx-internal-temperature', _KapschRequestMessages_trx_internal_temperature),
-        ('trx-my-power-mode', _KapschRequestMessages_trx_my_power_mode),
+        ('set-trx-my-power-mode', _KapschRequestMessages_set_trx_my_power_mode),
         ('trx-carrier-frequency1', _KapschRequestMessages_trx_carrier_frequency1),
         ('trx-carrier-frequency2', _KapschRequestMessages_trx_carrier_frequency2),
         ('trx-uplink-parameters', _KapschRequestMessages_trx_uplink_parameters),
@@ -4055,8 +4094,8 @@ class KapschOps1955Message:
         ('trx-output-power2', _KapschRequestMessages_trx_output_power2),
         ('trx-echo', _KapschRequestMessages_trx_echo),
         ('trx-set-ui-control', _KapschRequestMessages_trx_set_ui_control),
-        ('trx-ui-status1', _KapschRequestMessages_trx_ui_status1),
-        ('trx-ui-status2', _KapschRequestMessages_trx_ui_status2),
+        ('read-ui-control', _KapschRequestMessages_read_ui_control),
+        ('read-ui-status', _KapschRequestMessages_read_ui_status),
         ('trx-general-purpose', _KapschRequestMessages_trx_general_purpose),
         ('trx-extended-output-power', _KapschRequestMessages_trx_extended_output_power),
         ('trx-read-rf-param1', _KapschRequestMessages_trx_read_rf_param1),
@@ -4075,8 +4114,8 @@ class KapschOps1955Message:
         ('lic-release-retransmissions2', _KapschRequestMessages_lic_release_retransmissions2),
         ('lic-lid-cleanup-mode1', _KapschRequestMessages_lic_lid_cleanup_mode1),
         ('lic-lid-cleanup-mode2', _KapschRequestMessages_lic_lid_cleanup_mode2),
-        ('dsrc-link-mode1', _KapschRequestMessages_dsrc_link_mode1),
-        ('dsrc-link-mode2', _KapschRequestMessages_dsrc_link_mode2),
+        ('set-dsrc-link-mode', _KapschRequestMessages_set_dsrc_link_mode),
+        ('read-dsrc-link-mode', _KapschRequestMessages_read_dsrc_link_mode),
         ('dsrc-configuration1', _KapschRequestMessages_dsrc_configuration1),
         ('dsrc-configuration2', _KapschRequestMessages_dsrc_configuration2),
         ('set-bst-configuration', _KapschRequestMessages_set_bst_configuration),
@@ -4101,7 +4140,7 @@ class KapschOps1955Message:
     
     #-----< KapschResponseMessages >-----#
     KapschResponseMessages = CHOICE(name='KapschResponseMessages', mode=MODE_TYPE)
-    _KapschResponseMessages_action_request = INT(name='action-request', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _KapschResponseMessages_action_request = SEQ(name='action-request', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
     _KapschResponseMessages_action_response = SEQ(name='action-response', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Action-Response')))
     __KapschResponseMessages_action_response_fill = BIT_STR(name='fill', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __KapschResponseMessages_action_response_fill._const_sz = ASN1Set(rv=[1], rr=[], ev=None, er=[])
@@ -4201,21 +4240,21 @@ class KapschOps1955Message:
     _KapschResponseMessages_forced_release = SEQ(name='forced-release', mode=MODE_TYPE, tag=(18, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Forced-Release')))
     _KapschResponseMessages_tis_ready_application1 = SEQ(name='tis-ready-application1', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
     _KapschResponseMessages_tis_ready_application2 = SEQ(name='tis-ready-application2', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Tis-Ready-Application')))
-    _KapschResponseMessages_trx_status = SEQ(name='trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
+    _KapschResponseMessages_read_trx_status = SEQ(name='read-trx-status', mode=MODE_TYPE, tag=(1401, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
     _KapschResponseMessages_trx_id = SEQ(name='trx-id', mode=MODE_TYPE, tag=(1402, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-ID')))
     _KapschResponseMessages_trx_internal_humidity = SEQ(name='trx-internal-humidity', mode=MODE_TYPE, tag=(1403, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Humidity')))
     _KapschResponseMessages_trx_internal_temperature = SEQ(name='trx-internal-temperature', mode=MODE_TYPE, tag=(1404, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Internal-Temperature')))
-    _KapschResponseMessages_trx_my_power_mode = SEQ(name='trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-My-Power-Mode')))
+    _KapschResponseMessages_set_trx_my_power_mode = SEQ(name='set-trx-my-power-mode', mode=MODE_TYPE, tag=(1405, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status-Message')))
     _KapschResponseMessages_trx_carrier_frequency1 = SEQ(name='trx-carrier-frequency1', mode=MODE_TYPE, tag=(1406, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
     _KapschResponseMessages_trx_carrier_frequency2 = SEQ(name='trx-carrier-frequency2', mode=MODE_TYPE, tag=(1415, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Carrier-Frequency')))
     _KapschResponseMessages_trx_uplink_parameters = SEQ(name='trx-uplink-parameters', mode=MODE_TYPE, tag=(1407, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Uplink-Parameters')))
     _KapschResponseMessages_trx_output_power1 = SEQ(name='trx-output-power1', mode=MODE_TYPE, tag=(1408, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
     _KapschResponseMessages_trx_output_power2 = SEQ(name='trx-output-power2', mode=MODE_TYPE, tag=(1416, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Output-Power')))
     _KapschResponseMessages_trx_echo = SEQ(name='trx-echo', mode=MODE_TYPE, tag=(1414, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Echo')))
-    _KapschResponseMessages_trx_set_ui_control = SEQ(name='trx-set-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
-    _KapschResponseMessages_trx_ui_status1 = SEQ(name='trx-ui-status1', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschResponseMessages_trx_ui_status2 = SEQ(name='trx-ui-status2', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
-    _KapschResponseMessages_trx_ui_status3 = SEQ(name='trx-ui-status3', mode=MODE_TYPE, tag=(1423, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschResponseMessages_set_trx_ui_control = SEQ(name='set-trx-ui-control', mode=MODE_TYPE, tag=(1420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Set-UI-Control')))
+    _KapschResponseMessages_read_ui_control = SEQ(name='read-ui-control', mode=MODE_TYPE, tag=(1421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Read-UI-Control')))
+    _KapschResponseMessages_read_ui_status = SEQ(name='read-ui-status', mode=MODE_TYPE, tag=(1422, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
+    _KapschResponseMessages_report_ui_status = SEQ(name='report-ui-status', mode=MODE_TYPE, tag=(1423, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-UI-Status')))
     _KapschResponseMessages_trx_general_purpose = SEQ(name='trx-general-purpose', mode=MODE_TYPE, tag=(1500, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-General-Purpose')))
     _KapschResponseMessages_trx_extended_output_power = SEQ(name='trx-extended-output-power', mode=MODE_TYPE, tag=(1506, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Extended-Output-Power')))
     _KapschResponseMessages_trx_read_rf_param1 = SEQ(name='trx-read-rf-param1', mode=MODE_TYPE, tag=(1516, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Read-RF-Param')))
@@ -4234,8 +4273,8 @@ class KapschOps1955Message:
     _KapschResponseMessages_lic_release_retransmissions2 = SEQ(name='lic-release-retransmissions2', mode=MODE_TYPE, tag=(2419, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Release-Retransmissions')))
     _KapschResponseMessages_lic_lid_cleanup_mode1 = SEQ(name='lic-lid-cleanup-mode1', mode=MODE_TYPE, tag=(2420, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
     _KapschResponseMessages_lic_lid_cleanup_mode2 = SEQ(name='lic-lid-cleanup-mode2', mode=MODE_TYPE, tag=(2421, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-LID-Cleanup-Mode')))
-    _KapschResponseMessages_dsrc_link_mode1 = SEQ(name='dsrc-link-mode1', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
-    _KapschResponseMessages_dsrc_link_mode2 = SEQ(name='dsrc-link-mode2', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Link-Mode')))
+    _KapschResponseMessages_set_dsrc_link_mode = SEQ(name='set-dsrc-link-mode', mode=MODE_TYPE, tag=(2450, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Return-Status')))
+    _KapschResponseMessages_read_dsrc_link_mode = SEQ(name='read-dsrc-link-mode', mode=MODE_TYPE, tag=(2451, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Read-DSRC-Link-Mode')))
     _KapschResponseMessages_dsrc_configuration1 = SEQ(name='dsrc-configuration1', mode=MODE_TYPE, tag=(2455, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschResponseMessages_dsrc_configuration2 = SEQ(name='dsrc-configuration2', mode=MODE_TYPE, tag=(2456, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'DSRC-Configuration')))
     _KapschResponseMessages_set_bst_configuration = INT(name='set-bst-configuration', mode=MODE_TYPE, tag=(2457, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
@@ -4273,21 +4312,21 @@ class KapschOps1955Message:
         ('forced-release', _KapschResponseMessages_forced_release),
         ('tis-ready-application1', _KapschResponseMessages_tis_ready_application1),
         ('tis-ready-application2', _KapschResponseMessages_tis_ready_application2),
-        ('trx-status', _KapschResponseMessages_trx_status),
+        ('read-trx-status', _KapschResponseMessages_read_trx_status),
         ('trx-id', _KapschResponseMessages_trx_id),
         ('trx-internal-humidity', _KapschResponseMessages_trx_internal_humidity),
         ('trx-internal-temperature', _KapschResponseMessages_trx_internal_temperature),
-        ('trx-my-power-mode', _KapschResponseMessages_trx_my_power_mode),
+        ('set-trx-my-power-mode', _KapschResponseMessages_set_trx_my_power_mode),
         ('trx-carrier-frequency1', _KapschResponseMessages_trx_carrier_frequency1),
         ('trx-carrier-frequency2', _KapschResponseMessages_trx_carrier_frequency2),
         ('trx-uplink-parameters', _KapschResponseMessages_trx_uplink_parameters),
         ('trx-output-power1', _KapschResponseMessages_trx_output_power1),
         ('trx-output-power2', _KapschResponseMessages_trx_output_power2),
         ('trx-echo', _KapschResponseMessages_trx_echo),
-        ('trx-set-ui-control', _KapschResponseMessages_trx_set_ui_control),
-        ('trx-ui-status1', _KapschResponseMessages_trx_ui_status1),
-        ('trx-ui-status2', _KapschResponseMessages_trx_ui_status2),
-        ('trx-ui-status3', _KapschResponseMessages_trx_ui_status3),
+        ('set-trx-ui-control', _KapschResponseMessages_set_trx_ui_control),
+        ('read-ui-control', _KapschResponseMessages_read_ui_control),
+        ('read-ui-status', _KapschResponseMessages_read_ui_status),
+        ('report-ui-status', _KapschResponseMessages_report_ui_status),
         ('trx-general-purpose', _KapschResponseMessages_trx_general_purpose),
         ('trx-extended-output-power', _KapschResponseMessages_trx_extended_output_power),
         ('trx-read-rf-param1', _KapschResponseMessages_trx_read_rf_param1),
@@ -4306,8 +4345,8 @@ class KapschOps1955Message:
         ('lic-release-retransmissions2', _KapschResponseMessages_lic_release_retransmissions2),
         ('lic-lid-cleanup-mode1', _KapschResponseMessages_lic_lid_cleanup_mode1),
         ('lic-lid-cleanup-mode2', _KapschResponseMessages_lic_lid_cleanup_mode2),
-        ('dsrc-link-mode1', _KapschResponseMessages_dsrc_link_mode1),
-        ('dsrc-link-mode2', _KapschResponseMessages_dsrc_link_mode2),
+        ('set-dsrc-link-mode', _KapschResponseMessages_set_dsrc_link_mode),
+        ('read-dsrc-link-mode', _KapschResponseMessages_read_dsrc_link_mode),
         ('dsrc-configuration1', _KapschResponseMessages_dsrc_configuration1),
         ('dsrc-configuration2', _KapschResponseMessages_dsrc_configuration2),
         ('set-bst-configuration', _KapschResponseMessages_set_bst_configuration),
@@ -4332,6 +4371,9 @@ class KapschOps1955Message:
     
     _all_ = [
         OPS1955Container,
+        Lic_Return_Status,
+        _DSRC_Return_Status_link_id,
+        _DSRC_Return_Status_message_status,
         DSRC_Return_Status,
         _Action_Confirmation_link_id,
         _Action_Confirmation_response_parameter_bit_map,
@@ -4384,6 +4426,8 @@ class KapschOps1955Message:
         Tis_Ready_Application,
         TRX_Status,
         TRX_Mode,
+        _TRX_Status_Req_Message_instance,
+        TRX_Status_Req_Message,
         _TRX_Status_Message_instance,
         _TRX_Status_Message_status,
         _TRX_Status_Message_trx_mode,
@@ -4434,23 +4478,23 @@ class KapschOps1955Message:
         UI_Control_OPS1955,
         _TRX_Set_UI_Control_instance,
         _TRX_Set_UI_Control_status,
-        _TRX_Set_UI_Control_uitype,
+        _TRX_Set_UI_Control_ui_type,
         _TRX_Set_UI_Control_ops1925,
         _TRX_Set_UI_Control_ops1955,
         TRX_Set_UI_Control,
-        _TRX_Read_UI_Control_instance,
-        _TRX_Read_UI_Control_status,
-        _TRX_Read_UI_Control_uitype,
-        _TRX_Read_UI_Control_mode,
-        _TRX_Read_UI_Control_ops1925,
-        _TRX_Read_UI_Control_ops1955,
-        TRX_Read_UI_Control,
+        _Read_UI_Control_instance,
+        _Read_UI_Control_status,
+        _Read_UI_Control_uitype,
+        _Read_UI_Control_mode,
+        _Read_UI_Control_ops1925,
+        _Read_UI_Control_ops1955,
+        Read_UI_Control,
         UI_Type,
-        Sensors,
+        UI_Sensors_Status,
         _TRX_UI_Status_instance,
         _TRX_UI_Status_status,
-        _TRX_UI_Status_uitype,
-        _TRX_UI_Status_sensors,
+        _TRX_UI_Status_ui_type,
+        _TRX_UI_Status_ui_sensors_status,
         TRX_UI_Status,
         _TRX_General_Purpose_instance,
         _TRX_General_Purpose_password,
@@ -4475,7 +4519,6 @@ class KapschOps1955Message:
         _TRX_Read_RF_Param_data,
         _TRX_Read_RF_Param_length,
         TRX_Read_RF_Param,
-        Lic_Return_Status,
         _Lic_Nalm_Behaviour_message_status,
         _Lic_Nalm_Behaviour_behaviour,
         Lic_Nalm_Behaviour,
@@ -4497,9 +4540,12 @@ class KapschOps1955Message:
         _Lic_LID_Cleanup_Mode_message_status,
         _Lic_LID_Cleanup_Mode_lid_cleanup_mode,
         Lic_LID_Cleanup_Mode,
-        _DSRC_Link_Mode_message_status,
-        _DSRC_Link_Mode_mode,
-        DSRC_Link_Mode,
+        Mode,
+        _Set_DSRC_Link_Mode_mode,
+        Set_DSRC_Link_Mode,
+        _Read_DSRC_Link_Mode_message_status,
+        _Read_DSRC_Link_Mode_mode,
+        Read_DSRC_Link_Mode,
         _DSRC_Configuration_message_status,
         _DSRC_Configuration_trx_position,
         _DSRC_Configuration_bst_mode,
@@ -4627,11 +4673,11 @@ class KapschOps1955Message:
         _KapschRequestMessages_forced_release,
         _KapschRequestMessages_tis_ready_application1,
         _KapschRequestMessages_tis_ready_application2,
-        _KapschRequestMessages_trx_status,
+        _KapschRequestMessages_read_trx_status,
         _KapschRequestMessages_trx_id,
         _KapschRequestMessages_trx_internal_humidity,
         _KapschRequestMessages_trx_internal_temperature,
-        _KapschRequestMessages_trx_my_power_mode,
+        _KapschRequestMessages_set_trx_my_power_mode,
         _KapschRequestMessages_trx_carrier_frequency1,
         _KapschRequestMessages_trx_carrier_frequency2,
         _KapschRequestMessages_trx_uplink_parameters,
@@ -4639,8 +4685,8 @@ class KapschOps1955Message:
         _KapschRequestMessages_trx_output_power2,
         _KapschRequestMessages_trx_echo,
         _KapschRequestMessages_trx_set_ui_control,
-        _KapschRequestMessages_trx_ui_status1,
-        _KapschRequestMessages_trx_ui_status2,
+        _KapschRequestMessages_read_ui_control,
+        _KapschRequestMessages_read_ui_status,
         _KapschRequestMessages_trx_general_purpose,
         _KapschRequestMessages_trx_extended_output_power,
         _KapschRequestMessages_trx_read_rf_param1,
@@ -4659,8 +4705,8 @@ class KapschOps1955Message:
         _KapschRequestMessages_lic_release_retransmissions2,
         _KapschRequestMessages_lic_lid_cleanup_mode1,
         _KapschRequestMessages_lic_lid_cleanup_mode2,
-        _KapschRequestMessages_dsrc_link_mode1,
-        _KapschRequestMessages_dsrc_link_mode2,
+        _KapschRequestMessages_set_dsrc_link_mode,
+        _KapschRequestMessages_read_dsrc_link_mode,
         _KapschRequestMessages_dsrc_configuration1,
         _KapschRequestMessages_dsrc_configuration2,
         _KapschRequestMessages_set_bst_configuration,
@@ -4726,21 +4772,21 @@ class KapschOps1955Message:
         _KapschResponseMessages_forced_release,
         _KapschResponseMessages_tis_ready_application1,
         _KapschResponseMessages_tis_ready_application2,
-        _KapschResponseMessages_trx_status,
+        _KapschResponseMessages_read_trx_status,
         _KapschResponseMessages_trx_id,
         _KapschResponseMessages_trx_internal_humidity,
         _KapschResponseMessages_trx_internal_temperature,
-        _KapschResponseMessages_trx_my_power_mode,
+        _KapschResponseMessages_set_trx_my_power_mode,
         _KapschResponseMessages_trx_carrier_frequency1,
         _KapschResponseMessages_trx_carrier_frequency2,
         _KapschResponseMessages_trx_uplink_parameters,
         _KapschResponseMessages_trx_output_power1,
         _KapschResponseMessages_trx_output_power2,
         _KapschResponseMessages_trx_echo,
-        _KapschResponseMessages_trx_set_ui_control,
-        _KapschResponseMessages_trx_ui_status1,
-        _KapschResponseMessages_trx_ui_status2,
-        _KapschResponseMessages_trx_ui_status3,
+        _KapschResponseMessages_set_trx_ui_control,
+        _KapschResponseMessages_read_ui_control,
+        _KapschResponseMessages_read_ui_status,
+        _KapschResponseMessages_report_ui_status,
         _KapschResponseMessages_trx_general_purpose,
         _KapschResponseMessages_trx_extended_output_power,
         _KapschResponseMessages_trx_read_rf_param1,
@@ -4759,8 +4805,8 @@ class KapschOps1955Message:
         _KapschResponseMessages_lic_release_retransmissions2,
         _KapschResponseMessages_lic_lid_cleanup_mode1,
         _KapschResponseMessages_lic_lid_cleanup_mode2,
-        _KapschResponseMessages_dsrc_link_mode1,
-        _KapschResponseMessages_dsrc_link_mode2,
+        _KapschResponseMessages_set_dsrc_link_mode,
+        _KapschResponseMessages_read_dsrc_link_mode,
         _KapschResponseMessages_dsrc_configuration1,
         _KapschResponseMessages_dsrc_configuration2,
         _KapschResponseMessages_set_bst_configuration,

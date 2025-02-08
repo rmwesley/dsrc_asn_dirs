@@ -32,7 +32,22 @@ IMPORTS
 
 OPS1955Container ::= EfcContainer
 
-DSRC-Return-Status ::= INTEGER(0..255)
+Lic-Return-Status ::= INTEGER{
+    ok (0),
+    wrong-version-number (1),
+    unknown-class (2),
+    unknown-instance (3),
+    unknown-message-number (4),
+    invalid-length-of-data-field (5),
+    invalid-data (6),
+    parameters-affecting-the-accessed-command-not-set-properly (7),
+    command-failed (8)
+}(0..8)
+
+DSRC-Return-Status ::= SEQUENCE{
+    link-id OCTET STRING (SIZE(4)),
+    message-status Lic-Return-Status
+}
 
 Action-Confirmation ::= SEQUENCE {
     link-id INTEGER(0..255),
@@ -98,9 +113,39 @@ Tis-Ready-Application ::= SEQUENCE {
     eid INTEGER(0..255)
 }
 
-TRX-Status ::= INTEGER(0..255)
+TRX-Status ::= BIT STRING {
+    control-data-processor-not-ready-ot-busy (0),
+    bit-busy-or-not-ready (1),
+    illegal-command (2)
+    value-out-of-range (3),
+    password-error (4),
+    illegal-command-sequence (5),
+    trx-not-present (6),
+    trx-occupied (7),
+    warning (8),
+    major-error (9),
+    erroneous-value-b (10),
+    erroneous-value-a (11),
+    microwave-transmitter-power-failure (12),
+    voltage-error (13),
+    communciation-error (14),
+    beacon-not-configured (15)
+}(SIZE(16))
 
-TRX-Mode ::= INTEGER(0..31)
+TRX-Mode ::= BIT STRING{
+    my-power-off (0),
+    my-power-on (1),
+    frequency-2-not-1point5 (2),
+    localization-mode (3),
+    bst-time-slots-3-not-2 (4)
+    spare5 (5),
+    spare6 (6),
+    spare7 (7)
+}(SIZE(8))
+
+TRX-Status-Req-Message ::= SEQUENCE {
+    instance INTEGER(0..255)
+}
 
 TRX-Status-Message ::= SEQUENCE {
     instance INTEGER(0..255),
@@ -177,12 +222,12 @@ UI-Control-OPS1955 ::= SEQUENCE {
 TRX-Set-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status, -- Uplink only
-    uitype UI-Type,
+    ui-type UI-Type,
     ops1925 UI-Control-OPS1925, -- Dnlink only, only for OPS1925
     ops1955 UI-Control-OPS1955 -- Dnlink only, only for OPS1955
 }
 
-TRX-Read-UI-Control ::= SEQUENCE {
+Read-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status, -- Uplink only
     uitype UI-Type,
@@ -191,15 +236,21 @@ TRX-Read-UI-Control ::= SEQUENCE {
     ops1955 UI-Control-OPS1955 -- Uplink only, only for OPS1955
 }
 
-UI-Type ::= INTEGER(0..255)
+UI-Type ::= INTEGER{
+    ops1925-switch (0),
+    ops1955-infrared-sensor (1)
+}(0..255)
 
-Sensors ::= INTEGER(0..255)
+UI-Sensors-Status ::= BIT STRING{
+    door-open (0),
+    no-object-detected (1)
+}(SIZE(8))
 
 TRX-UI-Status ::= SEQUENCE {
     instance INTEGER(0..255),
     status TRX-Status, -- Uplink only
-    uitype UI-Type, -- Uplink only
-    sensors Sensors -- Uplink only
+    ui-type UI-Type, -- Uplink only
+    ui-sensors-status UI-Sensors-Status -- Uplink only
 }
 
 TRX-General-Purpose ::= SEQUENCE {
@@ -232,18 +283,6 @@ TRX-Read-RF-Param ::= SEQUENCE {
     data OCTET STRING (SIZE(255)), -- Uplink only
     length INTEGER
 }
-
-Lic-Return-Status ::= INTEGER{
-    ok (0),
-    wrong-version-number (1),
-    unknown-class (2),
-    unknown-instance (3),
-    unknown-message-number (4),
-    invalid-length-of-data-field (5),
-    invalid-data (6),
-    parameters-affecting-the-accessed-command-not-set-properly (7),
-    command-failed (8)
-}(0..8)
 
 Lic-Nalm-Behaviour ::= SEQUENCE {
     message-status Lic-Return-Status,
@@ -280,7 +319,19 @@ Lic-LID-Cleanup-Mode ::= SEQUENCE {
     lid-cleanup-mode INTEGER(0..255)
 }
 
-DSRC-Link-Mode ::= SEQUENCE {
+Mode ::= INTEGER{
+    off (0),
+    on (1),
+    paused (2),
+    single-shot (3),
+    single-shot-with-obu-detection (4)
+}(0..4)
+
+Set-DSRC-Link-Mode ::= SEQUENCE {
+    mode Mode
+}
+
+Read-DSRC-Link-Mode ::= SEQUENCE {
     message-status Lic-Return-Status, -- Present only for ID 2451
     mode INTEGER(0..255)
 }
@@ -411,11 +462,11 @@ KapschRequestMessages ::= CHOICE{
 	forced-release              [18] Forced-Release,
 	tis-ready-application1      [103] Tis-Ready-Application,
 	tis-ready-application2      [105] Tis-Ready-Application,
-	trx-status                  [1401] TRX-Status-Message,
+	read-trx-status             [1401] TRX-Status-Req-Message,
 	trx-id                      [1402] TRX-ID,
 	trx-internal-humidity       [1403] TRX-Internal-Humidity,
 	trx-internal-temperature    [1404] TRX-Internal-Temperature,
-	trx-my-power-mode           [1405] TRX-My-Power-Mode,
+	set-trx-my-power-mode       [1405] TRX-My-Power-Mode,
 	trx-carrier-frequency1      [1406] TRX-Carrier-Frequency,
 	trx-carrier-frequency2      [1415] TRX-Carrier-Frequency,
 	trx-uplink-parameters       [1407] TRX-Uplink-Parameters,
@@ -423,8 +474,8 @@ KapschRequestMessages ::= CHOICE{
 	trx-output-power2           [1416] TRX-Output-Power,
 	trx-echo                    [1414] TRX-Echo,
 	trx-set-ui-control          [1420] TRX-Set-UI-Control,
-	trx-ui-status1              [1421] TRX-UI-Status,
-	trx-ui-status2              [1422] TRX-UI-Status,
+	read-ui-control             [1421] Read-UI-Control,
+	read-ui-status              [1422] NULL,
 	trx-general-purpose         [1500] TRX-General-Purpose,
 	trx-extended-output-power   [1506] TRX-Extended-Output-Power,
 	trx-read-rf-param1          [1516] TRX-Read-RF-Param,
@@ -443,8 +494,8 @@ KapschRequestMessages ::= CHOICE{
 	lic-release-retransmissions2 [2419] Lic-Release-Retransmissions,
 	lic-lid-cleanup-mode1       [2420] Lic-LID-Cleanup-Mode,
 	lic-lid-cleanup-mode2       [2421] Lic-LID-Cleanup-Mode,
-	dsrc-link-mode1             [2450] DSRC-Link-Mode,
-	dsrc-link-mode2             [2451] DSRC-Link-Mode,
+	set-dsrc-link-mode          [2450] Set-DSRC-Link-Mode,
+	read-dsrc-link-mode         [2451] NULL,
 	dsrc-configuration1         [2455] DSRC-Configuration,
 	dsrc-configuration2         [2456] DSRC-Configuration,
 	set-bst-configuration       [2457] Set-BST-Configuration,
@@ -484,21 +535,21 @@ KapschResponseMessages ::= CHOICE{
 	forced-release              [18] Forced-Release,
 	tis-ready-application1      [103] Tis-Ready-Application,
 	tis-ready-application2      [105] Tis-Ready-Application,
-	trx-status                  [1401] TRX-Status-Message,
+	read-trx-status             [1401] TRX-Status-Message,
 	trx-id                      [1402] TRX-ID,
 	trx-internal-humidity       [1403] TRX-Internal-Humidity,
 	trx-internal-temperature    [1404] TRX-Internal-Temperature,
-	trx-my-power-mode           [1405] TRX-My-Power-Mode,
+	set-trx-my-power-mode       [1405] TRX-Status-Message,
 	trx-carrier-frequency1      [1406] TRX-Carrier-Frequency,
 	trx-carrier-frequency2      [1415] TRX-Carrier-Frequency,
 	trx-uplink-parameters       [1407] TRX-Uplink-Parameters,
 	trx-output-power1           [1408] TRX-Output-Power,
 	trx-output-power2           [1416] TRX-Output-Power,
 	trx-echo                    [1414] TRX-Echo,
-	trx-set-ui-control          [1420] TRX-Set-UI-Control,
-	trx-ui-status1              [1421] TRX-UI-Status,
-	trx-ui-status2              [1422] TRX-UI-Status,
-	trx-ui-status3              [1423] TRX-UI-Status,
+	set-trx-ui-control          [1420] TRX-Set-UI-Control,
+	read-ui-control             [1421] Read-UI-Control,
+	read-ui-status              [1422] TRX-UI-Status,
+	report-ui-status            [1423] TRX-UI-Status,
 	trx-general-purpose         [1500] TRX-General-Purpose,
 	trx-extended-output-power   [1506] TRX-Extended-Output-Power,
 	trx-read-rf-param1          [1516] TRX-Read-RF-Param,
@@ -517,8 +568,8 @@ KapschResponseMessages ::= CHOICE{
 	lic-release-retransmissions2 [2419] Lic-Release-Retransmissions,
 	lic-lid-cleanup-mode1       [2420] Lic-LID-Cleanup-Mode,
 	lic-lid-cleanup-mode2       [2421] Lic-LID-Cleanup-Mode,
-	dsrc-link-mode1             [2450] DSRC-Link-Mode,
-	dsrc-link-mode2             [2451] DSRC-Link-Mode,
+	set-dsrc-link-mode          [2450] DSRC-Return-Status,
+	read-dsrc-link-mode         [2451] Read-DSRC-Link-Mode,
 	dsrc-configuration1         [2455] DSRC-Configuration,
 	dsrc-configuration2         [2456] DSRC-Configuration,
 	set-bst-configuration       [2457] Lic-Return-Status,
