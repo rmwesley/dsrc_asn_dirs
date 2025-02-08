@@ -2912,6 +2912,7 @@ class KapschOps1955Message:
         'Notify-Application-Lost-Message',
         'Forced-Release',
         'Tis-Ready-Application',
+        'ActualStatus',
         'TRX-Status',
         'TRX-Status-Message',
         'TRX-ID',
@@ -2972,6 +2973,7 @@ class KapschOps1955Message:
         'Notify-Application-Lost-Message',
         'Forced-Release',
         'Tis-Ready-Application',
+        'ActualStatus',
         'TRX-Status',
         'TRX-Status-Message',
         'TRX-ID',
@@ -3200,18 +3202,36 @@ class KapschOps1955Message:
         ])
     Tis_Ready_Application._ext = None
     
+    #-----< ActualStatus >-----#
+    ActualStatus = INT(name='ActualStatus', mode=MODE_TYPE)
+    ActualStatus._cont = ASN1Dict([('ok', 0), ('warning', 1), ('reserved', 2), ('error', 3)])
+    ActualStatus._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=3)], ev=None, er=[])
+    
     #-----< TRX-Status >-----#
-    TRX_Status = SEQ_OF(name='TRX-Status', mode=MODE_TYPE)
-    _TRX_Status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_Status__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    TRX_Status._cont = _TRX_Status__item_
-    TRX_Status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    TRX_Status = SEQ(name='TRX-Status', mode=MODE_TYPE)
+    _TRX_Status_device_not_configured = BOOL(name='device-not-configured', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_communication_error = BOOL(name='communication-error', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_voltage_error = BOOL(name='voltage-error', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_microwave_transmitter_failure = BOOL(name='microwave-transmitter-failure', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_erroneous_value_a = BOOL(name='erroneous-value-a', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_erroneous_value_b = BOOL(name='erroneous-value-b', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_Status_actual_status = INT(name='actual-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'ActualStatus')))
+    TRX_Status._cont = ASN1Dict([
+        ('device-not-configured', _TRX_Status_device_not_configured),
+        ('communication-error', _TRX_Status_communication_error),
+        ('voltage-error', _TRX_Status_voltage_error),
+        ('microwave-transmitter-failure', _TRX_Status_microwave_transmitter_failure),
+        ('erroneous-value-a', _TRX_Status_erroneous_value_a),
+        ('erroneous-value-b', _TRX_Status_erroneous_value_b),
+        ('actual-status', _TRX_Status_actual_status),
+        ])
+    TRX_Status._ext = None
     
     #-----< TRX-Status-Message >-----#
     TRX_Status_Message = SEQ(name='TRX-Status-Message', mode=MODE_TYPE)
     _TRX_Status_Message_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Status_Message_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Status_Message_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Status_Message_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Status_Message_trx_mode = INT(name='trx-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Status_Message_trx_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Status_Message._cont = ASN1Dict([
@@ -3225,13 +3245,13 @@ class KapschOps1955Message:
     TRX_ID = SEQ(name='TRX-ID', mode=MODE_TYPE)
     _TRX_ID_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_ID_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_ID_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_trx_id = SEQ_OF(name='trx-id', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_trx_id__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_trx_id__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_ID_trx_id._cont = __TRX_ID_trx_id__item_
     _TRX_ID_trx_id._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
-    _TRX_ID_hwid = SEQ_OF(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_ID_hwid = SEQ(name='hwid', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_ID_swid = SEQ_OF(name='swid', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_ID_swid__item_ = INT(name='_item_', mode=MODE_TYPE)
     __TRX_ID_swid__item_._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
@@ -3250,7 +3270,7 @@ class KapschOps1955Message:
     TRX_Internal_Humidity = SEQ(name='TRX-Internal-Humidity', mode=MODE_TYPE)
     _TRX_Internal_Humidity_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Humidity_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Humidity_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Humidity_humid = INT(name='humid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Humidity_humid._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Humidity._cont = ASN1Dict([
@@ -3264,7 +3284,7 @@ class KapschOps1955Message:
     TRX_Internal_Temperature = SEQ(name='TRX-Internal-Temperature', mode=MODE_TYPE)
     _TRX_Internal_Temperature_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Internal_Temperature_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _TRX_Internal_Temperature_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Internal_Temperature_temp = INT(name='temp', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Internal_Temperature_temp._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Internal_Temperature._cont = ASN1Dict([
@@ -3290,10 +3310,7 @@ class KapschOps1955Message:
     TRX_Carrier_Frequency = SEQ(name='TRX-Carrier-Frequency', mode=MODE_TYPE)
     _TRX_Carrier_Frequency_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Carrier_Frequency_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __TRX_Carrier_Frequency_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_Carrier_Frequency_status._cont = __TRX_Carrier_Frequency_status__item_
-    _TRX_Carrier_Frequency_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Carrier_Frequency_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Carrier_Frequency_cfq = INT(name='cfq', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Carrier_Frequency_cfq._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Carrier_Frequency._cont = ASN1Dict([
@@ -3319,10 +3336,7 @@ class KapschOps1955Message:
     TRX_Output_Power = SEQ(name='TRX-Output-Power', mode=MODE_TYPE)
     _TRX_Output_Power_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Output_Power_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __TRX_Output_Power_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_Output_Power_status._cont = __TRX_Output_Power_status__item_
-    _TRX_Output_Power_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Output_Power_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Output_Power_spw = INT(name='spw', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Output_Power_spw._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     TRX_Output_Power._cont = ASN1Dict([
@@ -3383,10 +3397,7 @@ class KapschOps1955Message:
     TRX_Set_UI_Control = SEQ(name='TRX-Set-UI-Control', mode=MODE_TYPE)
     _TRX_Set_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Set_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Set_UI_Control_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __TRX_Set_UI_Control_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_Set_UI_Control_status._cont = __TRX_Set_UI_Control_status__item_
-    _TRX_Set_UI_Control_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Set_UI_Control_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Set_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Set_UI_Control_uitype._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_Set_UI_Control_ops1925 = SEQ(name='ops1925', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'UI-Control-OPS1925')), opt=True)
@@ -3404,10 +3415,7 @@ class KapschOps1955Message:
     TRX_Read_UI_Control = SEQ(name='TRX-Read-UI-Control', mode=MODE_TYPE)
     _TRX_Read_UI_Control_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_UI_Control_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_Read_UI_Control_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __TRX_Read_UI_Control_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_Read_UI_Control_status._cont = __TRX_Read_UI_Control_status__item_
-    _TRX_Read_UI_Control_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_Read_UI_Control_status = SEQ(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_Read_UI_Control_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_Read_UI_Control_uitype._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _TRX_Read_UI_Control_mode = INT(name='mode', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
@@ -3427,12 +3435,12 @@ class KapschOps1955Message:
     TRX_UI_Status = SEQ(name='TRX-UI-Status', mode=MODE_TYPE)
     _TRX_UI_Status_instance = INT(name='instance', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TRX_UI_Status_instance._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
-    _TRX_UI_Status_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_UI_Status_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     __TRX_UI_Status_status__item_ = INT(name='_item_', mode=MODE_TYPE)
     _TRX_UI_Status_status._cont = __TRX_UI_Status_status__item_
     _TRX_UI_Status_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
-    _TRX_UI_Status_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    _TRX_UI_Status_sensors = INT(name='sensors', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
+    _TRX_UI_Status_uitype = INT(name='uitype', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
+    _TRX_UI_Status_sensors = INT(name='sensors', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TRX_UI_Status._cont = ASN1Dict([
         ('instance', _TRX_UI_Status_instance),
         ('status', _TRX_UI_Status_status),
@@ -3450,10 +3458,7 @@ class KapschOps1955Message:
     _TRX_General_Purpose_genid = INT(name='genid', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
     _TRX_General_Purpose_genda_genre = OCT_STR(name='genda-genre', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
     _TRX_General_Purpose_genda_genre._const_sz = ASN1Set(rv=[255], rr=[], ev=None, er=[])
-    _TRX_General_Purpose_status = SEQ_OF(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
-    __TRX_General_Purpose_status__item_ = INT(name='_item_', mode=MODE_TYPE)
-    _TRX_General_Purpose_status._cont = __TRX_General_Purpose_status__item_
-    _TRX_General_Purpose_status._const_sz = ASN1Set(rv=[2], rr=[], ev=None, er=[])
+    _TRX_General_Purpose_status = SEQ(name='status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     _TRX_General_Purpose_length = INT(name='length', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TRX_General_Purpose._cont = ASN1Dict([
         ('instance', _TRX_General_Purpose_instance),
@@ -3603,7 +3608,7 @@ class KapschOps1955Message:
     
     #-----< DSRC-Link-Mode >-----#
     DSRC_Link_Mode = SEQ(name='DSRC-Link-Mode', mode=MODE_TYPE)
-    _DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _DSRC_Link_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _DSRC_Link_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _DSRC_Link_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     DSRC_Link_Mode._cont = ASN1Dict([
@@ -3614,7 +3619,7 @@ class KapschOps1955Message:
     
     #-----< DSRC-Configuration >-----#
     DSRC_Configuration = SEQ(name='DSRC-Configuration', mode=MODE_TYPE)
-    _DSRC_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _DSRC_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _DSRC_Configuration_trx_position = INT(name='trx-position', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _DSRC_Configuration_trx_position._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _DSRC_Configuration_bst_mode = INT(name='bst-mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3700,7 +3705,7 @@ class KapschOps1955Message:
     
     #-----< BST-Configuration >-----#
     BST_Configuration = SEQ(name='BST-Configuration', mode=MODE_TYPE)
-    _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _BST_Configuration_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _BST_Configuration_rsu = SEQ(name='rsu', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschBeaconID')))
     _BST_Configuration_profile = INT(name='profile', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcDsrcGeneric', 'Profile')))
     _BST_Configuration_mandApplications = SEQ_OF(name='mandApplications', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'KapschApplicationList')))
@@ -3714,7 +3719,7 @@ class KapschOps1955Message:
     
     #-----< Time >-----#
     Time = SEQ(name='Time', mode=MODE_TYPE)
-    _Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _Time_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Time_unix_time = INT(name='unix-time', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Time_unix_time._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Time_milliseconds = INT(name='milliseconds', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -3728,7 +3733,7 @@ class KapschOps1955Message:
     
     #-----< General-Log-Level >-----#
     General_Log_Level = SEQ(name='General-Log-Level', mode=MODE_TYPE)
-    _General_Log_Level_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _General_Log_Level_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _General_Log_Level_log_level = INT(name='log-level', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _General_Log_Level_log_level._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     General_Log_Level._cont = ASN1Dict([
@@ -3739,7 +3744,7 @@ class KapschOps1955Message:
     
     #-----< Log-Category-Mode >-----#
     Log_Category_Mode = SEQ(name='Log-Category-Mode', mode=MODE_TYPE)
-    _Log_Category_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _Log_Category_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Log_Category_Mode_log_category = INT(name='log-category', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Log_Category_Mode_log_category._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Log_Category_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), opt=True)
@@ -3814,14 +3819,14 @@ class KapschOps1955Message:
     LiC_Status_Message = SEQ(name='LiC-Status-Message', mode=MODE_TYPE)
     _LiC_Status_Message_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _LiC_Status_Message_lic_status = SEQ_OF(name='lic-status', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'LiC-Status')))
-    _LiC_Status_Message_trx_1_status = SEQ_OF(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_2_status = SEQ_OF(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_3_status = SEQ_OF(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_4_status = SEQ_OF(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_5_status = SEQ_OF(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_6_status = SEQ_OF(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_7_status = SEQ_OF(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
-    _LiC_Status_Message_trx_8_status = SEQ_OF(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_1_status = SEQ(name='trx-1-status', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_2_status = SEQ(name='trx-2-status', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_3_status = SEQ(name='trx-3-status', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_4_status = SEQ(name='trx-4-status', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_5_status = SEQ(name='trx-5-status', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_6_status = SEQ(name='trx-6-status', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_7_status = SEQ(name='trx-7-status', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
+    _LiC_Status_Message_trx_8_status = SEQ(name='trx-8-status', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'TRX-Status')))
     LiC_Status_Message._cont = ASN1Dict([
         ('message-status', _LiC_Status_Message_message_status),
         ('lic-status', _LiC_Status_Message_lic_status),
@@ -3857,7 +3862,7 @@ class KapschOps1955Message:
     
     #-----< Status-Mode >-----#
     Status_Mode = SEQ(name='Status-Mode', mode=MODE_TYPE)
-    _Status_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')), opt=True)
+    _Status_Mode_message_status = INT(name='message-status', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('KapschOps1955Message', 'Lic-Return-Status')))
     _Status_Mode_mode = INT(name='mode', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _Status_Mode_mode._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=255)], ev=None, er=[])
     _Status_Mode_interval = INT(name='interval', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -4180,7 +4185,14 @@ class KapschOps1955Message:
         _Tis_Ready_Application_link_id,
         _Tis_Ready_Application_eid,
         Tis_Ready_Application,
-        _TRX_Status__item_,
+        ActualStatus,
+        _TRX_Status_device_not_configured,
+        _TRX_Status_communication_error,
+        _TRX_Status_voltage_error,
+        _TRX_Status_microwave_transmitter_failure,
+        _TRX_Status_erroneous_value_a,
+        _TRX_Status_erroneous_value_b,
+        _TRX_Status_actual_status,
         TRX_Status,
         _TRX_Status_Message_instance,
         _TRX_Status_Message_status,
@@ -4206,7 +4218,6 @@ class KapschOps1955Message:
         _TRX_My_Power_Mode_mode,
         TRX_My_Power_Mode,
         _TRX_Carrier_Frequency_instance,
-        __TRX_Carrier_Frequency_status__item_,
         _TRX_Carrier_Frequency_status,
         _TRX_Carrier_Frequency_cfq,
         TRX_Carrier_Frequency,
@@ -4214,7 +4225,6 @@ class KapschOps1955Message:
         _TRX_Uplink_Parameters_upl,
         TRX_Uplink_Parameters,
         _TRX_Output_Power_instance,
-        __TRX_Output_Power_status__item_,
         _TRX_Output_Power_status,
         _TRX_Output_Power_spw,
         TRX_Output_Power,
@@ -4232,14 +4242,12 @@ class KapschOps1955Message:
         _UI_Control_OPS1955_blue,
         UI_Control_OPS1955,
         _TRX_Set_UI_Control_instance,
-        __TRX_Set_UI_Control_status__item_,
         _TRX_Set_UI_Control_status,
         _TRX_Set_UI_Control_uitype,
         _TRX_Set_UI_Control_ops1925,
         _TRX_Set_UI_Control_ops1955,
         TRX_Set_UI_Control,
         _TRX_Read_UI_Control_instance,
-        __TRX_Read_UI_Control_status__item_,
         _TRX_Read_UI_Control_status,
         _TRX_Read_UI_Control_uitype,
         _TRX_Read_UI_Control_mode,
@@ -4256,7 +4264,6 @@ class KapschOps1955Message:
         _TRX_General_Purpose_password,
         _TRX_General_Purpose_genid,
         _TRX_General_Purpose_genda_genre,
-        __TRX_General_Purpose_status__item_,
         _TRX_General_Purpose_status,
         _TRX_General_Purpose_length,
         TRX_General_Purpose,

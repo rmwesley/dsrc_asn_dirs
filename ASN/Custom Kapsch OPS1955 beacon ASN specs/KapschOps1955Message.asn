@@ -98,8 +98,23 @@ Tis-Ready-Application ::= SEQUENCE {
     eid INTEGER(0..255)
 }
 
+ActualStatus ::= INTEGER{
+    ok (0),
+    warning (1),
+    reserved (2),
+    error (3)
+}(0..3)
 
-TRX-Status ::= SEQUENCE (SIZE(2)) OF INTEGER(0..255)
+TRX-Status ::= SEQUENCE {
+    device-not-configured BOOLEAN,
+    communication-error BOOLEAN,
+    voltage-error BOOLEAN,
+    microwave-transmitter-failure BOOLEAN,
+    erroneous-value-a BOOLEAN,
+    erroneous-value-b BOOLEAN,
+    actual-status ActualStatus
+
+}
 
 TRX-Status-Message ::= SEQUENCE {
     instance INTEGER(0..255),
@@ -134,7 +149,7 @@ TRX-My-Power-Mode ::= SEQUENCE {
 
 TRX-Carrier-Frequency ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Present only for ID 1415
+    status TRX-Status, -- Present only for ID 1415
     cfq INTEGER(0..255)
 }
 
@@ -145,7 +160,7 @@ TRX-Uplink-Parameters ::= SEQUENCE {
 
 TRX-Output-Power ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Present only for ID 1416
+    status TRX-Status, -- Present only for ID 1416
     spw INTEGER(0..255)
 }
 
@@ -170,7 +185,7 @@ UI-Control-OPS1955 ::= SEQUENCE {
 
 TRX-Set-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    status TRX-Status, -- Uplink only
     uitype INTEGER(0..255),
     ops1925 UI-Control-OPS1925 OPTIONAL, -- Dnlink only, only for OPS1925
     ops1955 UI-Control-OPS1955 OPTIONAL -- Dnlink only, only for OPS1955
@@ -178,7 +193,7 @@ TRX-Set-UI-Control ::= SEQUENCE {
 
 TRX-Read-UI-Control ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    status TRX-Status, -- Uplink only
     uitype INTEGER(0..255),
     mode INTEGER OPTIONAL, -- Dnlink only, only for OPS1925
     ops1925 UI-Control-OPS1925 OPTIONAL, -- Uplink only, only for OPS1925
@@ -187,9 +202,9 @@ TRX-Read-UI-Control ::= SEQUENCE {
 
 TRX-UI-Status ::= SEQUENCE {
     instance INTEGER(0..255),
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
-    uitype INTEGER OPTIONAL, -- Uplink only
-    sensors INTEGER OPTIONAL -- Uplink only
+    status SEQUENCE (SIZE(2)) OF INTEGER, -- Uplink only
+    uitype INTEGER, -- Uplink only
+    sensors INTEGER -- Uplink only
 }
 
 TRX-General-Purpose ::= SEQUENCE {
@@ -197,7 +212,7 @@ TRX-General-Purpose ::= SEQUENCE {
     password OCTET STRING (SIZE(8)) OPTIONAL, -- Dnlink only
     genid INTEGER OPTIONAL, -- Dnlink only
     genda-genre OCTET STRING (SIZE(255)) OPTIONAL,
-    status SEQUENCE (SIZE(2)) OF INTEGER OPTIONAL, -- Uplink only
+    status TRX-Status, -- Uplink only
     length INTEGER -- Length of GENDA_GENRE (LiC ETC specific)
 }
 
@@ -271,12 +286,12 @@ Lic-LID-Cleanup-Mode ::= SEQUENCE {
 }
 
 DSRC-Link-Mode ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2451
+    message-status Lic-Return-Status, -- Present only for ID 2451
     mode INTEGER(0..255)
 }
 
 DSRC-Configuration ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2456
+    message-status Lic-Return-Status, -- Present only for ID 2456
     trx-position INTEGER(0..255),
     bst-mode INTEGER(0..255),
     low-priority-bst-cycle-time INTEGER(0..255),
@@ -333,25 +348,25 @@ KapschBeaconID ::= SEQUENCE{
 } -- for registration of manufacturerid see www.nni.nl/cen278
 
 BST-Configuration ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2458
+    message-status Lic-Return-Status, -- Present only for ID 2458
     rsu KapschBeaconID,
     profile Profile,
     mandApplications KapschApplicationList
 }
 
 Time ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2460
+    message-status Lic-Return-Status, -- Present only for ID 2460
     unix-time INTEGER(0..255),
     milliseconds INTEGER(0..255)
 }
 
 General-Log-Level ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2464
+    message-status Lic-Return-Status, -- Present only for ID 2464
     log-level INTEGER(0..255)
 }
 
 Log-Category-Mode ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2466 (to host)
+    message-status Lic-Return-Status, -- Present only for ID 2466 (to host)
     log-category INTEGER(0..255),
     mode INTEGER OPTIONAL -- Not used in 2466 (from host)
 }
@@ -400,7 +415,7 @@ LiC-Statistics ::= SEQUENCE {
 }
 
 Status-Mode ::= SEQUENCE {
-    message-status Lic-Return-Status OPTIONAL, -- Present only for ID 2754
+    message-status Lic-Return-Status, -- Present only for ID 2754
     mode INTEGER(0..255),
     interval INTEGER(0..255)
 }
