@@ -1,4 +1,4 @@
-EfcTisCipCardme {axxes(1) internal(0) tis(1) version0(0) minorVersion1(1)}
+EfcTisVlCipCardme {axxes(1) tis(1) vl(0) version0(0) minorVersion1(1)}
 DEFINITIONS AUTOMATIC TAGS 
 ::= BEGIN
 EXPORTS ALL;

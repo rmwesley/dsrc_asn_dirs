@@ -14,10 +14,10 @@ from pycrate_asn1rt.asnobj_class     import *
 from pycrate_asn1rt.asnobj_ext       import *
 from pycrate_asn1rt.init             import init_modules
 
-class EfcTisCipCardme:
+class EfcTisVlCipCardme:
 
-    _name_  = 'EfcTisCipCardme'
-    _oid_   = [1, 0, 1, 0, 1]
+    _name_  = 'EfcTisVlCipCardme'
+    _oid_   = [1, 1, 0, 0, 1]
     
     _obj_ = [
         'CodePays',
@@ -110,8 +110,8 @@ class EfcTisCipCardme:
     
     #-----< CodeSociete >-----#
     CodeSociete = SEQ(name='CodeSociete', mode=MODE_TYPE)
-    _CodeSociete_code_pays = INT(name='code-pays', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CodePays')))
-    _CodeSociete_numero_sca = INT(name='numero-sca', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroDeOrdreSociete')))
+    _CodeSociete_code_pays = INT(name='code-pays', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CodePays')))
+    _CodeSociete_numero_sca = INT(name='numero-sca', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroDeOrdreSociete')))
     CodeSociete._cont = ASN1Dict([
         ('code-pays', _CodeSociete_code_pays),
         ('numero-sca', _CodeSociete_numero_sca),
@@ -128,9 +128,9 @@ class EfcTisCipCardme:
     
     #-----< F-IDU >-----#
     F_IDU = SEQ(name='F-IDU', mode=MODE_TYPE)
-    _F_IDU_code_societe_emettrice = SEQ(name='code-societe-emettrice', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CodeSociete')))
-    _F_IDU_numero_client = INT(name='numero-client', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroClient')))
-    _F_IDU_numero_porteur = INT(name='numero-porteur', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroPorteur')))
+    _F_IDU_code_societe_emettrice = SEQ(name='code-societe-emettrice', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CodeSociete')))
+    _F_IDU_numero_client = INT(name='numero-client', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroClient')))
+    _F_IDU_numero_porteur = INT(name='numero-porteur', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroPorteur')))
     F_IDU._cont = ASN1Dict([
         ('code-societe-emettrice', _F_IDU_code_societe_emettrice),
         ('numero-client', _F_IDU_numero_client),
@@ -164,10 +164,10 @@ class EfcTisCipCardme:
     
     #-----< D-PRO >-----#
     D_PRO = SEQ(name='D-PRO', mode=MODE_TYPE)
-    _D_PRO_numero_produit = OCT_STR(name='numero-produit', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroDeOrdreProduit')))
-    _D_PRO_numero_liste_gare = INT(name='numero-liste-gare', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroListeGare')))
-    _D_PRO_numero_liste_calendrier = INT(name='numero-liste-calendrier', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroListeCalendrier')))
-    _D_PRO_date_fin_validite = SEQ(name='date-fin-validite', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'Date-YYMM-Tis')))
+    _D_PRO_numero_produit = OCT_STR(name='numero-produit', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroDeOrdreProduit')))
+    _D_PRO_numero_liste_gare = INT(name='numero-liste-gare', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroListeGare')))
+    _D_PRO_numero_liste_calendrier = INT(name='numero-liste-calendrier', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroListeCalendrier')))
+    _D_PRO_date_fin_validite = SEQ(name='date-fin-validite', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'Date-YYMM-Tis')))
     D_PRO._cont = ASN1Dict([
         ('numero-produit', _D_PRO_numero_produit),
         ('numero-liste-gare', _D_PRO_numero_liste_gare),
@@ -186,8 +186,8 @@ class EfcTisCipCardme:
     
     #-----< CodeGare >-----#
     CodeGare = SEQ(name='CodeGare', mode=MODE_TYPE)
-    _CodeGare_code_societe_circulee = SEQ(name='code-societe-circulee', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CodeSociete')))
-    _CodeGare_numero_d_ordre = INT(name='numero-d-ordre', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroDeOrdre')))
+    _CodeGare_code_societe_circulee = SEQ(name='code-societe-circulee', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CodeSociete')))
+    _CodeGare_numero_d_ordre = INT(name='numero-d-ordre', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroDeOrdre')))
     CodeGare._cont = ASN1Dict([
         ('code-societe-circulee', _CodeGare_code_societe_circulee),
         ('numero-d-ordre', _CodeGare_numero_d_ordre),
@@ -244,18 +244,18 @@ class EfcTisCipCardme:
     
     #-----< D-VET >-----#
     D_VET = SEQ(name='D-VET', mode=MODE_TYPE)
-    _D_VET_dernier_point_de_passage = INT(name='dernier-point-de-passage', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'DernierPointDePassage')))
-    _D_VET_code_gare = SEQ(name='code-gare', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CodeGare')))
-    _D_VET_numero_de_voie = INT(name='numero-de-voie', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'NumeroDeVoie')))
-    _D_VET_sens_de_la_voie = BOOL(name='sens-de-la-voie', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'SensDeLaVoie')))
-    _D_VET_classe_vehicule = INT(name='classe-vehicule', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'ClasseVehicule')))
-    _D_VET_date_du_passage = SEQ(name='date-du-passage', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'Date-YMMDD-Tis')))
-    _D_VET_heure_du_passage = SEQ(name='heure-du-passage', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'HeureDuPassage')))
-    _D_VET_periode_de_tarif = INT(name='periode-de-tarif', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'PeriodeDeTarif')))
-    _D_VET_type_de_tarif = INT(name='type-de-tarif', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'TypeDeTarif')))
-    _D_VET_cout_de_la_transaction_ttc = INT(name='cout-de-la-transaction-ttc', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CoutDeLaTransactionTTC')))
-    _D_VET_caractere_d_observation = INT(name='caractere-d-observation', mode=MODE_TYPE, tag=(10, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'CaractereDeObservation')))
-    _D_VET_pointeur_d_historique = INT(name='pointeur-d-historique', mode=MODE_TYPE, tag=(11, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'PointeurDeHistorique')))
+    _D_VET_dernier_point_de_passage = INT(name='dernier-point-de-passage', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'DernierPointDePassage')))
+    _D_VET_code_gare = SEQ(name='code-gare', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CodeGare')))
+    _D_VET_numero_de_voie = INT(name='numero-de-voie', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'NumeroDeVoie')))
+    _D_VET_sens_de_la_voie = BOOL(name='sens-de-la-voie', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'SensDeLaVoie')))
+    _D_VET_classe_vehicule = INT(name='classe-vehicule', mode=MODE_TYPE, tag=(4, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'ClasseVehicule')))
+    _D_VET_date_du_passage = SEQ(name='date-du-passage', mode=MODE_TYPE, tag=(5, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'Date-YMMDD-Tis')))
+    _D_VET_heure_du_passage = SEQ(name='heure-du-passage', mode=MODE_TYPE, tag=(6, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'HeureDuPassage')))
+    _D_VET_periode_de_tarif = INT(name='periode-de-tarif', mode=MODE_TYPE, tag=(7, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'PeriodeDeTarif')))
+    _D_VET_type_de_tarif = INT(name='type-de-tarif', mode=MODE_TYPE, tag=(8, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'TypeDeTarif')))
+    _D_VET_cout_de_la_transaction_ttc = INT(name='cout-de-la-transaction-ttc', mode=MODE_TYPE, tag=(9, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CoutDeLaTransactionTTC')))
+    _D_VET_caractere_d_observation = INT(name='caractere-d-observation', mode=MODE_TYPE, tag=(10, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'CaractereDeObservation')))
+    _D_VET_pointeur_d_historique = INT(name='pointeur-d-historique', mode=MODE_TYPE, tag=(11, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'PointeurDeHistorique')))
     D_VET._cont = ASN1Dict([
         ('dernier-point-de-passage', _D_VET_dernier_point_de_passage),
         ('code-gare', _D_VET_code_gare),
@@ -273,11 +273,11 @@ class EfcTisCipCardme:
     D_VET._ext = None
     
     #-----< D-HIS >-----#
-    D_HIS = SEQ(name='D-HIS', mode=MODE_TYPE, typeref=ASN1RefType(('EfcTisCipCardme', 'D-VET')))
+    D_HIS = SEQ(name='D-HIS', mode=MODE_TYPE, typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-VET')))
     
     #-----< D-GES >-----#
     D_GES = SEQ(name='D-GES', mode=MODE_TYPE)
-    _D_GES_date_limite_execption_grise = SEQ(name='date-limite-execption-grise', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'Date-YMMDD-Tis')))
+    _D_GES_date_limite_execption_grise = SEQ(name='date-limite-execption-grise', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'Date-YMMDD-Tis')))
     _D_GES_reserved = OCT_STR(name='reserved', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _D_GES_reserved._const_sz = ASN1Set(rv=[8], rr=[], ev=None, er=[])
     D_GES._cont = ASN1Dict([
@@ -308,8 +308,8 @@ class EfcTisCipCardme:
     
     #-----< D-EVE >-----#
     D_EVE = SEQ(name='D-EVE', mode=MODE_TYPE)
-    _D_EVE_numero_de_serie_du_telebadge = OCT_STR(name='numero-de-serie-du-telebadge', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'SerialNumber')))
-    _D_EVE_date_fabrication = SEQ(name='date-fabrication', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'Date-YYWW-Tis')))
+    _D_EVE_numero_de_serie_du_telebadge = OCT_STR(name='numero-de-serie-du-telebadge', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'SerialNumber')))
+    _D_EVE_date_fabrication = SEQ(name='date-fabrication', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'Date-YYWW-Tis')))
     D_EVE._cont = ASN1Dict([
         ('numero-de-serie-du-telebadge', _D_EVE_numero_de_serie_du_telebadge),
         ('date-fabrication', _D_EVE_date_fabrication),
@@ -340,7 +340,7 @@ class EfcTisCipCardme:
     
     #-----< D-OBS >-----#
     D_OBS = SEQ(name='D-OBS', mode=MODE_TYPE)
-    _D_OBS_erreur_logique = SEQ(name='erreur-logique', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'AnomalyBits')))
+    _D_OBS_erreur_logique = SEQ(name='erreur-logique', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'AnomalyBits')))
     D_OBS._cont = ASN1Dict([
         ('erreur-logique', _D_OBS_erreur_logique),
         ])
@@ -450,26 +450,26 @@ class EfcTisCipCardme:
     _TisContainer_reservedForFutureISOCENuse94 = NULL(name='reservedForFutureISOCENuse94', mode=MODE_TYPE, tag=(94, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse95 = NULL(name='reservedForFutureISOCENuse95', mode=MODE_TYPE, tag=(95, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse96 = NULL(name='reservedForFutureISOCENuse96', mode=MODE_TYPE, tag=(96, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TisContainer_f_idu = SEQ(name='f-idu', mode=MODE_TYPE, tag=(97, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'F-IDU')))
-    _TisContainer_d_pro = SEQ(name='d-pro', mode=MODE_TYPE, tag=(98, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-PRO')))
-    _TisContainer_d_vet = SEQ(name='d-vet', mode=MODE_TYPE, tag=(99, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-VET')))
-    _TisContainer_d_his0 = SEQ(name='d-his0', mode=MODE_TYPE, tag=(100, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his1 = SEQ(name='d-his1', mode=MODE_TYPE, tag=(101, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his2 = SEQ(name='d-his2', mode=MODE_TYPE, tag=(102, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his3 = SEQ(name='d-his3', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his4 = SEQ(name='d-his4', mode=MODE_TYPE, tag=(104, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his5 = SEQ(name='d-his5', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his6 = SEQ(name='d-his6', mode=MODE_TYPE, tag=(106, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his7 = SEQ(name='d-his7', mode=MODE_TYPE, tag=(107, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his8 = SEQ(name='d-his8', mode=MODE_TYPE, tag=(108, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his9 = SEQ(name='d-his9', mode=MODE_TYPE, tag=(109, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his10 = SEQ(name='d-his10', mode=MODE_TYPE, tag=(110, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his11 = SEQ(name='d-his11', mode=MODE_TYPE, tag=(111, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his12 = SEQ(name='d-his12', mode=MODE_TYPE, tag=(112, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his13 = SEQ(name='d-his13', mode=MODE_TYPE, tag=(113, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his14 = SEQ(name='d-his14', mode=MODE_TYPE, tag=(114, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_his15 = SEQ(name='d-his15', mode=MODE_TYPE, tag=(115, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-HIS')))
-    _TisContainer_d_ges = SEQ(name='d-ges', mode=MODE_TYPE, tag=(116, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-GES')))
+    _TisContainer_f_idu = SEQ(name='f-idu', mode=MODE_TYPE, tag=(97, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'F-IDU')))
+    _TisContainer_d_pro = SEQ(name='d-pro', mode=MODE_TYPE, tag=(98, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-PRO')))
+    _TisContainer_d_vet = SEQ(name='d-vet', mode=MODE_TYPE, tag=(99, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-VET')))
+    _TisContainer_d_his0 = SEQ(name='d-his0', mode=MODE_TYPE, tag=(100, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his1 = SEQ(name='d-his1', mode=MODE_TYPE, tag=(101, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his2 = SEQ(name='d-his2', mode=MODE_TYPE, tag=(102, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his3 = SEQ(name='d-his3', mode=MODE_TYPE, tag=(103, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his4 = SEQ(name='d-his4', mode=MODE_TYPE, tag=(104, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his5 = SEQ(name='d-his5', mode=MODE_TYPE, tag=(105, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his6 = SEQ(name='d-his6', mode=MODE_TYPE, tag=(106, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his7 = SEQ(name='d-his7', mode=MODE_TYPE, tag=(107, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his8 = SEQ(name='d-his8', mode=MODE_TYPE, tag=(108, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his9 = SEQ(name='d-his9', mode=MODE_TYPE, tag=(109, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his10 = SEQ(name='d-his10', mode=MODE_TYPE, tag=(110, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his11 = SEQ(name='d-his11', mode=MODE_TYPE, tag=(111, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his12 = SEQ(name='d-his12', mode=MODE_TYPE, tag=(112, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his13 = SEQ(name='d-his13', mode=MODE_TYPE, tag=(113, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his14 = SEQ(name='d-his14', mode=MODE_TYPE, tag=(114, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_his15 = SEQ(name='d-his15', mode=MODE_TYPE, tag=(115, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-HIS')))
+    _TisContainer_d_ges = SEQ(name='d-ges', mode=MODE_TYPE, tag=(116, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-GES')))
     _TisContainer_reservedForFutureISOCENuse117 = NULL(name='reservedForFutureISOCENuse117', mode=MODE_TYPE, tag=(117, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse118 = NULL(name='reservedForFutureISOCENuse118', mode=MODE_TYPE, tag=(118, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse119 = NULL(name='reservedForFutureISOCENuse119', mode=MODE_TYPE, tag=(119, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
@@ -477,9 +477,9 @@ class EfcTisCipCardme:
     _TisContainer_reservedForFutureISOCENuse121 = NULL(name='reservedForFutureISOCENuse121', mode=MODE_TYPE, tag=(121, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse122 = NULL(name='reservedForFutureISOCENuse122', mode=MODE_TYPE, tag=(122, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     _TisContainer_reservedForFutureISOCENuse123 = NULL(name='reservedForFutureISOCENuse123', mode=MODE_TYPE, tag=(123, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
-    _TisContainer_d_pass = OCT_STR(name='d-pass', mode=MODE_TYPE, tag=(124, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-PASS')))
-    _TisContainer_d_eve = SEQ(name='d-eve', mode=MODE_TYPE, tag=(125, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-EVE')))
-    _TisContainer_d_obs = SEQ(name='d-obs', mode=MODE_TYPE, tag=(126, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisCipCardme', 'D-OBS')))
+    _TisContainer_d_pass = OCT_STR(name='d-pass', mode=MODE_TYPE, tag=(124, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-PASS')))
+    _TisContainer_d_eve = SEQ(name='d-eve', mode=MODE_TYPE, tag=(125, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-EVE')))
+    _TisContainer_d_obs = SEQ(name='d-obs', mode=MODE_TYPE, tag=(126, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('EfcTisVlCipCardme', 'D-OBS')))
     _TisContainer_reservedForFutureISOCENuse127 = NULL(name='reservedForFutureISOCENuse127', mode=MODE_TYPE, tag=(127, TAG_CONTEXT_SPEC, TAG_IMPLICIT))
     TisContainer._cont = ASN1Dict([
         ('integer', _TisContainer_integer),
@@ -5409,4 +5409,4 @@ class EfcDsrcGeneric:
         VST,
     ]
 
-init_modules(EfcTisCipCardme, EfcDataDictionary, EfcCcc, EfcLac, EfcDsrcApplication, EfcDsrcGeneric)
+init_modules(EfcTisVlCipCardme, EfcDataDictionary, EfcCcc, EfcLac, EfcDsrcApplication, EfcDsrcGeneric)
