@@ -13,8 +13,8 @@ CodeSociete ::= SEQUENCE{
 	code-pays CodePays,
 	numero-sca NumeroDeOrdreSociete
 }
-NumeroClient ::= INTEGER(1..9999999)
-NumeroPorteur ::= INTEGER(1..99999)
+NumeroClient ::= INTEGER(0..9999999)
+NumeroPorteur ::= INTEGER(0..99999)
 
 F-IDU ::= SEQUENCE{
 	code-societe-emettrice CodeSociete,
@@ -23,8 +23,8 @@ F-IDU ::= SEQUENCE{
 }
 
 NumeroDeOrdreProduit ::= OCTET STRING(SIZE(2))
-NumeroListeGare ::= INTEGER(1..9999)
-NumeroListeCalendrier ::= INTEGER(1..99)
+NumeroListeGare ::= INTEGER(0..9999)
+NumeroListeCalendrier ::= INTEGER(0..99)
 Date-YYMM-Tis ::= SEQUENCE{
 	year INTEGER(0..99),
 	month INTEGER(0..12)

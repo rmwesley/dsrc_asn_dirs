@@ -120,11 +120,11 @@ class EfcTisVlCipCardme:
     
     #-----< NumeroClient >-----#
     NumeroClient = INT(name='NumeroClient', mode=MODE_TYPE)
-    NumeroClient._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=1, ub=9999999)], ev=None, er=[])
+    NumeroClient._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=9999999)], ev=None, er=[])
     
     #-----< NumeroPorteur >-----#
     NumeroPorteur = INT(name='NumeroPorteur', mode=MODE_TYPE)
-    NumeroPorteur._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=1, ub=99999)], ev=None, er=[])
+    NumeroPorteur._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=99999)], ev=None, er=[])
     
     #-----< F-IDU >-----#
     F_IDU = SEQ(name='F-IDU', mode=MODE_TYPE)
@@ -144,11 +144,11 @@ class EfcTisVlCipCardme:
     
     #-----< NumeroListeGare >-----#
     NumeroListeGare = INT(name='NumeroListeGare', mode=MODE_TYPE)
-    NumeroListeGare._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=1, ub=9999)], ev=None, er=[])
+    NumeroListeGare._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=9999)], ev=None, er=[])
     
     #-----< NumeroListeCalendrier >-----#
     NumeroListeCalendrier = INT(name='NumeroListeCalendrier', mode=MODE_TYPE)
-    NumeroListeCalendrier._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=1, ub=99)], ev=None, er=[])
+    NumeroListeCalendrier._const_val = ASN1Set(rv=[], rr=[ASN1RangeInt(lb=0, ub=99)], ev=None, er=[])
     
     #-----< Date-YYMM-Tis >-----#
     Date_YYMM_Tis = SEQ(name='Date-YYMM-Tis', mode=MODE_TYPE)
