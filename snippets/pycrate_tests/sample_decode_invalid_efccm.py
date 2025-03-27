@@ -1,4 +1,4 @@
-from ASN.compiled_DSRC_instances import AXXESv1_1 as EFC_CCC_LAC_asn1_objs
+from ASN.compiled_DSRC_instances import AXXESv1_2 as EFC_CCC_LAC_asn1_objs
 
 # efc_cm_uper_bytes = bytes.fromhex('B28031000A8D')
 # EFC_CCC_LAC_asn1_objs.EfcDataDictionary.EfcContextMark.from_uper(efc_cm_uper_bytes)
