@@ -5,21 +5,22 @@ DEFINITIONS ::= BEGIN
     RequestPduHeader, ResponsePduHeader,
     RequestMessages,
     Open-Rq, Close-Rq, Read-Display-Type-Rq;
-    Request-PDU ::= SEQUENCE {
-        header RequestPduHeader,
-        body RequestPduBody OPTIONAL}
-    Response-PDU ::= SEQUENCE {
-        header ResponsePduHeader,
-        body ResponsePduBody }
-    RequestPduHeader ::= SEQUENCE {
-        callingApTitle CallingApTitle,
-        respondingMode RespondingMode,
-        numberOfDirectives NumberOfDirectives }
-    CallingApTitle ::= Data-String (SIZE(4)) -- see "Calling AP Title" in table 16
-    RespondingMode ::= Bit-String-1B -- see "Responding Mode" in table 16
-    response-not-required RespondingMode ::= { bit1 }
-    response-fast-speed RespondingMode ::= { bit2 }
-    response-normal-speed RespondingMode ::= { bit3, bit2 }
+
+Request-PDU ::= SEQUENCE {
+    header RequestPduHeader,
+    body RequestPduBody OPTIONAL}
+Response-PDU ::= SEQUENCE {
+    header ResponsePduHeader,
+    body ResponsePduBody }
+RequestPduHeader ::= SEQUENCE {
+    callingApTitle CallingApTitle,
+    respondingMode RespondingMode,
+    numberOfDirectives NumberOfDirectives }
+CallingApTitle ::= Data-String (SIZE(4)) -- see "Calling AP Title" in table 16
+RespondingMode ::= Bit-String-1B -- see "Responding Mode" in table 16
+response-not-required RespondingMode ::= { bit1 }
+response-fast-speed RespondingMode ::= { bit2 }
+response-normal-speed RespondingMode ::= { bit3, bit2 }
 -- Note that bit8 ÷ bit4 are reserved and that:
 -- bit 8 7 6 5 4 3 2 1
 -- a) response-not-required: r r r r r x x 1
@@ -27,130 +28,131 @@ DEFINITIONS ::= BEGIN
 -- b.2) response-required-and-slow-speed: r r r r r x 0 0
 -- b.3) response-required-and-normal-speed: r r r r r 1 1 0
 -- where r = reserved and x = any.
-    NumberOfDirectives ::= Integer-1-1B -- see "Number of Directives" in table 16
-    RequestPduBody::= SEQUENCE {
-        open-message [0] Open-Rq OPTIONAL,
-        request-messages [1] RequestMessages OPTIONAL,
-        close-message [2] Close-Rq OPTIONAL }
-    RequestMessages ::= SET OF RequestMessage
-    RequestMessage ::= CHOICE {
-        read-display-type [0] Read-Display-Type-Rq,
-        read-appl-core [1] Read-Appl-Core-Rq,
-        read-appl-record [2] Read-Appl-Record-Rq,
-        read-master-core [3] Read-Master-Core-Rq,
-        select-tba-id [4] Select-TBA-Id-Rq,
-        write-appl-core [5] Write-Appl-Core-Rq,
-        write-appl-core-conf [6] Write-Appl-Core-Conf-Rq,
-        write-appl-record-curr [7] Write-Appl-Record-Curr-Rq,
-        write-appl-record-curr-conf [8] Write-Appl-Record-Curr-Conf-Rq,
-        write-appl-record-next [9] Write-Appl-Record-Next-Rq,
-        write-appl-record-next-conf [10] Write-Appl-Record-Next-Conf-Rq,
-        action [11] Action-Rq }
-    ResponsePduHeader ::= SEQUENCE {
-        calledApTitle CalledApTitle,
-        response-area Response-Area }
-    CalledApTitle ::= Data-String (SIZE(5)) -- see "Called AP Title" in table 40
-    Response-Area ::= CHOICE { -- see A-Association.response parameters in table 40
-        ack [0] Ack-Response,
-        mismatch [1] Mismatch-Response,
-        nack [2] Nack-Response }
-    Ack-Response ::= SEQUENCE {
-        ack Bit-String-1B ({bit3, bit2}), -- '06'H, see "Result" in table 40
-        ack-sense-code CHOICE { -- see "Diagnostic" in table 40
-            no-sense [0] Bit-String-1B ({ }), -- '00'H
-            no-card [1] Bit-String-1B ({bit1}), -- '01'H
-            wrong-tba-id [2] Bit-String-1B ({bit3, bit1}), -- '05'H
-            not-configured [3] Bit-String-1B ({bit3, bit2}) } } -- '06'H
-    Mismatch-Response ::= SEQUENCE {
-        mismatch Bit-String-1B ({bit1}), -- '01'H, see "Result" in table 40
-        mismatch-sense-code Bit-String-1B ({ }) } -- '00'H, see "Diagnostic" in table 40
-    Nack-Response ::= SEQUENCE {
-        nack Bit-String-1B ({bit5, bit3, bit1}), -- '15'H, see "Result" in table 40
-        nack-sense-code CHOICE { -- see "Diagnostic" in table 40
-            no-card [0] Bit-String-1B ({bit1}), -- '01'H
-            not-in-session [1] Bit-String-1B ({bit2}), -- '02'H
-            directive-unknown [2] Bit-String-1B ({bit2, bit1}), -- '03'H
-            directive-failure [3] Bit-String-1B ({bit3}), -- '04'H
-            opc-failure [4] Bit-String-1B ({bit3, bit1}), -- '05'H
-            not-configured [5] Bit-String-1B ({bit3, bit2}), -- '06'H
-            buffer-overflow [6] Bit-String-1B ({bit3, bit2, bit1}), -- '07'H
-            buffer-full [7] Bit-String-1B ({bit4, bit1}), -- '09'H
-            hardware-error [8] Bit-String-1B ({bit5}), -- '10'H
-            invalid-operation [9] Bit-String-1B ({bit5, bit1}) } } -- '11'H
-    ResponsePduBody ::= SET OF ResponseMessage
-    ResponseMessage ::= CHOICE {
-        read-display-type [0] Read-Display-Type-Rs,
-        read-appl-core [1] Read-Appl-Core-Rs,
-        read-appl-record-curr [2] Read-Appl-Record-Rs,
-        read-master-core [3] Read-Master-Core-Rs,
-        action-results [4] Action-Rs }
-    Open-Rq ::= SEQUENCE { id Bit-String-1B ({bit5}) }
-    Close-Rq ::= SEQUENCE { id Bit-String-1B ({bit5, bit1}) }
-    Read-Display-Type-Rq ::= SEQUENCE { id Bit-String-1B ({bit4, bit1}) }
-    Select-TBA-Id-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit5, bit3, bit1}),
-        lengthRespondingApTitle Integer-1-1B,
-        respondingApTitle Data-String }
-    Read-Master-Core-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit1}),
-        read-data-info Data-Info }
-    Read-Appl-Core-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit2}),
-        read-data-info Data-Info }
-    Read-Appl-Record-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit2, bit1}),
-        read-data-info Data-Info }
-    Write-Appl-Core-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit3, bit1}),
-        common-part Write-Common-Part }
-    Write-Appl-Core-Conf-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit5, bit4, bit1}),
-        common-part Write-Common-Part }
-    Write-Appl-Record-Curr-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit3, bit2}),
-        common-part Write-Common-Part }
-    Write-Appl-Record-Curr-Conf-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit6}),
-        common-part Write-Common-Part }
-    Write-Appl-Record-Next-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit3, bit2, bit1}),
-        common-part Write-Common-Part }
-    Write-Appl-Record-Next-Conf-Rq ::= SEQUENCE {
-        id Bit-String-1B ({bit6, bit1}),
-        common-part Write-Common-Part }
-    Action-Rq ::= SEQUENCE {
-        write-data-to-external-rq SEQUENCE {
-        id Bit-String-1B ({bit6, bit5, bit1}),
-        mode CHOICE {
-            immediate [0] Bit-String-1B ({bit1}),
-            deferred [1] Bit-String-1B ({bit2})},
-            address Bit-String-1B ({bit8, bit7, bit6, bit5, bit4, bit3, bit2, bit1}),
-            wait-time Integer-0-1B (0),
-            data-length Integer-1-1B,
-            data Write-Data },
-        read-data-from-external-rq SEQUENCE {id Bit-String-1B ({bit5, bit3, bit2, bit1})} }
-    Data-Info ::= SEQUENCE {
-            data-offset Integer-0-1B,
-            data-length Integer-0-1B }
-    Write-Data ::= Data-String
-    Write-Common-Part ::= SEQUENCE {
-            write-data-info Data-Info,
-            data Write-Data }
-    Read-Display-Type-Rs ::= CHOICE {
-            numeric-display [0] Bit-String-1B ({bit7, bit1} ),
-            alpha-numeric-display [1] Bit-String-1B ({bit7, bit4, bit3, bit2}) }
-    Read-Appl-Core-Rs ::= Read-Data
-    Read-Appl-Record-Rs ::= Read-Data
-    Read-Master-Core-Rs ::= Read-Data
-    Action-Rs ::= SEQUENCE {
-            data-length Integer-1-1B,
-            data Read-Data }
-    Read-Data ::= Data-String
-    Data-String ::= OCTET STRING
-    Bit-String-1B ::= BIT STRING { bit8(0), bit7(1), bit6(2), bit5(3), bit4(4), bit3(5), bit2(6), bit1(7) } (SIZE(8))
-    lower-bound-0 INTEGER ::= 0
-    lower-bound-1 INTEGER ::= 1
-    Integer-0-1B ::= INTEGER (lower-bound-0 .. upper-bound-1B)
-    Integer-1-1B ::= INTEGER (lower-bound-1 .. upper-bound-1B)
-    upper-bound-1B INTEGER ::= 255
+NumberOfDirectives ::= Integer-1-1B -- see "Number of Directives" in table 16
+RequestPduBody::= SEQUENCE {
+    open-message [0] Open-Rq OPTIONAL,
+    request-messages [1] RequestMessages OPTIONAL,
+    close-message [2] Close-Rq OPTIONAL }
+RequestMessages ::= SET OF RequestMessage
+RequestMessage ::= CHOICE {
+    read-display-type [0] Read-Display-Type-Rq,
+    read-appl-core [1] Read-Appl-Core-Rq,
+    read-appl-record [2] Read-Appl-Record-Rq,
+    read-master-core [3] Read-Master-Core-Rq,
+    select-tba-id [4] Select-TBA-Id-Rq,
+    write-appl-core [5] Write-Appl-Core-Rq,
+    write-appl-core-conf [6] Write-Appl-Core-Conf-Rq,
+    write-appl-record-curr [7] Write-Appl-Record-Curr-Rq,
+    write-appl-record-curr-conf [8] Write-Appl-Record-Curr-Conf-Rq,
+    write-appl-record-next [9] Write-Appl-Record-Next-Rq,
+    write-appl-record-next-conf [10] Write-Appl-Record-Next-Conf-Rq,
+    action [11] Action-Rq }
+ResponsePduHeader ::= SEQUENCE {
+    calledApTitle CalledApTitle,
+    response-area Response-Area }
+CalledApTitle ::= Data-String (SIZE(5)) -- see "Called AP Title" in table 40
+Response-Area ::= CHOICE { -- see A-Association.response parameters in table 40
+    ack [0] Ack-Response,
+    mismatch [1] Mismatch-Response,
+    nack [2] Nack-Response }
+Ack-Response ::= SEQUENCE {
+    ack Bit-String-1B ({bit3, bit2}), -- '06'H, see "Result" in table 40
+    ack-sense-code CHOICE { -- see "Diagnostic" in table 40
+        no-sense [0] Bit-String-1B ({ }), -- '00'H
+        no-card [1] Bit-String-1B ({bit1}), -- '01'H
+        wrong-tba-id [2] Bit-String-1B ({bit3, bit1}), -- '05'H
+        not-configured [3] Bit-String-1B ({bit3, bit2}) } } -- '06'H
+Mismatch-Response ::= SEQUENCE {
+    mismatch Bit-String-1B ({bit1}), -- '01'H, see "Result" in table 40
+    mismatch-sense-code Bit-String-1B ({ }) } -- '00'H, see "Diagnostic" in table 40
+Nack-Response ::= SEQUENCE {
+    nack Bit-String-1B ({bit5, bit3, bit1}), -- '15'H, see "Result" in table 40
+    nack-sense-code CHOICE { -- see "Diagnostic" in table 40
+        no-card [0] Bit-String-1B ({bit1}), -- '01'H
+        not-in-session [1] Bit-String-1B ({bit2}), -- '02'H
+        directive-unknown [2] Bit-String-1B ({bit2, bit1}), -- '03'H
+        directive-failure [3] Bit-String-1B ({bit3}), -- '04'H
+        opc-failure [4] Bit-String-1B ({bit3, bit1}), -- '05'H
+        not-configured [5] Bit-String-1B ({bit3, bit2}), -- '06'H
+        buffer-overflow [6] Bit-String-1B ({bit3, bit2, bit1}), -- '07'H
+        buffer-full [7] Bit-String-1B ({bit4, bit1}), -- '09'H
+        hardware-error [8] Bit-String-1B ({bit5}), -- '10'H
+        invalid-operation [9] Bit-String-1B ({bit5, bit1}) } } -- '11'H
+ResponsePduBody ::= SET OF ResponseMessage
+ResponseMessage ::= CHOICE {
+    read-display-type [0] Read-Display-Type-Rs,
+    read-appl-core [1] Read-Appl-Core-Rs,
+    read-appl-record-curr [2] Read-Appl-Record-Rs,
+    read-master-core [3] Read-Master-Core-Rs,
+    action-results [4] Action-Rs }
+Open-Rq ::= SEQUENCE { id Bit-String-1B ({bit5}) }
+Close-Rq ::= SEQUENCE { id Bit-String-1B ({bit5, bit1}) }
+Read-Display-Type-Rq ::= SEQUENCE { id Bit-String-1B ({bit4, bit1}) }
+Select-TBA-Id-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit5, bit3, bit1}),
+    lengthRespondingApTitle Integer-1-1B,
+    respondingApTitle Data-String }
+Read-Master-Core-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit1}),
+    read-data-info Data-Info }
+Read-Appl-Core-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit2}),
+    read-data-info Data-Info }
+Read-Appl-Record-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit2, bit1}),
+    read-data-info Data-Info }
+Write-Appl-Core-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit3, bit1}),
+    common-part Write-Common-Part }
+Write-Appl-Core-Conf-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit5, bit4, bit1}),
+    common-part Write-Common-Part }
+Write-Appl-Record-Curr-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit3, bit2}),
+    common-part Write-Common-Part }
+Write-Appl-Record-Curr-Conf-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit6}),
+    common-part Write-Common-Part }
+Write-Appl-Record-Next-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit3, bit2, bit1}),
+    common-part Write-Common-Part }
+Write-Appl-Record-Next-Conf-Rq ::= SEQUENCE {
+    id Bit-String-1B ({bit6, bit1}),
+    common-part Write-Common-Part }
+Action-Rq ::= SEQUENCE {
+    write-data-to-external-rq SEQUENCE {
+    id Bit-String-1B ({bit6, bit5, bit1}),
+    mode CHOICE {
+        immediate [0] Bit-String-1B ({bit1}),
+        deferred [1] Bit-String-1B ({bit2})},
+        address Bit-String-1B ({bit8, bit7, bit6, bit5, bit4, bit3, bit2, bit1}),
+        wait-time Integer-0-1B (0),
+        data-length Integer-1-1B,
+        data Write-Data },
+    read-data-from-external-rq SEQUENCE {id Bit-String-1B ({bit5, bit3, bit2, bit1})} }
+Data-Info ::= SEQUENCE {
+        data-offset Integer-0-1B,
+        data-length Integer-0-1B }
+Write-Data ::= Data-String
+Write-Common-Part ::= SEQUENCE {
+        write-data-info Data-Info,
+        data Write-Data }
+Read-Display-Type-Rs ::= CHOICE {
+        numeric-display [0] Bit-String-1B ({bit7, bit1} ),
+        alpha-numeric-display [1] Bit-String-1B ({bit7, bit4, bit3, bit2}) }
+Read-Appl-Core-Rs ::= Read-Data
+Read-Appl-Record-Rs ::= Read-Data
+Read-Master-Core-Rs ::= Read-Data
+Action-Rs ::= SEQUENCE {
+        data-length Integer-1-1B,
+        data Read-Data }
+Read-Data ::= Data-String
+Data-String ::= OCTET STRING
+Bit-String-1B ::= BIT STRING { bit8(0), bit7(1), bit6(2), bit5(3), bit4(4), bit3(5), bit2(6), bit1(7) } (SIZE(8))
+lower-bound-0 INTEGER ::= 0
+lower-bound-1 INTEGER ::= 1
+Integer-0-1B ::= INTEGER (lower-bound-0 .. upper-bound-1B)
+Integer-1-1B ::= INTEGER (lower-bound-1 .. upper-bound-1B)
+upper-bound-1B INTEGER ::= 255
+
 END
