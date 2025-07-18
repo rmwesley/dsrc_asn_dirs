@@ -17,5 +17,5 @@ def fix_etsi_asn_file(asn_filename):
         asn_out_file.write(new_asn_str)
 
 if __name__ == '__main__':
-    fix_etsi_asn_file('EFC-ACSE_V3.0.0.asn')
-    fix_etsi_asn_file('EFC-ASO_V3.0.0.asn')
+    fix_etsi_asn_file('ETSI-EFC-ACSE_V3.0.0.asn')
+    fix_etsi_asn_file('ETSI-EFC-ASO_V3.0.0.asn')
