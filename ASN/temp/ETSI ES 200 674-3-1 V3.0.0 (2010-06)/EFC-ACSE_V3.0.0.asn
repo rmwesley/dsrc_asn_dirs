@@ -1,4 +1,4 @@
-EFC-ACSE { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-1 }
+EFC-ACSE { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-1(1) }
 DEFINITIONS ::= BEGIN
     EXPORTS Data-String, Bit-String-1B, Integer-0-1B, Integer-1-1B,
     Read-Data, Write-Data,

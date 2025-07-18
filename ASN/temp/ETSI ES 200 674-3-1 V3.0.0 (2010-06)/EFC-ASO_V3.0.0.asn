@@ -1,4 +1,4 @@
-EFC-ASO { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-2 }
+EFC-ASO { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-2(2) }
 DEFINITIONS ::=
 BEGIN
 EXPORT;
@@ -7,7 +7,7 @@ IMPORT Data-String, Bit-String-1B, Integer-0-1B, Integer-1-1B,
     Request-Msg-Header, Response-Msg-Header,
     Without-Envelope-Rq,
     Open-Rq, Close-Rq, Read-Display-Type-Rq,
-FROM EFC-ACSE { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-1 };
+FROM EFC-ACSE { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-1(1) };
 
 ASO-Request-Msg ::= SEQUENCE {
     header Request-Msg-Header,
