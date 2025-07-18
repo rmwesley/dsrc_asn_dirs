@@ -7,7 +7,7 @@
 .\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/DSRC Instances asn specs/EFC CCC 2009/" -o ./ASN/compiled_DSRC_instances/CCCv1
 
 # .\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/DSRC Instances asn specs/EFC CCC 2023 with 8 bits CV/" -o ./ASN/compiled_DSRC_instances/modified_CCC_2023
-.\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/temp/ETSI ES 200 674-3-1 V3.0.0 (2010-06)_fixed/" -o ./ASN/compiled_DSRC_instances/UNIv3
+.\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/temp/ETSI ES 200 674-3-1 V3.0.0 (2010-06)/" -o ./ASN/compiled_DSRC_instances/UNIv3
 .\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/Custom Kapsch OPS1955 beacon ASN specs/" -o ./ASN/compiled_DSRC_instances/OPS1955
 .\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/DSRC Instances asn specs/EFC EU Wesley 2025/" -o ./ASN/compiled_DSRC_instances/EN15509
 .\.venv\Scripts\python.exe .\.venv\Scripts\pycrate_asn1compile.py -i "./ASN/DSRC Instances asn specs/AXXES EFC v1.2 2025/" -o ./ASN/compiled_DSRC_instances/AXXESv1_2
