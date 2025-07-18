@@ -60,8 +60,8 @@ Set-Credential-Rq ::= SEQUENCE {
 Get-Credential-Rq ::= SEQUENCE {
     id Bit-String-1B ::= '4A'H,
     data-info Data-Info,
-    nonce-len Integer-1-1B
-    nonce Data-String
+    nonce-len Integer-1-1B,
+    nonce Data-String,
     key Integer-1-1B }
 Read-Data-From-External-Rq ::= SEQUENCE {
     id Bit-String-1B ::= '17'H }
@@ -105,10 +105,10 @@ Video-Action ::= CHOICE {
         none Bit-String-1B ::= '06'H,
         all-on Bit-String-1B ::= '07'H } }
 Audio-Action ::= CHOICE {
-none Bit-String-1B ::= '00'H,
-ok Bit-String-1B ::= '01'H,
-ko Bit-String-1B ::= '02'H,
-warning Bit-String-1B ::= '03'H }
+    none Bit-String-1B ::= '00'H,
+    ok Bit-String-1B ::= '01'H,
+    ko Bit-String-1B ::= '02'H,
+    warning Bit-String-1B ::= '03'H }
 Get-TBA-Random-Rs ::= Read-Data
 Get-Master-Record-Rs ::= Read-Data
 Get-Credential-Rs ::= Read-Data (SIZE(4))
