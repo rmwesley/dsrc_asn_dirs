@@ -125,10 +125,10 @@ Action-Rq ::= SEQUENCE {
     mode CHOICE {
         immediate [0] Bit-String-1B ({bit1}),
         deferred [1] Bit-String-1B ({bit2})},
-        address Bit-String-1B ({bit8, bit7, bit6, bit5, bit4, bit3, bit2, bit1}),
-        wait-time Integer-0-1B (0),
-        data-length Integer-1-1B,
-        data Write-Data },
+    address Bit-String-1B ({bit8, bit7, bit6, bit5, bit4, bit3, bit2, bit1}),
+    wait-time Integer-0-1B (0),
+    data-length Integer-1-1B,
+    data Write-Data },
     read-data-from-external-rq SEQUENCE {id Bit-String-1B ({bit5, bit3, bit2, bit1})} }
 Data-Info ::= SEQUENCE {
         data-offset Integer-0-1B,
