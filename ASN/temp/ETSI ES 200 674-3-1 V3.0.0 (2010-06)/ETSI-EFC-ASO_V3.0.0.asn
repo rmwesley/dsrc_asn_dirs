@@ -27,9 +27,9 @@ ASO-With-Envelope-Rq ::= SEQUENCE {
 ASO-Without-Envelope-Rq ::= SET OF {
     without-envelope-rq Without-Envelope-Rq,
     get-tba-random Get-TBA-Random-Rq,
-    get-master-record Get-Master-Record-Rq
-    set-credential Set-Credential-Rq
-    get-credential Get-Credential-Rq
+    get-master-record Get-Master-Record-Rq,
+    set-credential Set-Credential-Rq,
+    get-credential Get-Credential-Rq,
     read-data-from-external Read-Data-From-External-Rq,
     set-password Set-Password-Rq,
     set-user-interface Set-User-Interface-Rq,
