@@ -148,9 +148,9 @@ DEFINITIONS ::= BEGIN
     Read-Data ::= Data-String
     Data-String ::= OCTET STRING
     Bit-String-1B ::= BIT STRING { bit8(0), bit7(1), bit6(2), bit5(3), bit4(4), bit3(5), bit2(6), bit1(7) } (SIZE(8))
-    Integer-0-1B ::= INTEGER (lower-bound-0 .. upper-bound-1B)
-    Integer-1-1B ::= INTEGER (lower-bound-1 .. upper-bound-1B)
     lower-bound-0 INTEGER ::= 0
     lower-bound-1 INTEGER ::= 1
+    Integer-0-1B ::= INTEGER (lower-bound-0 .. upper-bound-1B)
+    Integer-1-1B ::= INTEGER (lower-bound-1 .. upper-bound-1B)
     upper-bound-1B INTEGER ::= 255
 END
