@@ -7,7 +7,7 @@ with open(f'ASN/temp/ETSI ES 200 674-3-1 V3.0.0 (2010-06)/{asn_filename}', 'r') 
 new_lines = []
 for line in asn_str.split('\n'):
     if "INTEGER ::= " in line:
-        fixed_line = line.replace(" INTEGER ::= ", " INTEGER (") + ")"
+        fixed_line = line.replace(" INTEGER ::= ", " ::=")
     elif "::= '" in line:
         fixed_line = line.replace(" ::= '", " ('").replace("'H", "'H)")
     else:
