@@ -24,21 +24,21 @@ ASO-With-Envelope-Rq ::= SEQUENCE {
     open Open-Rq,
     without-envelope ASO-Without-Envelope-Rq,
     close Close-Rq OPTIONAL }
-ASO-Without-Envelope-Rq ::= SET OF {
-    without-envelope-rq Without-Envelope-Rq,
-    get-tba-random Get-TBA-Random-Rq,
-    get-master-record Get-Master-Record-Rq,
-    set-credential Set-Credential-Rq,
-    get-credential Get-Credential-Rq,
-    read-data-from-external Read-Data-From-External-Rq,
-    set-password Set-Password-Rq,
-    set-user-interface Set-User-Interface-Rq,
-    use-last-password Use-Last-Password-Rq,
+ASO-Without-Envelope-Rq ::= SET {
+    without-envelope-rq Without-Envelope-Rq OPTIONAL,
+    get-tba-random Get-TBA-Random-Rq OPTIONAL,
+    get-master-record Get-Master-Record-Rq OPTIONAL,
+    set-credential Set-Credential-Rq OPTIONAL,
+    get-credential Get-Credential-Rq OPTIONAL,
+    read-data-from-external Read-Data-From-External-Rq OPTIONAL,
+    set-password Set-Password-Rq OPTIONAL,
+    set-user-interface Set-User-Interface-Rq OPTIONAL,
+    use-last-password Use-Last-Password-Rq OPTIONAL,
     write-data-to-external Write-Data-To-External-Rq }
-ASO-Response-Msg-Body ::= SET OF {
-    get-tba-random Get-TBA-Random-Rs,
-    read-certificate Read-Certificate-Rs,
-    read-data-from-external Read-Data-From-External-Rs }
+ASO-Response-Msg-Body ::= SET {
+    get-tba-random Get-TBA-Random-Rs OPTIONAL,
+    read-certificate Read-Certificate-Rs OPTIONAL,
+    read-data-from-external Read-Data-From-External-Rs OPTIONAL }
 Use-Last-Password-Rq ::= SEQUENCE {
     id Bit-String-1B ::= '30'H }
 Set-Password-Rq ::= SEQUENCE {
