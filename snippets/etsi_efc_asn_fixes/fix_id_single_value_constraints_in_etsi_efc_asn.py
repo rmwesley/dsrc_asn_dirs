@@ -1,0 +1,121 @@
+asn_str = '''
+EFC-ASO { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-2 }
+DEFINITIONS ::=
+BEGIN
+EXPORT;
+IMPORT Data-String, Bit-String-1B, Integer-0-1B, Integer-1-1B,
+    Read-Data, Write-Data, Data-Info,
+    Request-Msg-Header, Response-Msg-Header,
+    Without-Envelope-Rq,
+    Open-Rq, Close-Rq, Read-Display-Type-Rq,
+    FROM EFC-ACSE
+    { itu-t(0) identified-organization(4) etsi(0) itsDomain(5) wg2(2) en3006740301-1 };
+    ASO-Request-Msg ::= SEQUENCE {
+    header Request-Msg-Header,
+    body ASO-Request-Msg-Body }
+    ASO-Response-Msg ::= SEQUENCE {
+    header Response-Msg-Header,
+    body ASO-Response-Msg-Body OPTIONAL}
+    ASO-Request-Msg-Body ::= CHOICE {
+    with-envelope ASO-With-Envelope-Rq,
+    without-envelope ASO-Without-Envelope-Rq }
+    ASO-With-Envelope-Rq ::= SEQUENCE {
+    open Open-Rq,
+    without-envelope ASO-Without-Envelope-Rq,
+    close Close-Rq OPTIONAL }
+    ASO-Without-Envelope-Rq ::= SET OF {
+        without-envelope-rq Without-Envelope-Rq,
+        get-tba-random Get-TBA-Random-Rq,
+        get-master-record Get-Master-Record-Rq
+        set-credential Set-Credential-Rq
+        get-credential Get-Credential-Rq
+        read-data-from-external Read-Data-From-External-Rq,
+        set-password Set-Password-Rq,
+        set-user-interface Set-User-Interface-Rq,
+        use-last-password Use-Last-Password-Rq,
+        write-data-to-external Write-Data-To-External-Rq }
+    ASO-Response-Msg-Body ::= SET OF {
+        get-tba-random Get-TBA-Random-Rs,
+        read-certificate Read-Certificate-Rs,
+        read-data-from-external Read-Data-From-External-Rs }
+    Use-Last-Password-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '30'H }
+    Set-Password-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '13'H,
+        password-length Integer-1-1B,
+        password Password }
+    Get-TBA-Random-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '37'H,
+        random-number-lgh Integer-1-1B }
+    Get-Master-Record-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '4C'H,
+        data-info Data-Info }
+    Set-Credential-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '4B'H,
+        credential-length Integer-1-1B,
+        credential Data-String }
+    Get-Credential-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '4A'H,
+        data-info Data-Info,
+        nonce-len Integer-1-1B
+        nonce Data-String
+        key Integer-1-1B }
+    Read-Data-From-External-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '17'H }
+    Write-Data-To-External-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '31'H,
+        mode Mode,
+        address Bit-String-1B,
+        wait-time Integer-1-1B,
+        data-length Integer-1-1B,
+        data Write-Data }
+    Set-User-Interface-Rq ::= SEQUENCE {
+        id Bit-String-1B ::= '14'H,
+        video Video-Action,
+        audio Audio-Action,
+        number-of-second Integer-0-1B,
+        count Integer-0-1B }
+    Password ::= Data-String
+    TBA-Id ::= Data-String
+    Mode ::= CHOICE {
+        to-send-c Bit-String-1B ::= '00'H,
+        to-exchange Bit-String-1B ::= '01'H,
+        to-send Bit-String-1B ::= '02'H,
+        to-get Bit-String-1B ::= '03'H }
+    Video-Action ::= CHOICE {
+        three-signal CHOICE {
+            none Bit-String-1B ::= '00'H,
+            ko Bit-String-1B ::= '01'H,
+            ok Bit-String-1B ::= '02'H,
+            warning Bit-String-1B ::= '03'H,
+            ok-and-warning Bit-String-1B ::= '04'H,
+            ok-and-ko Bit-String-1B ::= '05'H,
+            warning-and-ko Bit-String-1B ::= '06'H,
+            all-on Bit-String-1B ::= '07'H },
+        two-signal CHOICE {
+            none Bit-String-1B ::= '00'H,
+            ko Bit-String-1B ::= '01'H,
+            ok Bit-String-1B ::= '02'H,
+            all-on Bit-String-1B ::= '03'H,
+            none Bit-String-1B ::= '04'H,
+            none Bit-String-1B ::= '05'H,
+            none Bit-String-1B ::= '06'H,
+            all-on Bit-String-1B ::= '07'H } }
+    Audio-Action ::= CHOICE {
+    none Bit-String-1B ::= '00'H,
+    ok Bit-String-1B ::= '01'H,
+    ko Bit-String-1B ::= '02'H,
+    warning Bit-String-1B ::= '03'H }
+    Get-TBA-Random-Rs ::= Read-Data
+    Get-Master-Record-Rs ::= Read-Data
+    Get-Credential-Rs ::= Read-Data (SIZE(4))
+    Read-Data-From-External-Rs ::= SEQUENCE {
+        data-length Integer-1-1B,
+        data Read-Data }
+END
+'''
+
+for line in asn_str.split('\n'):
+    if line.lstrip().startswith('id') and '::=' in line:
+        # print(line)
+        print(line.replace("::= '", "('").replace("'H", "'H)"))
